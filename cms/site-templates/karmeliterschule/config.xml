@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitetemplate>
+	<name>Karmeliterschule 12-02-29</name>
+	<description>A school page template with a theme based on the skyline of the city Frankfurt am Main and the school Karmeliterschule itself.</description>
+	<layouts>
+		<layout>2-column page</layout>
+	</layouts>
+	<modules>
+		<module>content column</module>
+		<module>navigation column</module>
+		<module>archive for uploaded pdf files</module>
+		<module>school mascot with speech bubble / pdf column</module>
+	</modules>
+	<preview>
+		<folder>preview</folder>
+		<previewimage>
+			<filename>preview1.jpg</filename>
+			<imagedescription>Main site, featuring a two-column layout</imagedescription>
+		</previewimage>
+	</preview>
+	<stylesheet>
+		<folder>css</folder>
+	</stylesheet>
+	<javascript>
+		<folder>js</folder>
+	</javascript>
+	<images>
+		<folder>images</folder>
+	</images>
+	<views>
+		<folder>views</folder>
+		<general></general>
+	</views>
+</sitetemplate>
