@@ -1,0 +1,207 @@
+/* --------------------------------------------------------------------------------------------------- */
+/* External fonts */
+/* --------------------------------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------------------------------- */
+/* Standard HTML tags */
+/* --------------------------------------------------------------------------------------------------- */
+body{
+	margin:0;
+	padding:0;
+	background-image:url('/assets/images/bkg.jpg');
+	border:0;
+}
+
+ul{ list-style-type:none; }
+h1,h2,h3{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:400; margin-bottom:15px; padding-top:0; }
+h4,h5,h6{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:400; margin-bottom:7px; padding-top:0; }
+
+
+/* --------------------------------------------------------------------------------------------------- */
+/* Standard IDs */
+/* --------------------------------------------------------------------------------------------------- */
+#nav_bar{ display:block;clear:both;color:white;background-color:black;padding:10px; margin-bottom:10px; }
+#title{ float:left; font-size:1.5em; margin:-7px 40px 0 0; }
+#main_nav_menu{ list-style-type:none; margin:0; padding:0; color:gray; }
+#main_nav_menu li{ display:inline; /*padding:2px 8px;*/}
+#main_nav_menu a,a:visited{color:gray; background-color:black; transition:.2s linear;-moz-transition:.2s linear;-webkit-transition:.2s linear; text-decoration:none; padding:2px 8px;}
+#main_nav_menu a:hover{ color:white; background-color:#1E71E6; -moz-border-radius:15px; border-radius: 15px;}
+
+/* --------------------------------------------------------------------------------------------------- */
+/* Standard classes */
+/* --------------------------------------------------------------------------------------------------- */
+.left { float:left; }
+.right { float: right; }
+.clear { clear:both; }
+.clear_right { clear:right; }
+
+.standard_span { padding: 10px; margin: 10px; }
+.big_span { padding: 10px; margin: 30px; }
+.min_span { padding: 2px; margin: 5px; }
+.slim_shadow { -moz-box-shadow: 0 0 5px #000; -webkit-box-shadow: 0 0 5px#000; box-shadow: 0 0 5px #000; }
+.width_40 { width:40%; }
+.width_45 { width:45%; }
+.left_right_padding_20 { padding-left:20px; padding-right:20px; }
+
+.sans_serif { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.serif{ Georgia, "Times New Roman", Times, serif}
+
+/* --------------------------------------------------------------------------------------------------- */
+/* Specialized classes */
+/* --------------------------------------------------------------------------------------------------- */
+.hover_nav_menu { color:white; background-color:#1E71E6; -moz-border-radius:15px; border-radius: 15px; }
+.unhover_nav_menu { color:gray; background-color:black; }
+.hover_dashboard { background-color:#EDEB87; -moz-border-radius:5px; border-radius: 5px; }
+.unhover_dashboard { background-color: white; }
+
+.dashboard_list > li { padding: 10px 0; display:block;cursor:pointer;}
+.dashboard_list_right { right:50%; }
+
+.workbench { color:black; background-color:white; /*-moz-border-radius:5px; border-radius: 5px;*/}
+
+
+/* --------------------------------------------------------------------------------------------------- */
+/* Icons */
+/* --------------------------------------------------------------------------------------------------- */
+/*
+.icon_user { width:32px; height:32px; background-image:url('/assets/images/icons_32x32/myspace.png'); margin-right:15px; }
+.icon_templates { width:32px; height:32px; background-image:url('/assets/images/icons_32x32/star.png'); margin-right:15px; }
+.icon_dashboard { width:32px; height:32px; background-image:url('/assets/images/icons_32x32/home.png'); margin-right:15px; }
+.icon_system { width:32px; height:32px; background-image:url('/assets/images/icons_32x32/imac.png'); margin-right:15px; }
+.icon_structure { width:32px; height:32px; background-image:url('/assets/images/icons_32x32/plug.png'); margin-right:15px; }
+.icon_articles { width:32px; height:32px; background-image:url('/assets/images/icons_32x32/notepad.png'); margin-right:15px; }
+.icon_filemanager { width:32px; height:32px; background-image:url('/assets/images/icons_32x32/image.png'); margin-right:15px; }
+*/
+.icon_user { width:48px; height:48px; background-image:url('/assets/images/icons_48x48/Friends.png'); margin-right:15px; }
+.icon_templates { width:48px; height:48px; background-image:url('/assets/images/icons_48x48/Star.png'); margin-right:15px; }
+.icon_dashboard { width:48px; height:48px; background-image:url('/assets/images/icons_48x48/Home.png'); margin-right:15px; }
+.icon_system { width:48px; height:48px; background-image:url('/assets/images/icons_48x48/Box.png'); margin-right:15px; }
+.icon_structure { width:48px; height:48px; background-image:url('/assets/images/icons_48x48/Folder.png'); margin-right:15px; }
+.icon_articles { width:48px; height:48px; background-image:url('/assets/images/icons_48x48/Page.png'); margin-right:15px; }
+.icon_filemanager { width:48px; height:48px; background-image:url('/assets/images/icons_48x48/Picture.png'); margin-right:15px; }
+
+
+/* --------------------------------------------------------------------------------------------------- */
+/* Column settings [threecol, doublepage, blogstyle, fullpage, leftmenu] */
+/* http://matthewjamestaylor.com/blog/perfect-multi-column-liquid-layouts */
+/* --------------------------------------------------------------------------------------------------- */
+/* column container */
+.colmask {
+	position:relative;	/* This fixes the IE7 overflow hidden bug */
+	clear:both;
+	float:left;
+	width:100%;			/* width of whole page */
+	overflow:hidden;	/* This chops off any overhanging divs */
+}
+/* common column settings */
+.colright,
+.colmid,
+.colleft {
+	float:left;
+	width:100%;			/* width of page */
+	position:relative;
+}
+.col1,
+.col2,
+.col3 {
+	float:left;
+	position:relative;
+	padding:0 0 1em 0;	/* no left and right padding on columns, we just make them narrower instead 
+					only padding top and bottom is included here, make it whatever value you need */
+	overflow:hidden;
+}
+
+/* 3 Column settings */
+.threecol {
+	/* additional stuff for 3column layout goes here */
+}
+.threecol .colmid {
+	right:25%;			/* width of the right column */
+}
+.threecol .colleft {
+	right:50%;			/* width of the middle column */
+}
+.threecol .col1 {
+	width:46%;			/* width of center column content (column width minus padding on either side) */
+	left:102%;			/* 100% plus left padding of center column */
+}
+.threecol .col2 {
+	width:21%;			/* Width of left column content (column width minus padding on either side) */
+	left:31%;			/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
+}
+.threecol .col3 {
+	width:21%;			/* Width of right column content (column width minus padding on either side) */
+	left:85%;			/* Please make note of the brackets here:
+					(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+}
+
+/* 2 Column (double page) settings */
+.doublepage {
+	/* additional stuff for 2 column layout goes here */
+	left: 1%;
+	width: 96%;
+}
+.doublepage .colleft {
+	right:50%;			/* right column width */
+	/*background:#fff;	/* left column background colour */
+}
+.doublepage .col1 {
+	width:46%;			/* left column content width (column width minus left and right padding) */
+	left:52%;			/* right column width plus left column left padding */
+}
+.doublepage .col2 {
+	width:46%;			/* right column content width (column width minus left and right padding) */
+	left:56%;			/* (right column width) plus (left column left and right padding) plus (right column left padding) */
+}
+
+/* 3 Column blog style settings */
+.blogstyle {
+	/* additional stuff for 3 column blogstyle goes here */
+}
+.blogstyle .colmid {
+	right:25%;				/* width of the right column */
+	background:#f4f4f4;		/* center column background colour */
+}
+.blogstyle .colleft {
+	right:25%;				/* width of the middle column */
+	background:#fff;			/* left column background colour */
+}
+.blogstyle .col1 {
+	width:46%;				/* width of center column content (column width minus padding on either side) */
+	left:52%;				/* 100% plus left padding of center column */
+}
+.blogstyle .col2 {
+	width:21%;				/* Width of left column content (column width minus padding on either side) */
+	left:56%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
+}
+.blogstyle .col3 {
+	width:21%;				/* Width of right column content (column width minus padding on either side) */
+	left:60%;				/* Please make note of the brackets here:
+						(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+}
+
+/* Full page settings */
+.fullpage {
+	/* additional stuff for 1 column style goes here */
+	left:1%;			/* page left padding */
+	width:96%
+}
+.fullpage .col1 {
+}
+
+/* 2 Column (left menu) settings */
+.leftmenu {
+	/* additional stuff for 2 column layout goes here */
+}
+.leftmenu .colleft {
+	right:75%;			/* right column width */
+	background:#f4f4f4;	/* left column background colour */
+}
+.leftmenu .col1 {
+	width:71%;			/* right column content width */
+	left:102%;			/* 100% plus left column left padding */
+}
+.leftmenu .col2 {
+	width:21%;			/* left column content width (column width minus left and right padding) */
+	left:6%;			/* (right column left and right padding) plus (left column left padding) */
+}
