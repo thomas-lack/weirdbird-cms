@@ -78,7 +78,6 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 		$t->folder_images = $templateConfig['images']['folder'];
 		$t->save();
 		
-		
 		// just in case
 		die();
 	}
