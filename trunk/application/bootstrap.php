@@ -16,6 +16,11 @@ else
 	require SYSPATH.'classes/kohana'.EXT;
 }
 
+// Load the chrome php logger
+// usage: 
+// ChromePhp::log($obj, 'test');
+require_once MODPATH.'chromephp/chromephp.php';
+
 /**
  * Set the default time zone.
  *

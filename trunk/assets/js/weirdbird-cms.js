@@ -10,6 +10,10 @@ var cms = {
 		this.registerNavHandlers();
 		this.registerDashboardHandlers();
 	},
+	
+	/**
+	*
+	*/
 	registerNavHandlers: function(){
 		if (this.debug) console.log('registering nav menu handlers');
 		$('#navmenu > ul > li > a').each(function(){
@@ -30,7 +34,11 @@ var cms = {
 						}
 						if (urlSuffix == 'templates')
 						{
-							cms.populateTemplateGrid();
+							cms.populateTemplatesGrid();
+						}
+						if (urlSuffix == 'structures')
+						{
+							cms.populateStructuresGrid();
 						}
 						$('#content').unblock();
 					},
@@ -42,6 +50,10 @@ var cms = {
 			});
 		});
 	},
+	
+	/**
+	*
+	*/
 	registerDashboardHandlers: function() {
 		if (this.debug) console.log('registering dashboard handlers');
 		$('.dashboard-list > li').each(function(){
@@ -85,7 +97,11 @@ var cms = {
 		el.addClass('big bold');
 		el.parent().append('<span class="icon right very-big">=</span>');
 	},
-	populateTemplateGrid: function() {
+	
+	/**
+	*
+	*/
+	populateTemplatesGrid: function() {
 		if (this.debug) console.log('populating template data grid');
 		
 		var sharableDataSource = new kendo.data.DataSource({
@@ -163,6 +179,10 @@ var cms = {
 			}
 		});
 	},
+	
+	/**
+	*
+	*/
 	updateTemplateGridInfo: function(dataId){
 		$('p.hidden').hide();
 		$('button').show();
@@ -176,8 +196,93 @@ var cms = {
 			$('button[isactive=1]').hide();
 			$('p.hidden[isactive=1]').show();
 		}
+	},
+	
+	/**
+	*
+	*/
+	populateStructuresGrid: function() {
+		if (this.debug) console.log('populating structures data grid');
+		
+		var data = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: 'cms/structures/data',
+					dataType: 'json'
+				},
+				update: {
+					url: function(params){
+						return 'cms/structures/update/' + params.id;
+					},
+					type: 'POST'
+				},
+				destroy: {
+					url: function(params){
+						console.log('destroy');
+						return 'cms/structures/destroy/' + params.id;
+					},
+					type: 'POST'
+				},
+				create: {
+					url: 'cms/structures/create',
+					type: 'POST',
+					complete: function(e) {
+						// refresh grid after db update
+						$("#structures-grid").data("kendoGrid").dataSource.read(); 
+					}
+				},
+				// map the parameters we give to the backend according to the used
+				// operation (e.g. read out the position for new entries)
+				parameterMap: function(options, operation) {
+					
+					return {
+						id: options.id,
+						position: (operation == 'create') ? $('.k-grid-content tr').length : options.position,
+						active: options.active,
+						title: options.title,
+						description: options.description,
+						format: options.format
+					}
+				}
+			},
+			schema: {
+				data: 'data',
+				model: {
+					id: 'id',
+					fields: {
+						id: {editable:false, nullable:false, defaultValue: -1},
+						position: {editable:false, validation: {required:true}},
+						active: {type:'boolean'},
+						title: {type:'string', validation: {required:true}},
+						description: {type:'string'},
+						format: {type:'string', validation: {required:true}}
+					}
+				}
+			}
+		});
+		
+		$('#structures-grid').kendoGrid({
+			dataSource: data,
+			toolbar: ['create', 'save', 'cancel'],
+			sortable: false,
+			filterable: false,
+			scrollable: true,
+			selectable: true,
+			editable: true, // 'inline' with editable: true the delete command is not working!
+			columns: [
+				{field:'position', title:'#', width:'50'},
+				{field:'active', title:'Active?', width:'70',
+					template: '<input type="checkbox" # if(active){# checked #}#/>'
+				},
+				{field:'title', title:'Title'},
+				{field:'description', title:'Description'},
+				{field:'format', title:'Type'},
+				{command:'destroy', title:''}
+			]
+		});
 	}
 }
+
 
 $(document).ready(function(){
 	cms.init();

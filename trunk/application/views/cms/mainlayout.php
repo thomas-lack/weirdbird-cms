@@ -41,7 +41,7 @@
 				<ul class="sans-serif">
 					<li><a href="#" ajax="dashboard" class="big bold">Dashboard</a><span class="icon right very-big">=</span></li>
 					<li><a href="#" ajax="templates">Templates</a></li>
-					<li><a href="#" ajax="structure">Structure</a></li>
+					<li><a href="#" ajax="structures">Structures</a></li>
 					<li><a href="#" ajax="articles">Articles</a></li>
 					<li><a href="#" ajax="file_manager">File Manager</a></li>
 					<li><a href="#" ajax="user">User</a></li>

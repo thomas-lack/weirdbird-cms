@@ -34,14 +34,15 @@ class Controller_CMS_Main extends Controller_Template
 		{
             $styles = array(
 					'assets/css/kendo.common.min.css' => 'screen, projection',
-					'assets/css/kendoui.css' => 'screen, projection',
+					'assets/css/kendo.default.min.css' => 'screen, projection',
+					//'assets/css/kendoui.css' => 'screen, projection',
 					'assets/css/cms_screen2.css' => 'screen, projection'
 				);
             $scripts = array(
-					'http://code.jquery.com/jquery.min.js',
-					'assets/js/jquery-blockui.js',
+					'assets/js/jquery.min.js',
+					'assets/js/jquery.blockui.js',
 					'assets/js/weirdbird-cms.js',
-					'assets/js/kendo.all.min.js'
+					'assets/js/kendo.web.min.js'
 				);
             $this->template->styles = array_merge( $this->template->styles, $styles );
             $this->template->scripts = array_merge( $this->template->scripts, $scripts );
