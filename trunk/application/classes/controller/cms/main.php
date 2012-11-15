@@ -35,7 +35,6 @@ class Controller_CMS_Main extends Controller_Template
             $styles = array(
 					'assets/css/kendo.common.min.css' => 'screen, projection',
 					'assets/css/kendo.default.min.css' => 'screen, projection',
-					//'assets/css/kendoui.css' => 'screen, projection',
 					'assets/css/cms_screen2.css' => 'screen, projection'
 				);
             $scripts = array(
