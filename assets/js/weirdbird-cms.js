@@ -268,7 +268,7 @@ var cms = {
 			filterable: false,
 			scrollable: true,
 			selectable: true,
-			editable: true, // 'inline' with editable: true the delete command is not working!
+			editable: 'inline', // 'inline' with editable: true the delete command is not working!
 			columns: [
 				{field:'position', title:'#', width:'50'},
 				{field:'active', title:'Active?', width:'70',
