@@ -56,7 +56,10 @@
 			<!-- skiplink anchor: navigation -->
 			<div id="nav_main">
 				<ul>
-					
+					<? 
+						foreach($structures as $s)
+							echo '<li>' . $s . '</li>';
+					?>
 				</ul>
 			</div>
 		</div>

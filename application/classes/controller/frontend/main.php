@@ -18,6 +18,7 @@ class Controller_Frontend_Main extends Controller_Template {
 		// otherwise start loading the template
 		else {
 			$this->config = $template->find();
+			
 			$this->template = '../../' 
 				. $this->config->folder 
 				. '/'
@@ -25,9 +26,21 @@ class Controller_Frontend_Main extends Controller_Template {
 				. '/mainlayout';
 
 			parent::before();
+
+			$structures = ORM::factory('structure')
+				->where('active','=','true')
+				->order_by('position', 'asc')
+				->find_all();
+			
+			$structs = array();
+			foreach($structures as $s) {
+				array_push($structs, $s->title);
+			}
+
 			if ($this->auto_render) {
 				$this->template->styles = array();
 				$this->template->scripts = array();
+				$this->template->structures = $structs;
 			}
 		}
 	}
