@@ -1,7 +1,15 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
  
 class Model_Template extends ORM {
- 
+    
+    // access the loadfiles of the current template via $template->loadfiles
+    // (and the layouts, models, etc...)
+    protected $_has_many = array(
+        'loadfiles' => array(),
+        'layouts' => array(),
+        'modules' => array()
+    );
+
     protected $_rules = array(
         'active' => array(
             'not_empty'  => NULL,
