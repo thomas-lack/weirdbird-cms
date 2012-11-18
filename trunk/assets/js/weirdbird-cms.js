@@ -12,7 +12,7 @@ var cms = {
 	},
 	
 	/**
-	*
+	* set which content shall be loaded via ajax by clicking on a menu button
 	*/
 	registerNavHandlers: function(){
 		if (this.debug) console.log('registering nav menu handlers');
@@ -52,7 +52,7 @@ var cms = {
 	},
 	
 	/**
-	*
+	* register clickable buttons for the dashboard
 	*/
 	registerDashboardHandlers: function() {
 		if (this.debug) console.log('registering dashboard handlers');
@@ -89,6 +89,10 @@ var cms = {
 			});
 		});
 	},
+	
+	/*
+	* Change color of the navigation menu on the fly
+	*/
 	updateNavigationMenu: function(categoryLink) {
 		if (this.debug) console.log('resetting navigation menu to: ' + categoryLink);
 		$('#navmenu > ul > li > a').removeClass('big bold');
@@ -99,13 +103,13 @@ var cms = {
 	},
 	
 	/**
-	*
+	* Load template data into the template grid
 	*/
 	populateTemplatesGrid: function() {
 		if (this.debug) console.log('populating template data grid');
 		
 		var sharableDataSource = new kendo.data.DataSource({
-			pageSize: 3,
+			//pageSize: 3,
 			transport: {
 			read: {
 				url: "cms/templates/data",
@@ -114,16 +118,21 @@ var cms = {
 		}
 		});
 		
-		$('#template-list').kendoGrid({
+		$('#template-grid').kendoGrid({
 			dataSource: sharableDataSource,
+			toolbar: [{
+				text: 'Import all templates',
+				className: 'tplimport',
+				imageClass: 'k-add'
+			}],
 			scrollable: false,
-			pageable: true,
+			pageable: false,
 			columns: [{
-				title: 'Activate',
+				title: 'Preview',
+				width: 150,
 				template: ''
-				+'<p class="hidden" activeid="#=id#" isactive="#=active#"><span class="blue icon very-big">"</span> '
-				+'This template is currently active.</p>'
-				+'<button activate="#=id#" isactive="#=active#">Set active <span class="icon">=</span></button>'
+					+'<img src="#=folder#/#=folder_preview#/#=previewimage_filename#" />'
+					+'<p class="sans-serif very-small uppercase dark-gray normal-lh">#=previewimage_description#</p>'
 			},{
 				title: 'Description',
 				template: ''
@@ -131,30 +140,24 @@ var cms = {
 				+'<p class="justified normal normal-lh">#=description#</p>'
 				+'<h2>Layouts</h2>'
 				+'<ul class="normal normal-lh">'
-				+'#if (layouts.layout[1].length > 1){#'
-				+'#for (var i=0;i<layouts.layout.length;i++){#'
-				+'<li><span class="icon green">&Atilde;</span> #=layouts.layout[i]#</li>'
-				+'#}#'
-				+'#} else {#'
-				+'<li><span class="icon green">&Atilde;</span> #=layouts.layout#</li>'
+				+'#for (var i=0;i<layouts.length;i++){#'
+				+'<li><span class="icon green">&Atilde;</span> #=layouts[i].description#</li>'
 				+'#}#'
 				+'</ul>'
 				+'<h2>Modules</h2>'
 				+'<ul class="normal normal-lh">'
-				+'#if (modules.module[1].length > 1){#'
-				+'#for (var i=0;i<modules.module.length;i++){#'
-				+'<li><span class="icon green">&Atilde;</span> #=modules.module[i]#</li>'
-				+'#}#'
-				+'#} else {#'
-				+'<li><span class="icon green">&Atilde;</span> #=modules.module#</li>'
+				+'#for (var i=0;i<modules.length;i++){#'
+				+'<li><span class="icon green">&Atilde;</span> #=modules[i].description#</li>'
 				+'#}#'
 				+'</ul>'
 			},{
-				title: 'Preview',
+				title: 'Activate',
+				width: 70,
 				template: ''
-				+'<img src="#=templatefolder#/#=preview.folder#/#=preview.previewimage.filename#" />'
-				+'<p class="sans-serif very-small uppercase dark-gray normal-lh">#=preview.previewimage.imagedescription#</p>'
-			}],
+				+'<p class="hidden" activeid="#=id#" isactive="#=active#"><span class="blue icon very-big">"</span> '
+				+'This template is currently active.</p>'
+				+'<button activate="#=id#" isactive="#=active#">Set active <span class="icon">=</span></button>'
+			},],
 			dataBound: function(e){
 				if (this.debug) console.log("data was bound to the grid / registering button handlers");
 				cms.updateTemplateGridInfo();
@@ -178,10 +181,27 @@ var cms = {
 				});
 			}
 		});
+
+		//add click handler to the custom toolbar button
+		$('.tplimport').click(function(){
+			$('#content').block();
+			$.ajax({
+				url: 'cms/templates/import',
+				success: function(data){
+					$('#template-grid').data('kendoGrid').dataSource.read(); 
+					$('#content').unblock();
+				},
+				failure: function(){
+					alert('Oops. An ajax error happened.');
+					$('#content').unblock();
+				}
+			});
+		});
 	},
 	
 	/**
-	*
+	* Show "set active" button in the template grid, only if the 
+	* template is not active currently
 	*/
 	updateTemplateGridInfo: function(dataId){
 		$('p.hidden').hide();
@@ -199,7 +219,7 @@ var cms = {
 	},
 	
 	/**
-	*
+	* Fill the structures grid with data
 	*/
 	populateStructuresGrid: function() {
 		if (this.debug) console.log('populating structures data grid');
@@ -234,7 +254,6 @@ var cms = {
 				// map the parameters we give to the backend according to the used
 				// operation (e.g. read out the position for new entries)
 				parameterMap: function(options, operation) {
-					
 					return {
 						id: options.id,
 						position: (operation == 'create') ? $('.k-grid-content tr').length : options.position,
@@ -253,7 +272,7 @@ var cms = {
 						id: {editable:false, nullable:false, defaultValue: -1},
 						position: {editable:false, validation: {required:true}},
 						active: {type:'boolean'},
-						title: {type:'string', validation: {required:true}},
+						title: {type:'string', validation: {required:true}},  // TODO !!!!! check for [a-zA-Z0-9_]
 						description: {type:'string'},
 						format: {type:'string', validation: {required:true}}
 					}

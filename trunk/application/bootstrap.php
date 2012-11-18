@@ -121,14 +121,27 @@ Cookie::$salt = 'e8e6cea3c92f843c227bb73a2c9853d6';
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+// standard "/cms" route
 Route::set('cms', 'cms(/<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'directory'		=> 'cms',
 		'controller'	=> 'main',
 		'action'		=> 'index',
 	));
-	
-Route::set('default', '(<controller>(/<action>(/<id>)))')
+
+// route to load template structures
+Route::set('tplstruct', '<structure>(/<id>)',
+	array(
+		'action' 		=> '[a-zA-Z0-9_]+',
+	))
+	->defaults(array(
+		'directory'		=> 'frontend',
+		'controller' 	=> 'structure',
+		'action'		=> 'index',
+	));
+
+// standard "/" route (frontend)	
+Route::set('default',  ''/*(<controller>(/<action>(/<id>)))'*/)
 	->defaults(array(
 		'directory'		=> 'frontend',
 		'controller' 	=> 'main',

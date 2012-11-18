@@ -3,7 +3,7 @@
 *
 *	weirdbird CMS
 *	Template: 	Karmeliterschule
-*	Purpose:	Main Layout
+*	Purpose:	2 column (Main) Layout
 *
 ************************************************************************************/
 ?>
@@ -22,6 +22,8 @@
 	<?
 		foreach ($styles as $file) 
 			echo HTML::style($file), "\n";
+		foreach ($externalScripts as $file)
+			echo HTML::script($file), "\n";
 		foreach ($scripts as $file) 
 			echo HTML::script($file), "\n";
 	?>
@@ -47,7 +49,7 @@
 				<a class="skip" href="#navigation" title="skip link">Skip to the navigation</a><span class="hideme">.</span>
 				<a class="skip" href="#content" title="skip link">Skip to the content</a><span class="hideme">.</span>
 				<!-- end: skip link navigation -->
-				<a href="kontakt">Kontakt</a> | 
+				<a href="/show:kontakt">Kontakt</a> | 
 				<a href="impressum">Impressum</a></span> 
 			</div>
 		</div>
@@ -57,8 +59,11 @@
 			<div id="nav_main">
 				<ul>
 					<? 
-						foreach($structures as $s)
-							echo '<li>' . $s . '</li>';
+						foreach($structures as $s) {
+							// TODO: mark current rubrik as <li id="current">
+							// TODO: add links
+							echo '<li><a href="#">' . $s->title . '</a></li>';
+						}
 					?>
 				</ul>
 			</div>

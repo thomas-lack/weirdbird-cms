@@ -1,0 +1,330 @@
+@charset "UTF-8";
+/**
+ * "Yet Another Multicolumn Layout" - (X)HTML/CSS Framework
+ *
+ * (en) Screen layout for YAML examples
+ * (de) Bildschirmlayout für YAML-Beispiele
+ *
+ * @copyright       Copyright 2005-2007, Dirk Jesse
+ * @license         CC-A 2.0 (http://creativecommons.org/licenses/by/2.0/),
+ *                  YAML-C (http://www.yaml.de/en/license/license-conditions.html)
+ * @link            http://www.yaml.de
+ * @package         yaml
+ * @version         3.0.4
+ * @revision        $Revision: 130 $
+ * @lastmodified    $Date: 2007-10-05 19:05:21 +0200 (Fr, 05 Okt 2007) $
+ */
+
+@media all
+{
+  /*------------------------------------------------------------------------------------------------------*/
+
+  /**
+   * (en) Formatting YAML's  basic layout elements
+   * (de) Gestaltung des YAML Basis-Layouts
+   */
+
+  /* (en) Marginal areas & page background */
+  /* (de) Randbereiche & Seitenhintergrund */
+  body 
+  { 
+  	background: #474871 url("../../images/background_flow.gif") repeat-x top left fixed; 
+  	padding: 5px 0; 
+  }
+
+  /* (en) Layout: width, background, borders */
+  /* (de) Layout: Breite, Hintergrund, Rahmen */
+  #page_margins { min-width: 740px; max-width: 80em; margin: 0 auto; border: 0px #889 solid; }
+  #page
+  { 
+  	background: #fff; 
+  	border: 1px black solid; 
+  }
+
+  /* (en) Centering layout in old IE-versions */
+  /* (de) Zentrierung des Layouts in alten IE-versionen */
+  body { text-align: center }
+  #page_margins { text-align:left }
+
+  /* (en) Designing main layout elements */
+  /* (de) Gestaltung der Hauptelemente des Layouts */
+  #header {
+    color: #000;
+    background: url(../../images/header_flow.gif) repeat-x top left;
+    height: 160px;
+    padding: 0px 2em 0em 20px;  /* vorher padding: 45px 2em 1em 20px;  */
+  }
+  
+  /**
+  * little Addon for displaying a warning box, if javascript is not activated
+  */
+  
+  #javascriptWarning 
+  {
+  	color: #000;
+  	background-color: #fff;
+  	/*padding: 20px 0 20px 100px;*/
+  }
+  
+  #javascriptWarning p
+  {
+  	padding: 20px 0 20px 20px;
+  }
+
+  #header_logo 
+  {
+  	background-image: url(../../images/header_logo.gif); 
+  	border: 0px solid red;
+  	height: 160px;
+  	width: 901px;
+  }
+  
+ #topnav { color: #aaa; background: transparent; }
+
+  /* (en) adjustment of main navigation */
+  /* (de) Anpassung der Hauptnavigation */
+  #nav ul { margin-left: 20px; }
+  #nav_main {background-color: #336}
+
+  #teaser_image
+  {
+  	background: url(../../images/teaser_welcome.gif) repeat-x top left;
+  	width: 100%;
+  	height: 250px;
+  	border: 6px #9F9F9F solid;  
+  }
+  
+  /**
+  * Definition f�r Adressfelder
+  */
+  
+  #address
+  {
+  	/*background: url(../../images/poststamp.gif) no-repeat top right #DCDCDC;*/
+  	background: url(../../images/mail.gif) no-repeat top right #fff;
+  	/*border: 1px solid #B8B8B8;*/
+  	border: 1px dotted #B8B8B8;
+  	padding: 20px 20px;
+  	font-size: 105%;
+  }
+  
+  #address p
+  {
+  	line-height: 1.1em;
+  }
+  
+  #address_spacer
+  {
+  	width: 70%;
+  }
+  
+  
+  table 
+  {
+  	line-height:1.1em;
+  	border: 0px solid #B8B8B8;
+  }
+
+  /**
+  * Textboxen fuer die sich veraendernden Texte in der Karmi-Sprechblase
+  */
+  
+  #karmi
+  {
+  	background-image: url(../../images/karmipost_bubble.gif);
+  	background-repeat:no-repeat;
+  	background-position: 170px 170px;
+  	/*width: 180px;
+  	height: 628px;*/ 
+  }
+   
+  #karmiWelcome { visibility: visible; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #karmiWelcome div { text-align:left; color: #000; top: 0px;}
+  
+  #pw2011 { visibility: hidden; position: absolute; left: 207px; top: 290px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2011 div { text-align:left; color: #000; top: 0px;}
+  
+  #pw2010gs { visibility: hidden; position: absolute; left: 207px; top: 290px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2010gs div { text-align:left; color: #000; top: 0px;}
+  
+  #pw2010hs { visibility: hidden; position: absolute; left: 207px; top: 280px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2010hs div { text-align:left; color: #000; top: 0px;}
+  
+  #pw2009gs { visibility: hidden; position: absolute; left: 207px; top: 240px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2009gs div { text-align:left; color: #000; top: 0px;}
+  
+  #pw2009hs { visibility: hidden; position: absolute; left: 207px; top: 212px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2009hs div { text-align:left; color: #000; top: 0px;}
+    
+  #pw2008zeitreise { visibility: hidden; position: absolute; left: 207px; top: 257px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2008zeitreise div { text-align:left; color: #000; top: 0px;}
+  
+  #MIGRINTEGRATION { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #MIGRINTEGRATION div { text-align:left; color: #000; top: 0px;}
+  
+  #mitSprache { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #mitSprache div { text-align:left; color: #000; top: 0px;}
+
+  #pw2007wasser { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2007wasser div { text-align:left; color: #000; top: 0px;}
+
+  #pw2007 { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #pw2007 div { text-align:left; color: #000; top: 0px;}
+
+  #theater { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #theater div { text-align:left; color: #000; top: 0px;}
+
+  #fuba { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #fuba div { text-align:left; color: #000; top: 0px;}
+
+  #fasching07 { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #fasching07 div { text-align:left; color: #000; top: 0px;}
+
+  #leseoly07 { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #leseoly07 div { text-align:left; color: #000; top: 0px;}
+
+  #martin07 { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #martin07 div { text-align:left; color: #000; top: 0px;}
+
+  #spieleoly07 { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #spieleoly07 div { text-align:left; color: #000; top: 0px;}
+
+  #wmarkt07 { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #wmarkt07 div { text-align:left; color: #000; top: 0px;}
+  
+  #SuS { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #SuS div { text-align:left; color: #000; top: 0px;}
+  
+  #Schirn { visibility: hidden; position: absolute; left: 207px; top: 197px; width: 146px; height: 270px; z-index: 1000; _left:189px;}
+  #Schirn div { text-align:left; color: #000; top: 0px;}
+    
+  /**
+  * Definitionen fuer Schulprogramm und mitSprache Texte
+  */
+  
+  .program_text
+  {
+	margin:0 0 10px 0;
+	background: #ecfad7;
+	/*visibility:hidden;*/
+	overflow:visible;
+	display:none;
+  }
+  
+  .program_height li
+  {
+  	list-style-image: url('../../images/10.png');
+  	line-height: 1.7em;
+  }
+
+  .program_height
+  {
+	min-height: 640px;
+	_height:640px;
+	overflow: visible;
+  }
+  
+  /**
+  * class for replacement of <ul> list style items
+  */
+  .bubble_ul li
+  {
+  	list-style-image: url('../../images/10.png');
+  	line-height: 1.7em;
+  }
+    	
+  /**
+  * Image Placer fuer saemtliche Ueberschrifts-Grafiken
+  */
+  
+  #image_placer 
+  { 
+  margin-top:6px;
+  padding-bottom:6px; 
+  }
+  
+  /**
+  * Kontaktformular
+  */
+  
+  #contact_form input, textarea
+  {
+  	background: #FFF; /*#EFEBED;*/
+  	border: 1px dotted #D5D2D4;
+  	margin-top: 3px;
+  	font-family: courier;
+  }
+  
+  #contact_form .submit
+  {
+  	background: #fff; /*#EFEBED;;*/
+  	border: 1px dotted #D5D2D4;
+  	padding: 10px 46px 10px 46px;
+  	font-family: arial;
+  	font-style: bold;
+  	color: #4D87C7;
+  }
+  
+  #contact_form .submit:hover { background: #f6ffe9; }
+  
+  /**
+  * Definitionen f�r jQuery Navigation (wegen Fehlermeldung)
+  */
+  
+  .show_buecherei {}
+  .show_lesefoerderung {}
+  .show_mehrsprachigkeit {}
+  .show_mitsprache {}
+  .show_werkstatt {}
+  .show_elterntreffs {}
+  .show_deutschlernen {}
+  .show_pkonzept {}
+  .show_pilotversuch {}
+  .show_fit {}
+  .show_mS_einleitung {}
+  .show_mS_portrait {}
+  .show_mS_chronologie {}
+  .show_mS_projektorga {}
+  .show_mS_DaZ {}
+  .show_mS_MuiL {}
+  .show_mS_ZvSuE {}
+  .show_mS_ViS {}
+  .show_mS_lehrerfortbildung {}
+  .show_mS_RuP {}
+  .mS_einleitung {}
+  
+  #main { background: #fff;padding:10px 0; }
+
+  #footer { 
+    color:#666; 
+    background: #f9f9f9;
+    padding: 15px;
+    border-top: 5px #efefef solid;
+  }
+
+  /*------------------------------------------------------------------------------------------------------*/
+
+  /**
+   * (en) Formatting content container
+   * (de) Formatierung der Inhalts-Container
+   *
+   * |-------------------------------|
+   * | #header                       |
+   * |-------------------------------|
+   * | #col1   | #col3     | #col2   |
+   * | 25%     | flexible  | 25%     |
+   * |-------------------------------|
+   * | #footer                       |
+   * |-------------------------------|
+   */
+
+
+  #col1 { width: 25% }
+  #col1_content { padding: 10px 10px 10px 20px; }
+
+  #col2 { width: 25% }
+  #col2_content { padding: 10px 20px 10px 10px; }
+
+  #col3 { margin: 0 25% }
+  #col3_content { padding: 10px }
+}
