@@ -272,7 +272,15 @@ var cms = {
 						id: {editable:false, nullable:false, defaultValue: -1},
 						position: {editable:false, validation: {required:true}},
 						active: {type:'boolean'},
-						title: {type:'string', validation: {required:true}},  // TODO !!!!! check for [a-zA-Z0-9_]
+						title: {type:'string', validation: {
+							required:true,
+							custom: function(input) {
+								input.attr('data-custom-msg', 
+									'The title can only contain letters A-Z, a-z, underscore _ or Numbers 0-9.');
+								// check for a-zA-Z0-9_
+								return (input.val().match(/^[a-zA-Z0-9_]+$/g));
+							}
+						}},
 						description: {type:'string'},
 						format: {type:'string', validation: {required:true}}
 					}
@@ -280,6 +288,11 @@ var cms = {
 			}
 		});
 		
+		var testData = [
+			{ 'value': '2col', 'text': 'omnom 2col' },
+			{ 'value': '3col', 'text': 'offoff 3col'}
+		];
+
 		$('#structures-grid').kendoGrid({
 			dataSource: data,
 			toolbar: ['create', 'save', 'cancel'],
@@ -287,7 +300,7 @@ var cms = {
 			filterable: false,
 			scrollable: true,
 			selectable: true,
-			editable: 'inline', // 'inline' with editable: true the delete command is not working!
+			editable: true, // 'inline' with editable: true the delete command is not working!
 			columns: [
 				{field:'position', title:'#', width:'50'},
 				{field:'active', title:'Active?', width:'70',
@@ -295,7 +308,7 @@ var cms = {
 				},
 				{field:'title', title:'Title'},
 				{field:'description', title:'Description'},
-				{field:'format', title:'Type'},
+				{field:'format', title:'Type', values: testData},
 				{command:'destroy', title:''}
 			]
 		});
