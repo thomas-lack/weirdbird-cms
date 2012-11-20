@@ -15,36 +15,6 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 		return glob($this->siteTemplatesFolder . '/*' , GLOB_ONLYDIR);
 	}
 	
-	private function getTemplateConfigs($templateFolders)
-	{
-		$t = ORM::factory('template')->where('active', '=', '1')->find();
-		
-		$ret = array();
-		$id = 0;
-		foreach ($templateFolders as $folder)
-		{
-			$str = file_get_contents($folder . '/config.xml');
-			
-			$xml = simplexml_load_string($str);
-			$json = json_encode($xml);
-			var_dump($json);
-			die();
-
-			$arr = json_decode($json, TRUE);
-			$arr['templatefolder'] = $folder;
-			$arr['id'] = $id;
-			
-			if (isset($t) && $t->name == $arr['name'])
-				$arr['active'] = 1;
-			else
-				$arr['active'] = 0;
-			
-			$ret[] = $arr;
-			$id++;
-		}
-		return $ret;
-	}
-	
 	/**
 	* Retrieve all template data as json object
 	*/
@@ -193,6 +163,25 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 		}
 
 		echo '{"save":"success"}';
+		die();
+	}
+
+	/**
+	* Returns all the layouts for the currently active template
+	*/
+	public function action_activelayouts()
+	{
+		$template = ORM::factory('template')->where('active','=','1')->find();
+		
+		echo json_encode(
+			array_map(
+				create_function(
+					'$obj',
+					'return $obj->as_array();'
+				),
+				ORM::factory('layout')->where('template_id','=',$template->id)->find_all()->as_array()		
+			)
+		);
 		die();
 	}
 }
