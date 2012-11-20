@@ -8,8 +8,8 @@
 		<h2><span class="icon semi-big icon-space-top right-padding-10">B</span> Templates</h2>
 		Chose a template that defines the look of your web site.
 	</li>
-	<li href="structure">
-		<h2><span class="icon semi-big icon-space-top right-padding-10">&Igrave;</span> Structure</h2>
+	<li href="structures">
+		<h2><span class="icon semi-big icon-space-top right-padding-10">&Igrave;</span> Structures</h2>
 		Manage the categories and submenu content structure of your web site.
 	</li>
 	<li href="articles">

@@ -11,25 +11,15 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 	
 	public function action_data()
 	{
-		$structures = ORM::factory('structure')->order_by('position', 'asc')->find_all();
-		
-		$retInitial = '{"data":[';
-		$ret = '' . $retInitial;
-		foreach($structures as $structure) {
-			if ($ret != $retInitial)
-				$ret .= ',';
-			$ret .= '{' .
-				'"id":"' . $structure->id . '",' .
-				'"active":"' . $structure->active . '",' .
-				'"position":"' . $structure->position . '",' .
-				'"title":"' . $structure->title . '",' .
-				'"description":"' . $structure->description . '",' .
-				'"format":"' . $structure->format . '"' .
-				'}';
-		}
-		$ret .= ']}';
-		
-		echo $ret;
+		echo json_encode(
+			array_map(
+				create_function(
+					'$obj',
+					'return $obj->as_array();'
+				),
+				ORM::factory('structure')->order_by('position', 'asc')->find_all()->as_array()		
+			)
+		);
 		die();
 	}
 	
@@ -57,7 +47,7 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 			$structure->position = ($f->position != null) ? $f->position + 1 : $_POST['position'];
 			$structure->title = $_POST['title'];
 			$structure->description = $_POST['description'];
-			$structure->format = $_POST['format'];
+			$structure->layout = $_POST['layout'];
 			$structure->save();
 			
 			echo '{"success":"true"}';
@@ -78,7 +68,7 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 		$structure->position = $_POST['position'];
 		$structure->title = $_POST['title'];
 		$structure->description = $_POST['description'];
-		$structure->format = $_POST['format'];
+		$structure->layout = $_POST['layout'];
 		$structure->save();
 		
 		// TODO : save user who changed something

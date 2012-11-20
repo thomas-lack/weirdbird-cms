@@ -12,6 +12,27 @@ var cms = {
 	},
 	
 	/**
+	* Helper method to provide functionality of module loading depending on the 
+	* url suffix of the corresponding ajax call
+	* (see registerNavHandlers() or registerDashboardHandlers())
+	*/
+	callerMapping: function(module) {
+		switch (module) {
+			case 'dashboard' : 
+				cms.registerDashboardHandlers();
+				break;
+			case 'templates' :
+				cms.populateTemplatesGrid();
+				break;
+			case 'structures' :
+				cms.populateStructuresGrid();
+				break;
+			default:
+				cms.registerDashboardHandlers();
+		}
+	},
+
+	/**
 	* set which content shall be loaded via ajax by clicking on a menu button
 	*/
 	registerNavHandlers: function(){
@@ -28,18 +49,7 @@ var cms = {
 					url: 'cms/' + urlSuffix,
 					success: function(data){
 						$('#content').html(data);
-						if (urlSuffix == 'dashboard')
-						{
-							cms.registerDashboardHandlers();
-						}
-						if (urlSuffix == 'templates')
-						{
-							cms.populateTemplatesGrid();
-						}
-						if (urlSuffix == 'structures')
-						{
-							cms.populateStructuresGrid();
-						}
+						cms.callerMapping(urlSuffix);
 						$('#content').unblock();
 					},
 					failure: function(){
@@ -75,10 +85,7 @@ var cms = {
 					url: 'cms/' + urlSuffix,
 					success: function(data){
 						$('#content').html(data);
-						if (urlSuffix == 'templates')
-						{
-							cms.populateTemplateGrid();
-						}
+						cms.callerMapping(urlSuffix);
 						$('#content').unblock();
 					},
 					failure: function(){
@@ -224,7 +231,8 @@ var cms = {
 	populateStructuresGrid: function() {
 		if (this.debug) console.log('populating structures data grid');
 		
-		var data = new kendo.data.DataSource({
+		var structData = new kendo.data.DataSource({
+			autoSync: false,
 			transport: {
 				read: {
 					url: 'cms/structures/data',
@@ -238,7 +246,6 @@ var cms = {
 				},
 				destroy: {
 					url: function(params){
-						console.log('destroy');
 						return 'cms/structures/destroy/' + params.id;
 					},
 					type: 'POST'
@@ -256,60 +263,85 @@ var cms = {
 				parameterMap: function(options, operation) {
 					return {
 						id: options.id,
-						position: (operation == 'create') ? $('.k-grid-content tr').length : options.position,
-						active: options.active,
+						position: (operation == 'create') ? '' + $('.k-grid-content tr').length : options.position,
+						active: '' + options.active,
 						title: options.title,
 						description: options.description,
-						format: options.format
+						layout: options.layout
 					}
 				}
 			},
 			schema: {
-				data: 'data',
 				model: {
 					id: 'id',
 					fields: {
 						id: {editable:false, nullable:false, defaultValue: -1},
-						position: {editable:false, validation: {required:true}},
-						active: {type:'boolean'},
+						position: {editable:false},
+						active: {type:'string'},
 						title: {type:'string', validation: {
 							required:true,
-							custom: function(input) {
-								input.attr('data-custom-msg', 
-									'The title can only contain letters A-Z, a-z, underscore _ or Numbers 0-9.');
+							titleCheckNoSpacesOrExtraChars: function(input) {
 								// check for a-zA-Z0-9_
-								return (input.val().match(/^[a-zA-Z0-9_]+$/g));
+								var ret;
+								if (input.attr('name') == 'title') {
+									ret = input.val().match(/^[a-zA-Z0-9_]+$/g);
+									input.attr('data-titleCheckNoSpacesOrExtraChars-msg', 
+										'The title can only contain letters A-Z, a-z, underscore _ or Numbers 0-9.');	
+								}
+								else {
+									ret = input.val();
+								}
+								console.log(input.val(), ret);
+								return ret;
 							}
 						}},
 						description: {type:'string'},
-						format: {type:'string', validation: {required:true}}
+						layout: {type:'string', editable: true}
 					}
 				}
 			}
 		});
 		
-		var testData = [
-			{ 'value': '2col', 'text': 'omnom 2col' },
-			{ 'value': '3col', 'text': 'offoff 3col'}
+		function layoutDropDown(container, options) {
+			$('<input id="layoutDD" data-text-field="description" data-value-field="name" data-bind="value:' 
+				+ options.field + '" />')
+				.appendTo(container)
+				.kendoDropDownList({
+					autoBind: false,
+					enabled: true,
+					optionLabel: "Select Layout...",
+					dataSource: {
+						transport: {
+							read: {
+								url: 'cms/templates/activelayouts',
+								dataType: 'json',
+								type: 'GET'
+							}
+						}
+					}
+				});
+		}
+
+		var dropdownYesNoData = [
+			{ 'value' : 'true', 'text' : 'Yes' },
+			{ 'value' : 'false', 'text' : 'No' },
 		];
 
 		$('#structures-grid').kendoGrid({
-			dataSource: data,
-			toolbar: ['create', 'save', 'cancel'],
+			dataSource: structData,
+			toolbar: ['create'/*, 'save'*/],
 			sortable: false,
 			filterable: false,
 			scrollable: true,
 			selectable: true,
-			editable: true, // 'inline' with editable: true the delete command is not working!
+			editable: 'inline', // 'inline' with editable: true the delete command is not working!
 			columns: [
 				{field:'position', title:'#', width:'50'},
-				{field:'active', title:'Active?', width:'70',
-					template: '<input type="checkbox" # if(active){# checked #}#/>'
-				},
+				{field:'active', title:'Active?', width:'70',values: dropdownYesNoData },
 				{field:'title', title:'Title'},
 				{field:'description', title:'Description'},
-				{field:'format', title:'Type', values: testData},
-				{command:'destroy', title:''}
+				{field:'layout', title:'Layout', editor: layoutDropDown },
+				{command:['edit', 'destroy'], title:''}
 			]
 		});
 	}

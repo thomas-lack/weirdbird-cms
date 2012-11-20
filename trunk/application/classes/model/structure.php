@@ -27,7 +27,7 @@ class Model_Structure extends ORM {
             'max_length' => array(256)
 		),
 		// format is a mapping string to symbolize the format of the current page (e.g. '2col')
-		'format' => array(
+		'layout' => array(
 			'not_empty'  => NULL,
             'min_length' => array(1),
             'max_length' => array(128)
