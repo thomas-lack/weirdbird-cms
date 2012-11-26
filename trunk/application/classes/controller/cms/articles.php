@@ -49,4 +49,9 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		);
 		die();
 	}
+
+	public function action_layout()
+	{
+		$id = $this->request->param('id');
+	}
 }
