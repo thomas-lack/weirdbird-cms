@@ -28,7 +28,7 @@ var cms = {
 				cms.populateStructuresGrid();
 				break;
 			case 'articles' :
-				cms.populateModuleSelectionGrid();
+				cms.populateModuleSelection();
 				cms.populateArticleEditingForm();
 				break;
 			default:
@@ -307,13 +307,15 @@ var cms = {
 		});
 		
 		function layoutDropDown(container, options) {
-			$('<input id="layoutDD" data-text-field="description" data-value-field="name" data-bind="value:' 
+			$('<input id="layoutDD" data-bind="value:' 
 				+ options.field + '" />')
 				.appendTo(container)
 				.kendoDropDownList({
 					autoBind: false,
 					enabled: true,
-					optionLabel: "Select Layout...",
+					optionLabel: 'Select Layout...',
+					dataTextField: 'description',
+					dataValueField: 'name',
 					dataSource: {
 						transport: {
 							read: {
@@ -350,25 +352,57 @@ var cms = {
 		});
 	},
 
-	populateModuleSelectionGrid: function() {
+	/*
+	* paint the initial dropdown list for structure selection on the article page
+	*/
+	populateStructureSelection: function() {
 		if (this.debug) console.log('populating module selection data grid');
 
-		$('#category-panelbar').kendoPanelBar({
+		/*$('#category-panelbar').kendoPanelBar({
 			expandMode: 'single'
-		});
+		});*/
 
-		// make a kendo dropdown list from every 
+		// make a kendo dropdown list from every active structure
 		$('#structure').kendoDropDownList({
 			optionLabel: 'Select structure...',
 			dataTextField: 'title',
 			dataValueField: 'id',
-			dataSource: {
-				transport: {
-					read: 'cms/articles/activestructures',
-					dataType: 'json',
-					type: 'GET'
-				}
+			autoBind: false,
+			// change event
+			change: function(e) {
+				console.log(e,$('#structure').data('kendoDropDownList').dataItem());
 			}
+		});
+
+		// since kendo ui datasource for dropdown lists is not working, we
+		// have to bind the data via jquery ajax calls
+		$.ajax({
+            url: 'cms/articles/activestructures',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (data) {
+                var d = $('#structure').data('kendoDropDownList');
+                d.setDataSource(data);
+                d.refresh();
+            }
+        });
+	},
+
+	/*
+	* paint a dropdown list with modules for every column of the selected structure
+	*
+	* The dataItem needs the following fields:
+	* id (structure id), layout (string of selected layout)
+	*/
+	populateColumnModuleBlock: function(dataItem) {
+
+		// reset the content area first
+		$('#columnmoduleblock').empty();
+
+		// get the number of columns and fill the content area with dropdown lists
+		$.ajax({
+			url: 'cms/articles/layout'
 		});
 	},
 

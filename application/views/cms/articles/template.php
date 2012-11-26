@@ -54,10 +54,15 @@
 					?>
 				</ul>-->
 
+				<!-- structure selection block -->
 				<p>
 					<label for="structure">Structure: </label>
 					<input id="structure">
 				</p>
+
+				<!-- column module selection block -->
+				<div id="columnmoduleblock"></div>
+
 			</div>
 		</td>
 		<td>
