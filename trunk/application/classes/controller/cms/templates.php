@@ -101,6 +101,7 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 				$l->name = $layout->name;
 				$l->description = $layout->description;
 				$l->view = $layout->view;
+				$l->columns = $layout->columns;
 				$l->save();
 				// add a link of the standard layout (if given) to the template
 				$isStandardLayout = (boolean) $layout->attributes()->standard;

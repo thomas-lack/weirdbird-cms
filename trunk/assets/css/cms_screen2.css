@@ -113,6 +113,8 @@ li { display:block; }
 .dashboard-list li { text-align:justify; text-justify:newspaper; padding:15px; cursor:pointer; }
 .hover-dashboard { background-color:#2e505d/*EDEB87*/; -moz-border-radius:5px; border-radius: 5px; color:white;}
 .unhover-dashboard { background-color: white; color:#0c3546; -moz-border-radius:5px; border-radius: 5px; }
+.tbl-fullwidth { width:100%; border-color:black;}
+.tbl-fullwidth tr td { vertical-align:top;width:50%;padding-right:20px;}
 
 /* --------------------------------------------------------------------------------------------------- */
 /* Standard IDs */
@@ -128,7 +130,7 @@ li { display:block; }
 #navmenu ul li { display:block; padding:5px 0; font-size:0.8em;}
 #navmenu ul li a { color:white; text-decoration:none; }
 #content { background-color:white; }
-#bottombar { color:#0c3546; background-color:f0f0ed; padding:20px; -moz-border-radius:0 0 3px 3px; border-radius:0 0 3px 3px; clear:both; }
+#bottombar { color:#0c3546; background-color:#f0f0ed; padding:20px; -moz-border-radius:0 0 3px 3px; border-radius:0 0 3px 3px; clear:both; }
 #template-list { font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; font-size:0.8em; text-align:justify; text-justify:newspaper; line-height:1.4em; }
 #template-list a { text-decoration:none; background-color:#dededc; padding:4px 9px; -moz-border-radius:3px; border-radius:3px; color:#0c3546; }
 #template-list a:hover {text-decoration:none; background-color:#b0b0af; transition:.2s linear;-moz-transition:.2s linear;-webkit-transition:.2s linear; }

@@ -27,6 +27,10 @@ var cms = {
 			case 'structures' :
 				cms.populateStructuresGrid();
 				break;
+			case 'articles' :
+				cms.populateModuleSelectionGrid();
+				cms.populateArticleEditingForm();
+				break;
 			default:
 				cms.registerDashboardHandlers();
 		}
@@ -344,6 +348,32 @@ var cms = {
 				{command:['edit', 'destroy'], title:''}
 			]
 		});
+	},
+
+	populateModuleSelectionGrid: function() {
+		if (this.debug) console.log('populating module selection data grid');
+
+		$('#category-panelbar').kendoPanelBar({
+			expandMode: 'single'
+		});
+
+		// make a kendo dropdown list from every 
+		$('#structure').kendoDropDownList({
+			optionLabel: 'Select structure...',
+			dataTextField: 'title',
+			dataValueField: 'id',
+			dataSource: {
+				transport: {
+					read: 'cms/articles/activestructures',
+					dataType: 'json',
+					type: 'GET'
+				}
+			}
+		});
+	},
+
+	populateArticleEditingForm: function() {
+		if (this.debug) console.log('populating article editing form');
 	}
 }
 
