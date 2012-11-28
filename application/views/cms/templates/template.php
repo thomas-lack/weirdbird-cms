@@ -3,4 +3,4 @@
 </p>
 <h1>Available site templates</h1>
 
-<div id="template-grid"></div>
+<div id="templates-grid" style="margin-top:20px;"></div>

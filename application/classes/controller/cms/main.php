@@ -33,15 +33,16 @@ class Controller_CMS_Main extends Controller_Template
         if ($this->auto_render) 
 		{
             $styles = array(
-					'assets/css/kendo.common.min.css' => 'screen, projection',
-					'assets/css/kendo.default.min.css' => 'screen, projection',
+					'assets/css/ext-all-gray.css' => 'screen, projection',
+					'assets/css/CheckHeader.css' => 'screen, projection',
 					'assets/css/cms_screen2.css' => 'screen, projection'
 				);
             $scripts = array(
 					'assets/js/jquery.min.js',
 					'assets/js/jquery.blockui.js',
-					'assets/js/weirdbird-cms.js',
-					'assets/js/kendo.web.min.js'
+					'assets/js/ext-all-debug.js',
+					'assets/js/CheckColumn.js',
+					'assets/js/weirdbird-cms.js'
 				);
             $this->template->styles = array_merge( $this->template->styles, $styles );
             $this->template->scripts = array_merge( $this->template->scripts, $scripts );

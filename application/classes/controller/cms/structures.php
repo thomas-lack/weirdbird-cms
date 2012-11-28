@@ -30,45 +30,38 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 	
 	public function action_create()
 	{
-		// if a record with the same position already exists,
-		// then do not create a new record
-		$t = ORM::factory('structure')->where('position','=',$_POST['position'])->count_all();
-		
-		if ($t != '0') {
-			echo '{"success":"false"}';
-		}
-		else {
-			// find out the real last position
-			$f = ORM::factory('structure')->order_by('position','desc')->limit(1)->find();
-			
-			// INSERT query
-			$structure = ORM::factory('structure');
-			$structure->active = $_POST['active'];
-			$structure->position = ($f->position != null) ? $f->position + 1 : $_POST['position'];
-			$structure->title = $_POST['title'];
-			$structure->description = $_POST['description'];
-			$structure->layout = $_POST['layout'];
-			$structure->save();
-			
+		$d = json_decode($this->request->body());
+
+		// upon first creation (no entries) just return a success
+		if (!$d->active && $d->position == "" && $d->title == "" && $d->description == "") {
 			echo '{"success":"true"}';
+			die();
 		}
+
+		// INSERT query
+		$structure = ORM::factory('structure');
+		$structure->active = ($d->active) ? 1 : 0;
+		$structure->position = $d->position;
+		$structure->title = $d->title;
+		$structure->description = $d->description;
+		$structure->layout_id = null;
+		$structure->save();
 		
+		echo '{"success":"true"}';
 		die();
 	}
 	
 	public function action_update()
 	{
-		$id = $this->request->param('id');
-		
-		// create model instance
-		$structure = ORM::factory('structure', $id);
+		$d = json_decode($this->request->body());
 		
 		// UPDATE query
-		$structure->active = $_POST['active'];
-		$structure->position = $_POST['position'];
-		$structure->title = $_POST['title'];
-		$structure->description = $_POST['description'];
-		$structure->layout = $_POST['layout'];
+		$structure = ORM::factory('structure', $d->id);
+		$structure->active = ($d->active) ? 1 : 0;
+		$structure->position = $d->position;
+		$structure->title = $d->title;
+		$structure->description = $d->description;
+		//$structure->layout_id = (isset($d->layout_id)) ? $d->layout_id : null;
 		$structure->save();
 		
 		// TODO : save user who changed something
@@ -79,9 +72,9 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 	
 	public function action_destroy()
 	{
-		$id = $this->request->param('id');
+		$d = json_decode($this->request->body());
 		
-		ORM::factory('structure', $id)->delete();
+		ORM::factory('structure', $d->id)->delete();
 		
 		echo '{"success":"true"}';
 		die();

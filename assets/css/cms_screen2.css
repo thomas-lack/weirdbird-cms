@@ -94,6 +94,7 @@ li { display:block; }
 .dark-gray { color:#0c3546; }
 .green { color:#10CC17; }
 .blue { color:#085e73; }
+.red { color:#DE1826;}
 .negative-left-margin-2 { margin-left:-3px; }
 .bottom-padding-10 { padding-botton:10px; }
 .right-padding-10 { padding-right:10px; }
@@ -171,7 +172,7 @@ li { display:block; }
 	background:#2e505d;	/* left column background colour */
 }
 .leftmenu .col1 {
-	width:77%;			/* right column content width */
+	width:76%;			/* right column content width */
 	left:102%;			/* 100% plus left column left padding */
 }
 .leftmenu .col2 {

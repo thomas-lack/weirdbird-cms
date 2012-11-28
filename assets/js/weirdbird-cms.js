@@ -1,11 +1,13 @@
 var cms = {
 	debug: true,
+	
 	init:	function(){
-		$.blockUI.defaults.css.border = '3px solid #aaa';
+		/*$.blockUI.defaults.css.border = '3px solid #aaa';
 		$.blockUI.defaults.css.backgroundColor = 'white';
 		$.blockUI.defaults.css.width = '35px';
 		$.blockUI.defaults.css.left = '48%';
 		$.blockUI.defaults.message = '<img src="/assets/images/ajax-loader.gif"/>';
+		*/
 		//$(document).ajaxStart($.blockUI).ajaxStop($.unblockUI); /* can be used to block the whole document on every ajax request */
 		this.registerNavHandlers();
 		this.registerDashboardHandlers();
@@ -28,8 +30,7 @@ var cms = {
 				cms.populateStructuresGrid();
 				break;
 			case 'articles' :
-				cms.populateModuleSelection();
-				cms.populateArticleEditingForm();
+				
 				break;
 			default:
 				cms.registerDashboardHandlers();
@@ -48,17 +49,17 @@ var cms = {
 			el.on('click', function(){
 				cms.updateNavigationMenu(urlSuffix);
 				
-				$('#content').block();
+				//$('#content').block();
 				$.ajax({
 					url: 'cms/' + urlSuffix,
 					success: function(data){
 						$('#content').html(data);
 						cms.callerMapping(urlSuffix);
-						$('#content').unblock();
+						//$('#content').unblock();
 					},
 					failure: function(){
 						alert('Oops. An ajax error happened.');
-						$('#content').unblock();
+						//$('#content').unblock();
 					}
 				});
 			});
@@ -84,7 +85,7 @@ var cms = {
 			el.on('click', function(){
 				cms.updateNavigationMenu(urlSuffix);
 				
-				$('#content').block();
+				//$('#content').block();
 				$.ajax({
 					url: 'cms/' + urlSuffix,
 					success: function(data){
@@ -94,7 +95,7 @@ var cms = {
 					},
 					failure: function(){
 						alert('Oops. An ajax error happened.');
-						$('#content').unblock();
+						//$('#content').unblock();
 					}
 				});
 			});
@@ -119,95 +120,94 @@ var cms = {
 	populateTemplatesGrid: function() {
 		if (this.debug) console.log('populating template data grid');
 		
-		var sharableDataSource = new kendo.data.DataSource({
-			//pageSize: 3,
-			transport: {
-			read: {
-				url: "cms/templates/data",
-				dataType: "json"
-			}
-		}
-		});
-		
-		$('#template-grid').kendoGrid({
-			dataSource: sharableDataSource,
-			toolbar: [{
-				text: 'Import all templates',
-				className: 'tplimport',
-				imageClass: 'k-add'
-			}],
-			scrollable: false,
-			pageable: false,
-			columns: [{
-				title: 'Preview',
-				width: 150,
-				template: ''
-					+'<img src="#=folder#/#=folder_preview#/#=previewimage_filename#" />'
-					+'<p class="sans-serif very-small uppercase dark-gray normal-lh">#=previewimage_description#</p>'
-			},{
-				title: 'Description',
-				template: ''
-				+'<h2>#=name#</h2>'
-				+'<p class="justified normal normal-lh">#=description#</p>'
-				+'<h2>Layouts</h2>'
-				+'<ul class="normal normal-lh">'
-				+'#for (var i=0;i<layouts.length;i++){#'
-				+'<li><span class="icon green">&Atilde;</span> #=layouts[i].description#</li>'
-				+'#}#'
-				+'</ul>'
-				+'<h2>Modules</h2>'
-				+'<ul class="normal normal-lh">'
-				+'#for (var i=0;i<modules.length;i++){#'
-				+'<li><span class="icon green">&Atilde;</span> #=modules[i].description#</li>'
-				+'#}#'
-				+'</ul>'
-			},{
-				title: 'Activate',
-				width: 70,
-				template: ''
-				+'<p class="hidden" activeid="#=id#" isactive="#=active#"><span class="blue icon very-big">"</span> '
-				+'This template is currently active.</p>'
-				+'<button activate="#=id#" isactive="#=active#">Set active <span class="icon">=</span></button>'
-			},],
-			dataBound: function(e){
-				if (this.debug) console.log("data was bound to the grid / registering button handlers");
-				cms.updateTemplateGridInfo();
-				$('table > tbody > tr > td > button').each(function(){
-					$(this).on('click', function(){
-						var dataId = $(this).attr('activate');
-						
-						$('#content').block();
-						$.ajax({
-							url: 'cms/templates/settemplate/' + dataId,
-							success: function(data){
-								cms.updateTemplateGridInfo(dataId);
-								$('#content').unblock();
-							},
-							failure: function(){
-								alert('Oops. An ajax error happened.');
-								$('#content').unblock();
-							}
-						});
-					});
-				});
-			}
+		Ext.create('Ext.data.Store', {
+		    storeId:'templatesStore',
+		    fields: ['id', {name:'active', type:'bool'}, 'name', 'standardlayout', 'description', 'folder_images', 
+		    	'previewimage_filename', 'previewimage_description', 'layouts', 'modules', 'folder', 'folder_preview'],
+		    proxy: {
+		        type: 'ajax',
+		       	url: 'cms/templates/read',
+		        reader: {
+		            type: 'json',
+		            successProperty: 'success'
+		        }
+		    },
+		    autoLoad: true,
+		    autoSync: false,
 		});
 
-		//add click handler to the custom toolbar button
-		$('.tplimport').click(function(){
-			$('#content').block();
-			$.ajax({
-				url: 'cms/templates/import',
-				success: function(data){
-					$('#template-grid').data('kendoGrid').dataSource.read(); 
-					$('#content').unblock();
-				},
-				failure: function(){
-					alert('Oops. An ajax error happened.');
-					$('#content').unblock();
+		Ext.create('Ext.grid.Panel', {
+			id: 'templatesGrid',
+		    title: 'Templates',
+		    renderTo: Ext.get('templates-grid'),
+		    autoShow: true,
+		    store: Ext.data.StoreManager.lookup('templatesStore'),
+		    columns: [
+		    	{ text: 'Active?', xtype: 'templatecolumn', width:50,
+		    		tpl: '<tpl if="active"><span class="icon green very-big">&Atilde;</span>'
+		    			+ '<tpl else><span class="icon red very-big">&Acirc;</span></tpl>'},
+		    	{ text: 'Preview' , width: 270, xtype: 'templatecolumn',
+		    		tpl: '<p><img src="{folder}/{folder_preview}/{previewimage_filename}" /></p>'
+		    			+ '<p class="sans-serif very-small uppercase dark-gray normal-lh">{previewimage_description}</p>'},
+		    	{ text: 'Description', flex: 1, xtype: 'templatecolumn',
+		    		tpl: '<h2>{name}</h2>'
+						+'<p class="justified normal normal-lh">{description}</p>'
+						+'<h2>Layouts</h2>'
+						+'<ul class="normal normal-lh">'
+						+'<tpl for="layouts">'
+						+'<li><span class="icon green">&Atilde;</span> {description}</li>'
+						+'</tpl>'
+						+'</ul>'
+						+'<h2>Modules</h2>'
+						+'<ul class="normal normal-lh">'
+						+'<tpl for="modules">'
+						+'<li><span class="icon green">&Atilde;</span> {description}</li>'
+						+'</tpl>'
+						+'</ul>'
 				}
-			});
+		    ],
+		    tbar: [{
+		    	text: '<span class="icon">&Ntilde;</span> Import Templates',
+		    	handler: function() {
+		    		Ext.Msg.show({
+		    			title: 'Really import templates?',
+		    			msg: 'If you proceed, all your layout and module mappings will be lost. Do you really want to import all templates again?',
+		    			buttons: Ext.Msg.YESNO,
+		    			icon: Ext.Msg.WARNING,
+		    			fn: function(btn) {
+		    				if (btn == 'yes') {
+		    					Ext.Ajax.request({
+		    						url: 'cms/templates/import',
+		    						success: function() {
+		    							Ext.MessageBox.alert('Status', 'Templates were imported successfully. Do not forget to set one to active.');
+		    							Ext.data.StoreManager.lookup('templatesStore').load();
+		    						}
+		    					});
+		    				}
+		    			}
+		    		});
+		    	}
+		    },'-',{
+		    	text: '<span class="icon">G</span> Set Template Active',
+		    	disabled: true,
+		    	itemId: 'activateTemplate',
+		    	handler: function() {
+		    		var selection = Ext.getCmp('templatesGrid').getView().getSelectionModel().getSelection()[0];
+		    		Ext.Ajax.request({
+		    			url: 'cms/templates/settemplate/' + selection.data.id,
+		    			success: function() {
+		    				Ext.MessageBox.alert('Status', 'The template <i>' + selection.data.name + '</i> was successfully set to active.');
+		    				Ext.data.StoreManager.lookup('templatesStore').load();
+		    			}
+		    		});
+		    	}
+		    }]
 		});
+	
+		// make "set active" button clickable if a row is selected
+		Ext.getCmp('templatesGrid').getSelectionModel().on('selectionchange', function(selModel, selections){
+	        Ext.getCmp('templatesGrid').down('#activateTemplate').setDisabled(selections.length === 0);
+	    });
 	},
 	
 	/**
@@ -235,179 +235,83 @@ var cms = {
 	populateStructuresGrid: function() {
 		if (this.debug) console.log('populating structures data grid');
 		
-		var structData = new kendo.data.DataSource({
-			autoSync: false,
-			transport: {
-				read: {
-					url: 'cms/structures/data',
-					dataType: 'json'
-				},
-				update: {
-					url: function(params){
-						return 'cms/structures/update/' + params.id;
-					},
-					type: 'POST'
-				},
-				destroy: {
-					url: function(params){
-						return 'cms/structures/destroy/' + params.id;
-					},
-					type: 'POST'
-				},
-				create: {
-					url: 'cms/structures/create',
-					type: 'POST',
-					complete: function(e) {
-						// refresh grid after db update
-						$("#structures-grid").data("kendoGrid").dataSource.read(); 
-					}
-				},
-				// map the parameters we give to the backend according to the used
-				// operation (e.g. read out the position for new entries)
-				parameterMap: function(options, operation) {
-					return {
-						id: options.id,
-						position: (operation == 'create') ? '' + $('.k-grid-content tr').length : options.position,
-						active: '' + options.active,
-						title: options.title,
-						description: options.description,
-						layout: options.layout
-					}
-				}
-			},
-			schema: {
-				model: {
-					id: 'id',
-					fields: {
-						id: {editable:false, nullable:false, defaultValue: -1},
-						position: {editable:false},
-						active: {type:'string'},
-						title: {type:'string', validation: {
-							required:true,
-							titleCheckNoSpacesOrExtraChars: function(input) {
-								// check for a-zA-Z0-9_
-								var ret;
-								if (input.attr('name') == 'title') {
-									ret = input.val().match(/^[a-zA-Z0-9_]+$/g);
-									input.attr('data-titleCheckNoSpacesOrExtraChars-msg', 
-										'The title can only contain letters A-Z, a-z, underscore _ or Numbers 0-9.');	
-								}
-								else {
-									ret = input.val();
-								}
-								console.log(input.val(), ret);
-								return ret;
-							}
-						}},
-						description: {type:'string'},
-						layout: {type:'string', editable: true}
-					}
-				}
-			}
-		});
-		
-		function layoutDropDown(container, options) {
-			$('<input id="layoutDD" data-bind="value:' 
-				+ options.field + '" />')
-				.appendTo(container)
-				.kendoDropDownList({
-					autoBind: false,
-					enabled: true,
-					optionLabel: 'Select Layout...',
-					dataTextField: 'description',
-					dataValueField: 'name',
-					dataSource: {
-						transport: {
-							read: {
-								url: 'cms/templates/activelayouts',
-								dataType: 'json',
-								type: 'GET'
-							}
-						}
-					}
-				});
-		}
-
-		var dropdownYesNoData = [
-			{ 'value' : 'true', 'text' : 'Yes' },
-			{ 'value' : 'false', 'text' : 'No' },
-		];
-
-		$('#structures-grid').kendoGrid({
-			dataSource: structData,
-			toolbar: ['create'/*, 'save'*/],
-			sortable: false,
-			filterable: false,
-			scrollable: true,
-			selectable: true,
-			editable: 'inline', // 'inline' with editable: true the delete command is not working!
-			columns: [
-				{field:'position', title:'#', width:'50'},
-				{field:'active', title:'Active?', width:'70',values: dropdownYesNoData },
-				{field:'title', title:'Title'},
-				{field:'description', title:'Description'},
-				{field:'layout', title:'Layout', editor: layoutDropDown },
-				{command:['edit', 'destroy'], title:''}
+		Ext.define('Structure', {
+			extend: 'Ext.data.Model',
+			fields: [
+				{name:'id', type:'int'}, 
+				{name:'active', type:'bool'}, 
+				'position', 'title', 'description', 
+				{name:'layout_id', type:'int'}
 			]
 		});
-	},
 
-	/*
-	* paint the initial dropdown list for structure selection on the article page
-	*/
-	populateStructureSelection: function() {
-		if (this.debug) console.log('populating module selection data grid');
-
-		/*$('#category-panelbar').kendoPanelBar({
-			expandMode: 'single'
-		});*/
-
-		// make a kendo dropdown list from every active structure
-		$('#structure').kendoDropDownList({
-			optionLabel: 'Select structure...',
-			dataTextField: 'title',
-			dataValueField: 'id',
-			autoBind: false,
-			// change event
-			change: function(e) {
-				console.log(e,$('#structure').data('kendoDropDownList').dataItem());
-			}
+		Ext.create('Ext.data.Store', {
+		    storeId:'structuresStore',
+		    model: 'Structure',
+		    proxy: {
+		        type: 'ajax',
+		       	api: {
+		       		read: 'cms/structures/read',
+		       		create : 'cms/structures/create',
+		            update : 'cms/structures/update',
+		            destroy : 'cms/structures/destroy'
+		       	},
+		        reader: {
+		            type: 'json',
+		            successProperty: 'success'
+		        },
+		        writer: {
+		        	type: 'json'
+		        }
+		    },
+		    autoLoad: true,
+		    autoSync: true,
 		});
 
-		// since kendo ui datasource for dropdown lists is not working, we
-		// have to bind the data via jquery ajax calls
-		$.ajax({
-            url: 'cms/articles/activestructures',
-            type: 'GET',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            success: function (data) {
-                var d = $('#structure').data('kendoDropDownList');
-                d.setDataSource(data);
-                d.refresh();
-            }
-        });
-	},
+		var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+	        clicksToMoveEditor: 1,
+	        autoCancel: false
+	    });
 
-	/*
-	* paint a dropdown list with modules for every column of the selected structure
-	*
-	* The dataItem needs the following fields:
-	* id (structure id), layout (string of selected layout)
-	*/
-	populateColumnModuleBlock: function(dataItem) {
-
-		// reset the content area first
-		$('#columnmoduleblock').empty();
-
-		// get the number of columns and fill the content area with dropdown lists
-		$.ajax({
-			url: 'cms/articles/layout'
+		Ext.create('Ext.grid.Panel', {
+		    plugins: [rowEditing],
+		    id: 'categoriesGrid',
+		    title: 'Categories',
+		    renderTo: Ext.get('structures-grid'),
+		    autoShow: true,
+		    store: Ext.data.StoreManager.lookup('structuresStore'),
+		    columns: [
+		        { text: '#',  dataIndex: 'position', width:30, editor:{ allowBlank:false }},
+		        { text: 'Active?', dataIndex: 'active', width: 50, xtype: 'checkcolumn',
+		        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
+		       	},
+		        { text: 'Title', dataIndex: 'title', editor:{ allowBlank:false } },
+		        { text: 'Description', dataIndex: 'description', flex: 1, editor:{ allowBlank:true } }
+		    ],
+		    tbar: [{
+		    	text: '<span class="icon">@</span> Add category',
+		    	handler: function() {
+		    		rowEditing.cancelEdit();
+		    		Ext.data.StoreManager.lookup('structuresStore').insert(0,new Structure());
+		    		rowEditing.startEdit(0,0);
+		    	}
+		    },'-',{
+		    	text: '<span class="icon">A</span> Remove category',
+		    	itemId: 'deleteCategory',
+		    	disabled: true,
+		    	handler: function() {
+		    		var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
+		    		if (selection) {
+		    			Ext.data.StoreManager.lookup('structuresStore').remove(selection);
+		    		}
+		    	}
+		    }]
 		});
-	},
-
-	populateArticleEditingForm: function() {
-		if (this.debug) console.log('populating article editing form');
+		
+		// make remove button clickable if a row is selected
+		Ext.getCmp('categoriesGrid').getSelectionModel().on('selectionchange', function(selModel, selections){
+	        Ext.getCmp('categoriesGrid').down('#deleteCategory').setDisabled(selections.length === 0);
+	    });
 	}
 }
 
