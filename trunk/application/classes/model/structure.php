@@ -2,6 +2,10 @@
  
 class Model_Structure extends ORM {
  
+    protected $_has_one = array(
+    	'layout' => array()
+    );
+
     // define validation rules
 	protected $_rules = array(
         // field 'id' is assumed by kohana as primary and unique
@@ -26,8 +30,7 @@ class Model_Structure extends ORM {
             'min_length' => array(1),
             'max_length' => array(256)
 		),
-		// format is a mapping string to symbolize the format of the current page (e.g. '2col')
-		'layout' => array(
+		'layout_id' => array(
 			'not_empty'  => NULL,
             'min_length' => array(1),
             'max_length' => array(128)

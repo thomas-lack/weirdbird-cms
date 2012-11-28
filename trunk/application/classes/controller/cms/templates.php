@@ -59,6 +59,11 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 		die();
 	}
 
+	public function action_read()
+	{
+		$this->action_data();
+	}
+
 	/**
 	* Import all template configurations into the db from the config.xml files
 	*/
@@ -66,10 +71,15 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 	{
 		// remove all current templates from db
 		foreach(ORM::factory('template')->find_all() as $t) $t->delete();
+		foreach(ORM::factory('structure')->find_all() as $s) {
+			$s->layout_id = null;
+			$s->save();
+		}
 		foreach(ORM::factory('layout')->find_all() as $l) $l->delete();
 		foreach(ORM::factory('module')->find_all() as $m) $m->delete();
 		foreach(ORM::factory('loadfile')->find_all() as $l) $l->delete();
-		
+		foreach(ORM::factory('structurecolumnmapping')->find_all() as $s) $s->delete();
+
 		// read data from config.xml and write it to db
 		$templateFolders = $this->getTemplateFolders();
 		foreach ($templateFolders as $folder) {

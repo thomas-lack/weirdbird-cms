@@ -3,4 +3,4 @@
 </p>
 <h1>Site structure and category management</h1>
 
-<div id="structures-grid"></div>
+<div id="structures-grid" style="margin-top:20px;"></div>
