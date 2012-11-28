@@ -76,14 +76,14 @@ li { display:block; }
 /* --------------------------------------------------------------------------------------------------- */
 .serif { font-family:'FjordOne',Georgia,"Times New Roman",Times,serif; }
 .sans-serif { font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; }
-.normal-lh { line-height:1.4em; }
+.normal-lh { line-height:1.6em; }
 .bold { font-weight:600; }
 .uppercase { text-transform:uppercase; }
 .justified { text-align:justify; text-justify:newspaper; }
-.very-small { font-size:0.7em; }
-.small { font-size:0.8em; }
-.normal { font-size:0.9em; }
-.semi-big { font-size:1.1em; }
+.very-small { font-size:0.8em; }
+.small { font-size:0.9em; }
+.normal { font-size:1.1em; }
+.semi-big { font-size:1.3em; }
 .big { font-size:1.2em; }
 .very-big { font-size:1.5em; }
 .headline { font-size:1.5em; font-weight:600; color:#589da6; }
@@ -96,7 +96,7 @@ li { display:block; }
 .blue { color:#085e73; }
 .red { color:#DE1826;}
 .negative-left-margin-2 { margin-left:-3px; }
-.bottom-padding-10 { padding-botton:10px; }
+.bottom-padding-10 { padding-bottom:10px; }
 .right-padding-10 { padding-right:10px; }
 .no-margin { margin:0; }
 .icon { font-weight: normal;font-style: normal;line-height: normal;font-family: 'RaphaelIcons';position: relative;/*top: 0.1em;*/ }
@@ -115,7 +115,7 @@ li { display:block; }
 .hover-dashboard { background-color:#2e505d/*EDEB87*/; -moz-border-radius:5px; border-radius: 5px; color:white;}
 .unhover-dashboard { background-color: white; color:#0c3546; -moz-border-radius:5px; border-radius: 5px; }
 .tbl-fullwidth { width:100%; border-color:black;}
-.tbl-fullwidth tr td { vertical-align:top;width:50%;padding-right:20px;}
+.tbl-fullwidth tr td { vertical-align:top;padding-right:20px;}
 
 /* --------------------------------------------------------------------------------------------------- */
 /* Standard IDs */
@@ -128,7 +128,7 @@ li { display:block; }
 #content-wrapper { background-color:#2e505d; }
 #navmenu { background-color:#2e505d; color:white; padding:30px 0;}
 #navmenu ul { margin:30px 0 0 0; padding:0; list-style-type:none; }
-#navmenu ul li { display:block; padding:5px 0; font-size:0.8em;}
+#navmenu ul li { display:block; padding:5px 0; font-size:1em;}
 #navmenu ul li a { color:white; text-decoration:none; }
 #content { background-color:white; }
 #bottombar { color:#0c3546; background-color:#f0f0ed; padding:20px; -moz-border-radius:0 0 3px 3px; border-radius:0 0 3px 3px; clear:both; }
