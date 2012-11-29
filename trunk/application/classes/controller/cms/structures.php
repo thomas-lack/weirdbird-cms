@@ -86,37 +86,4 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 		echo '{"success":"true"}';
 		die();
 	}
-
-	public function action_readstructurecolumnmapping()
-	{
-		echo json_encode(
-			array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
-				ORM::factory('structurecolumnmapping')->find_all()->as_array()		
-			)
-		);
-		die();
-	}
-
-	public function action_createstructurecolumnmapping()
-	{
-		$data = $this->request->post();
-		
-		$mapping = ORM::factory('structurecolumnmapping')
-			->where('structure_id','=',$data['structure_id'])
-			->where('column','=',$data['column'])
-			->find();
-		// in case we cannot UPDATE we insert all the data again
-		// to CREATE a new relation
-		$mapping->structure_id = $data['structure_id'];
-		$mapping->column = $data['column'];
-		$mapping->module_id = $data['module_id'];
-		$mapping->save();
-
-		echo '{"success":"true"}';
-		die();
-	}
 }
