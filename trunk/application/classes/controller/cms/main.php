@@ -12,7 +12,7 @@ class Controller_CMS_Main extends Controller_Template
 		// if a user is not logged in, redirect to login page
         if (!$user)
         {
-            Request::current()->redirect('cms/user/login');
+           HTTP::redirect('cms/user/login');
         }
 		
 		// set standard variables 

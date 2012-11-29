@@ -71,7 +71,7 @@ class Controller_CMS_User extends Controller_Template {
             // If successful, redirect user
             if ($user)
             {
-                Request::current()->redirect('cms');
+                HTTP::redirect('cms');
             }
             else
             {
