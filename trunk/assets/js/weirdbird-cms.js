@@ -246,8 +246,9 @@ var cms = {
 		});
 
 		Ext.create('Ext.data.Store', {
-		    storeId:'structuresStore',
+		    storeId: 'structuresStore',
 		    model: 'Structure',
+		    lastOperation: '',
 		    proxy: {
 		        type: 'ajax',
 		       	api: {
@@ -266,52 +267,255 @@ var cms = {
 		    },
 		    autoLoad: true,
 		    autoSync: true,
+		    listeners: {
+		    	load: function() {
+		    		// after loading select the first entry to populate the 2nd form panel
+		    		Ext.getCmp('categoriesGrid').getSelectionModel().select(0);
+		    	},
+		    	write: function(store, op) {
+		    		// if last operation was "create" and now we have an update,
+		    		// we want to reload the store afterwards to get the objects new id
+		    		var s = Ext.data.StoreManager.lookup('structuresStore');
+		    		if (s.lastOperation == 'create'
+		    			&& op.action == 'update') {
+		    			s.load();
+		    		}
+		    		
+		    		s.lastOperation = op.action;
+		    	}
+		    }
 		});
+
+		// load layouts of current template
+		Ext.create('Ext.data.Store', {
+			storeId: 'layoutsStore',
+			fields: ['id', 'template_id', 'name', 'description', 'view', 'columns'],
+			proxy: { 
+				type: 'ajax',
+				url: 'cms/layouts/read',
+				reader: { 
+					type: 'json',
+					successProperty: 'success' 
+				},
+			},
+			autoLoad: false
+		});
+		Ext.data.StoreManager.lookup('layoutsStore').load(); // have to load manually, else the combobox bugs
+
+		// load modules of current template
+		Ext.create('Ext.data.Store', {
+			storeId: 'modulesStore',
+			fields: ['id', 'template_id', 'name', 'description', 'view'],
+			proxy: {
+				type: 'ajax',
+				url: 'cms/modules/read',
+				reader: {
+					type: 'json',
+					successProperty: 'success'
+				}
+			},
+			autoLoad: false
+		});
+		Ext.data.StoreManager.lookup('modulesStore').load();
+
+		// define column mapping store
+		Ext.create('Ext.data.Store', {
+			storeId: 'columnMappingStore',
+			fields: ['id', 'structure_id', 'column', 'module_id'],
+			proxy: {
+				type: 'ajax',
+				url: 'cms/structurecolumnmappings/read',
+				reader: {
+					type: 'json'
+				}
+			},
+			autoLoad: false
+		});
+		Ext.data.StoreManager.lookup('columnMappingStore').load();
 
 		var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
 	        clicksToMoveEditor: 1,
 	        autoCancel: false
 	    });
 
-		Ext.create('Ext.grid.Panel', {
-		    plugins: [rowEditing],
-		    id: 'categoriesGrid',
-		    title: 'Categories',
-		    renderTo: Ext.get('structures-grid'),
-		    autoShow: true,
-		    store: Ext.data.StoreManager.lookup('structuresStore'),
-		    columns: [
-		        { text: '#',  dataIndex: 'position', width:30, editor:{ allowBlank:false }},
-		        { text: 'Active?', dataIndex: 'active', width: 50, xtype: 'checkcolumn',
-		        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
-		       	},
-		        { text: 'Title', dataIndex: 'title', editor:{ allowBlank:false } },
-		        { text: 'Description', dataIndex: 'description', flex: 1, editor:{ allowBlank:true } }
-		    ],
-		    tbar: [{
-		    	text: '<span class="icon">@</span> Add category',
-		    	handler: function() {
-		    		rowEditing.cancelEdit();
-		    		Ext.data.StoreManager.lookup('structuresStore').insert(0,new Structure());
-		    		rowEditing.startEdit(0,0);
-		    	}
-		    },'-',{
-		    	text: '<span class="icon">A</span> Remove category',
-		    	itemId: 'deleteCategory',
-		    	disabled: true,
-		    	handler: function() {
-		    		var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
-		    		if (selection) {
-		    			Ext.data.StoreManager.lookup('structuresStore').remove(selection);
-		    		}
-		    	}
-		    }]
+		//create outer formpanel
+		Ext.create('Ext.form.Panel', {
+			id: 'structuresForm',
+			renderTo: 'structures-form',
+			frame: true,
+			layout: 'column',
+			items: [
+			// left gridpanel
+			{
+				columnWidth: 0.60,
+				xtype: 'gridpanel',
+				id: 'categoriesGrid',
+				title: 'Categories',
+				plugins: [rowEditing],
+				store: Ext.data.StoreManager.lookup('structuresStore'),
+				columns: [
+			        { text: '#',  dataIndex: 'position', width:30, editor:{ allowBlank:false }},
+			        { text: 'Active?', dataIndex: 'active', width: 50, xtype: 'checkcolumn',
+			        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
+			       	},
+			        { text: 'Title', dataIndex: 'title', editor:{ allowBlank:false } },
+			        { text: 'Description', dataIndex: 'description', flex: 1, editor:{ allowBlank:true } }
+			    ],
+			    tbar: [{
+			    	text: '<span class="icon">@</span> Add category',
+			    	handler: function() {
+			    		rowEditing.cancelEdit();
+			    		Ext.data.StoreManager.lookup('structuresStore').insert(0,new Structure());
+			    		rowEditing.startEdit(0,0);
+			    	}
+			    },'-',{
+			    	text: '<span class="icon">A</span> Remove category',
+			    	itemId: 'deleteCategory',
+			    	handler: function() {
+			    		Ext.Msg.show({
+			    			title: 'Really delete category?',
+			    			msg: 'Do you really want to delete the selected category?',
+			    			buttons: Ext.Msg.YESNO,
+			    			icon: Ext.Msg.WARNING,
+			    			fn: function(btn) {
+			    				if (btn == 'yes') {
+			    					var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
+						    		Ext.data.StoreManager.lookup('structuresStore').remove(selection);
+						    		// finally select 1st entry again
+						    		Ext.getCmp('categoriesGrid').getSelectionModel().select(0);
+			    				}
+			    			}
+			    		});
+			    	}
+			    }],
+			    listeners: {
+	                selectionchange: function(model, records) {
+	                    // link to formpanel on selection
+	                    if (records[0]) {
+	                       	var layout_id = records[0].data.layout_id;
+	                       	var s = Ext.data.StoreManager.lookup('layoutsStore');
+	                       	var i = s.find('id', layout_id);
+	                       	
+	                       	// if a layout record is found in the store we
+	                       	// get the data and fill the layout combobox
+	                       	if (i != -1) {
+	                       		var rec = s.getAt(i);	
+	                       		Ext.getCmp('layoutsComboBox').setValue(rec.data.description);
+
+	                       		// also paint the corresponding number of module comboboxes
+	                       		cms.paintModuleSelectionBoxes(rec.data.columns);
+	                       	}
+	                       	else {
+	                       		var c = Ext.getCmp('layoutsComboBox');
+	                       		c.setValue('Choose layout...');
+	                       		cms.paintModuleSelectionBoxes(0);
+	                       	}
+	                       		
+	                    }
+	                }
+	            }
+			},
+			// right formpanel
+			{
+				id: 'layoutModuleFormPanel',
+				columnWidth: 0.4,
+	            margin: '0 0 0 10',
+	            xtype: 'fieldset',
+	            title:'Layout and module selection',
+	            defaultType: 'combo',
+	            defaults: {
+	                width: 300,
+	                labelWidth: 90
+	            },
+				items:[{
+					fieldLabel: 'Layout',
+					id: 'layoutsComboBox',
+					store: Ext.data.StoreManager.lookup('layoutsStore'),
+					emptyText: 'Choose layout...',
+					displayField: 'description',
+					valueField: 'id',
+					queryMode: 'local',
+					listeners: {
+						change: function(cmp, newValue, oldValue) {
+							// save if new value is numeric
+							if (Ext.isNumeric(newValue)) {
+								var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
+						    	selection.set('layout_id', newValue);
+
+						    	// also repaint the column boxes
+						    	var s = Ext.data.StoreManager.lookup('layoutsStore');
+	                       		var i = s.find('id', newValue);
+	                       		var rec = s.getAt(i);
+						    	cms.paintModuleSelectionBoxes(rec.data.columns);
+							}
+						}
+					}
+				}]
+			}]
 		});
+	},
+
+	/*
+	* Helper method to add comboboxes to the layout & modules formpanel
+	*/
+	paintModuleSelectionBoxes: function(columns) {
+		var cmp = Ext.getCmp('layoutModuleFormPanel');
+
+		// remove all older module comboboxes
+		for (var i = 0; i < cmp.items.items.length; i++) {
+			var id = cmp.items.items[i].id;
+			if (id != 'layoutsComboBox') {
+				cmp.remove(id, true);
+				cmp.doLayout();
+				i--; // size of array changes with removal -> hence the addressing
+			}
+		}
 		
-		// make remove button clickable if a row is selected
-		Ext.getCmp('categoriesGrid').getSelectionModel().on('selectionchange', function(selModel, selections){
-	        Ext.getCmp('categoriesGrid').down('#deleteCategory').setDisabled(selections.length === 0);
-	    });
+		// add new module comboboxes
+		for (var i = 0; i < columns; i++) {
+			cmp.add({
+				fieldLabel: 'Column ' + (i+1) + ' module',
+				id: 'moduleComboBoxColumn' + i,
+				store: Ext.data.StoreManager.lookup('modulesStore'),
+				emptyText: 'Choose module...',
+				displayField: 'description',
+				valueField: 'id',
+				queryMode: 'local',
+				listeners: {
+					change: function(cmp, newValue, oldValue) {
+						// save if new value is numeric
+						if (Ext.isNumeric(newValue)) {
+							var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
+
+					    	Ext.Ajax.request({
+					    		url: 'cms/structurecolumnmappings/update',
+					    		params: {
+					    			structure_id: selection.data.id,
+					    			column: cmp.id.slice(20,cmp.id.length),
+					    			module_id: newValue
+					    		},
+					    		success: function() {
+					    			// load mapping data again for correct lookup on later changes
+					    			Ext.data.StoreManager.lookup('columnMappingStore').load();
+					    		}
+					    	});
+						}
+					}
+				}
+			});
+
+			// if a module was selected before, set the value
+			var structure_id = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0].data.id;
+			var q = Ext.data.StoreManager.lookup('columnMappingStore').query('structure_id', structure_id);
+			for (var j=0; j < q.items.length; j++) {
+				var data = q.items[j].data;
+				if (data.column == i) {
+					var index = Ext.data.StoreManager.lookup('modulesStore').find('id', data.module_id);
+					var d = Ext.data.StoreManager.lookup('modulesStore').getAt(index).data.description;
+					Ext.getCmp('moduleComboBoxColumn' + i).setValue(d);
+				}
+			}
+		}
 	}
 }
 
