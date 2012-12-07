@@ -78,6 +78,12 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 		foreach(ORM::factory('layout')->find_all() as $l) $l->delete();
 		foreach(ORM::factory('module')->find_all() as $m) $m->delete();
 		foreach(ORM::factory('loadfile')->find_all() as $l) $l->delete();
+		// remove all article <-> structure_column_mappings mappings
+		foreach(ORM::factory('structurecolumnmapping')->find_all() as $m) {
+			$m->structure_column_mapping_id = null;
+			$m->save();
+		}
+		// remove alle structure <-> column mappings
 		foreach(ORM::factory('structurecolumnmapping')->find_all() as $s) $s->delete();
 
 		// read data from config.xml and write it to db
@@ -128,6 +134,7 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 				$m->name = $module->name;
 				$m->description = $module->description;
 				$m->view = $module->view;
+				$m->allowarticles = ($module->allowarticles == 'true') ? 1 : 0;
 				$m->save();
 			}
 

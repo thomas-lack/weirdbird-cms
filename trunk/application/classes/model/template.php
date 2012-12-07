@@ -49,6 +49,6 @@ class Model_Template extends ORM {
             'min_length' => array(1),
             'max_length' => array(256),
             'folder_images' => NULL,
-        ),
+        )
     );
 }
