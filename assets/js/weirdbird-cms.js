@@ -9,6 +9,7 @@ var cms = {
 		$.blockUI.defaults.message = '<img src="/assets/images/ajax-loader.gif"/>';
 		*/
 		//$(document).ajaxStart($.blockUI).ajaxStop($.unblockUI); /* can be used to block the whole document on every ajax request */
+		Ext.tip.QuickTipManager.init();
 		this.registerNavHandlers();
 		this.registerDashboardHandlers();
 	},
@@ -30,7 +31,7 @@ var cms = {
 				cms.populateStructuresGrid();
 				break;
 			case 'articles' :
-				
+				cms.populateArticlesGrid();
 				break;
 			default:
 				cms.registerDashboardHandlers();
@@ -516,7 +517,105 @@ var cms = {
 				}
 			}
 		}
+	},
+
+	/*
+	* Fill the articles grid with data
+	*/
+	populateArticlesGrid: function() {
+		var store = Ext.create('Ext.data.TreeStore', {
+		    root: {
+		        expanded: true,
+		        children: [
+		            { text: "Willkommen", expanded: true, children: [
+		            	{ text: 'Column 1', expanded: true, children: [
+		            		{ text: 'Willkommenstext', leaf: true}
+		            	]},
+		            	{ text: 'Column 2 (not editable)', expanded: false, children: []},
+		            ] },
+		            { text: "Schulprogramm", expanded: false, children: [
+		            	{ text: 'Column 1', expanded: true, children: [
+		            		{ text: 'Kollegium', leaf: true },
+		            		{ text: 'mitSprache', leaf: true }
+		            	]},
+		            	{ text: 'Column 2 (not editable)', expanded: false, children: []},
+		            ] },
+		            { text: "Stadtteil", expanded: false, children: [
+		            	{ text: 'Column 1', expanded: true, children: [
+		            		{ text: 'Stadtteilinfo', leaf: true}
+		            	]},
+		            	{ text: 'Column 2 (not editable)', expanded: false, children: []},
+		            ] }
+		        ]
+		    }
+		});
+
+		Ext.create('Ext.panel.Panel', {
+			layout: 'column',
+			renderTo: 'article-editing',
+			frame: true,
+			//border: 0,
+			items: [{
+				columnWidth: 0.3,
+				xtype: 'treepanel',
+				id: 'articlesTreePanel',
+				title: 'Category/Column selection',
+				store: store,
+				rootVisible: false,
+				bbar: [
+				  { xtype: 'button', text: '<span class="icon very-big">&Atilde;</span>&nbsp;Save article' },
+				  { xtype: 'button', text: '<span class="icon very-big">&Acirc;</span>&nbsp;Delete article' }
+				]
+			},{
+				columnWidth: 0.7,
+				xtype: 'fieldset',
+				id: 'articlesEditPanel',
+				title: 'Article editing',
+				margin: '0 0 0 10',
+				defaultType: 'textfield',
+	            defaults: {
+	                width: 300,
+	                labelWidth: 70,
+	                margin: '0 0 10 0'
+	            },
+				items: [{
+					fieldLabel: 'Active',
+					xtype: 'checkbox'
+				},{
+					fieldLabel: 'Title'
+				},{
+					fieldLabel: 'Description',
+					xtype: 'textareafield',
+					width: 580,
+					height: 100
+
+				},{
+					fieldLabel: 'Article',
+					xtype: 'htmleditor',
+					width: 580,
+					height: 250,
+					resizable: true
+				}]
+			}]
+		});
+
+
+		//cms.generateHtmlEditor();
+	},
+	/*
+	* Helper method to fill the editor DIV with a new html editor
+	*/
+	generateHtmlEditor: function(id, parent) {
+		console.log(parent);
+
+		return Ext.create('Ext.form.HtmlEditor', {
+			width: 580,
+			height: 250,
+			resizable: true,
+			//renderTo: 'article-editing'
+		});
 	}
+
 }
 
 
