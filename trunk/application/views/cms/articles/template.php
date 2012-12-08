@@ -2,8 +2,6 @@
 	<span class="sans-serif very-small uppercase dark-gray"><?= $category; ?></span>
 </p>
 
-<h1>Article editing</h1>
-
-<div id="article-tree-editing" style="margin-top:20px;"></div>
+<h1>Article management</h1>
 
 <div id="article-editing" style="margin-top:20px;"></div>

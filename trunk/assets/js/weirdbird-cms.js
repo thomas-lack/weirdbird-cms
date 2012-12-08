@@ -189,7 +189,7 @@ var cms = {
 		    		});
 		    	}
 		    },'-',{
-		    	text: '<span class="icon">G</span> Set Template Active',
+		    	text: '<span class="icon very-big">G</span> Set Template Active',
 		    	disabled: true,
 		    	itemId: 'activateTemplate',
 		    	handler: function() {
@@ -243,6 +243,9 @@ var cms = {
 				{name:'active', type:'bool'}, 
 				'position', 'title', 'description', 
 				{name:'layout_id', type:'int'}
+			],
+			validation: [
+				{type: 'format', field: 'title', matcher: /lolthisdoesntworkatall(TODO)/ }
 			]
 		});
 
@@ -363,14 +366,14 @@ var cms = {
 			        { text: 'Description', dataIndex: 'description', flex: 1, editor:{ allowBlank:true } }
 			    ],
 			    tbar: [{
-			    	text: '<span class="icon">@</span> Add category',
+			    	text: '<span class="icon very-big">@</span> Add category',
 			    	handler: function() {
 			    		rowEditing.cancelEdit();
 			    		Ext.data.StoreManager.lookup('structuresStore').insert(0,new Structure());
 			    		rowEditing.startEdit(0,0);
 			    	}
 			    },'-',{
-			    	text: '<span class="icon">A</span> Remove category',
+			    	text: '<span class="icon very-big">A</span> Remove category',
 			    	itemId: 'deleteCategory',
 			    	handler: function() {
 			    		Ext.Msg.show({
@@ -549,6 +552,29 @@ var cms = {
 		        ]
 		    }
 		});
+		
+		Ext.define('Structure', {
+			extend: 'Ext.data.Model',
+			fields: [ 'id', 'active', 'position', 'title', 'description', 'layout_id' ],
+			//hasMany: { model: 'Column', name: 'columns' },
+			proxy: {
+				type: 'ajax',
+				url: 'cms/structures/read',
+				reader: { type: 'json' , root: '' }
+			}
+		});
+
+		// load modules of current template
+		Ext.create('Ext.data.Store', {
+			id: 'structuresStore',
+			model: 'Structure',
+			autoLoad: true,
+			listeners: {
+				load: function(self, records, success) {
+					console.log(self, records, success);
+				}
+			}
+		});
 
 		Ext.create('Ext.panel.Panel', {
 			layout: 'column',
@@ -556,18 +582,21 @@ var cms = {
 			frame: true,
 			//border: 0,
 			items: [{
-				columnWidth: 0.3,
+				columnWidth: 0.31,
 				xtype: 'treepanel',
 				id: 'articlesTreePanel',
 				title: 'Category/Column selection',
-				store: store,
+				store: store, //Ext.data.StoreManager.lookup('structuresStore'),
 				rootVisible: false,
-				bbar: [
-				  { xtype: 'button', text: '<span class="icon very-big">&Atilde;</span>&nbsp;Save article' },
-				  { xtype: 'button', text: '<span class="icon very-big">&Acirc;</span>&nbsp;Delete article' }
+				tbar: [
+					{ xtype: 'button', text: '<span class="icon very-big">@</span>&nbsp;Add article' },
+					'-',
+					{ xtype: 'button', text: '<span class="icon very-big">&Atilde;</span>&nbsp;Save article' },
+					'-',
+				  	{ xtype: 'button', text: '<span class="icon very-big">&Acirc;</span>&nbsp;Delete article' }
 				]
 			},{
-				columnWidth: 0.7,
+				columnWidth: 0.69,
 				xtype: 'fieldset',
 				id: 'articlesEditPanel',
 				title: 'Article editing',
@@ -575,7 +604,8 @@ var cms = {
 				defaultType: 'textfield',
 	            defaults: {
 	                width: 300,
-	                labelWidth: 70,
+	                //labelWidth: 70,
+	                labelAlign: 'top',
 	                margin: '0 0 10 0'
 	            },
 				items: [{
@@ -593,7 +623,7 @@ var cms = {
 					fieldLabel: 'Article',
 					xtype: 'htmleditor',
 					width: 580,
-					height: 250,
+					height: 300,
 					resizable: true
 				}]
 			}]
