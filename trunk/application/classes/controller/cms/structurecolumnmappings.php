@@ -36,17 +36,4 @@ class Controller_CMS_StructureColumnMappings extends Controller_CMS_Main
 		echo '{"success":"true"}';
 		die();
 	}
-
-	/**
-	*	Returns the mapped categories/columns/articles, so that EXTJS can
-	*	handle it as nested data and produce a nice treeview
-	*/
-	public function action_treeview()
-	{
-		$template = ORM::factory('template')->where('active','=','1')->find();
-		$modules = ORM::factory('module')->where('template_id','=',$template->id)->find_all();
-		$mappings = ORM::factory('structurecolumnmapping')->find_all();
-
-		
-	}
 }
