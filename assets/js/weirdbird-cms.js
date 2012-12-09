@@ -31,7 +31,7 @@ var cms = {
 				cms.populateStructuresGrid();
 				break;
 			case 'articles' :
-				cms.populateArticlesGrid();
+				cms.prepareArticlesPanel();
 				break;
 			default:
 				cms.registerDashboardHandlers();
@@ -525,57 +525,24 @@ var cms = {
 	/*
 	* Fill the articles grid with data
 	*/
-	populateArticlesGrid: function() {
-		var store = Ext.create('Ext.data.TreeStore', {
-		    root: {
-		        expanded: true,
-		        children: [
-		            { text: "Willkommen", expanded: true, children: [
-		            	{ text: 'Column 1', expanded: true, children: [
-		            		{ text: 'Willkommenstext', leaf: true}
-		            	]},
-		            	{ text: 'Column 2 (not editable)', expanded: false, children: []},
-		            ] },
-		            { text: "Schulprogramm", expanded: false, children: [
-		            	{ text: 'Column 1', expanded: true, children: [
-		            		{ text: 'Kollegium', leaf: true },
-		            		{ text: 'mitSprache', leaf: true }
-		            	]},
-		            	{ text: 'Column 2 (not editable)', expanded: false, children: []},
-		            ] },
-		            { text: "Stadtteil", expanded: false, children: [
-		            	{ text: 'Column 1', expanded: true, children: [
-		            		{ text: 'Stadtteilinfo', leaf: true}
-		            	]},
-		            	{ text: 'Column 2 (not editable)', expanded: false, children: []},
-		            ] }
-		        ]
-		    }
-		});
-		
-		Ext.define('Structure', {
-			extend: 'Ext.data.Model',
-			fields: [ 'id', 'active', 'position', 'title', 'description', 'layout_id' ],
-			//hasMany: { model: 'Column', name: 'columns' },
-			proxy: {
-				type: 'ajax',
-				url: 'cms/structures/read',
-				reader: { type: 'json' , root: '' }
+	prepareArticlesPanel: function() {
+		Ext.Ajax.request({
+			url: 'cms/articles/treeview',
+
+			success: function(response) {
+				
+				var storeConfig = Ext.JSON.decode(response.responseText);
+				var treeStore = Ext.create('Ext.data.TreeStore', storeConfig);
+				
+				cms.paintArticlesPanel(treeStore);
 			}
 		});
-
-		// load modules of current template
-		Ext.create('Ext.data.Store', {
-			id: 'structuresStore',
-			model: 'Structure',
-			autoLoad: true,
-			listeners: {
-				load: function(self, records, success) {
-					console.log(self, records, success);
-				}
-			}
-		});
-
+	},
+	/*
+	* After loading the prepared tree store data for the articles panel,
+	* it can be added to the DOM
+	*/
+	paintArticlesPanel: function(treeStore) {
 		Ext.create('Ext.panel.Panel', {
 			layout: 'column',
 			renderTo: 'article-editing',
@@ -586,7 +553,7 @@ var cms = {
 				xtype: 'treepanel',
 				id: 'articlesTreePanel',
 				title: 'Category/Column selection',
-				store: store, //Ext.data.StoreManager.lookup('structuresStore'),
+				store: treeStore,
 				rootVisible: false,
 				tbar: [
 					{ xtype: 'button', text: '<span class="icon very-big">@</span>&nbsp;Add article' },
@@ -604,13 +571,14 @@ var cms = {
 				defaultType: 'textfield',
 	            defaults: {
 	                width: 300,
-	                //labelWidth: 70,
+	                labelWidth: 50,
 	                labelAlign: 'top',
 	                margin: '0 0 10 0'
 	            },
 				items: [{
 					fieldLabel: 'Active',
-					xtype: 'checkbox'
+					xtype: 'checkbox',
+					labelAlign: 'left'
 				},{
 					fieldLabel: 'Title'
 				},{
@@ -627,25 +595,9 @@ var cms = {
 					resizable: true
 				}]
 			}]
-		});
-
-
-		//cms.generateHtmlEditor();
-	},
-	/*
-	* Helper method to fill the editor DIV with a new html editor
-	*/
-	generateHtmlEditor: function(id, parent) {
-		console.log(parent);
-
-		return Ext.create('Ext.form.HtmlEditor', {
-			width: 580,
-			height: 250,
-			resizable: true,
-			//renderTo: 'article-editing'
-		});
+		});		
 	}
-
+	
 }
 
 
