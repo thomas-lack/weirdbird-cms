@@ -38,10 +38,11 @@ class Controller_CMS_Main extends Controller_Template
 					'assets/css/cms_screen2.css' => 'screen, projection'
 				);
             $scripts = array(
-					'assets/js/jquery.min.js',
-					'assets/js/jquery.blockui.js',
+					//'assets/js/jquery.min.js',
+					//'assets/js/jquery.blockui.js',
 					'assets/js/ext-all-debug.js',
 					'assets/js/CheckColumn.js',
+					'assets/js/tiny_mce.js',
 					'assets/js/weirdbird-cms.js'
 				);
             $this->template->styles = array_merge( $this->template->styles, $styles );
