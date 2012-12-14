@@ -2,13 +2,6 @@ var cms = {
 	debug: true,
 	
 	init:	function(){
-		/*$.blockUI.defaults.css.border = '3px solid #aaa';
-		$.blockUI.defaults.css.backgroundColor = 'white';
-		$.blockUI.defaults.css.width = '35px';
-		$.blockUI.defaults.css.left = '48%';
-		$.blockUI.defaults.message = '<img src="/assets/images/ajax-loader.gif"/>';
-		*/
-		//$(document).ajaxStart($.blockUI).ajaxStop($.unblockUI); /* can be used to block the whole document on every ajax request */
 		Ext.tip.QuickTipManager.init();
 		this.registerNavHandlers();
 		this.registerDashboardHandlers();
@@ -43,27 +36,23 @@ var cms = {
 	*/
 	registerNavHandlers: function(){
 		if (this.debug) console.log('registering nav menu handlers');
-		$('#navmenu > ul > li > a').each(function(){
-			var el = $(this);
-			var urlSuffix = el.attr('ajax');
-			el.unbind();
-			el.on('click', function(){
+		Ext.each(Ext.query('#navmenu > ul > li > a'), function(domEl, i, list){
+			var el = Ext.get(domEl);
+			var urlSuffix = el.getAttribute('ajax');
+			
+			var loadFn = function() {
 				cms.updateNavigationMenu(urlSuffix);
 				
-				//$('#content').block();
-				$.ajax({
+				Ext.Ajax.request({
 					url: 'cms/' + urlSuffix,
-					success: function(data){
-						$('#content').html(data);
+					success: function(response){
+						Ext.get(Ext.query('#content')).setHTML(response.responseText);
 						cms.callerMapping(urlSuffix);
-						//$('#content').unblock();
-					},
-					failure: function(){
-						alert('Oops. An ajax error happened.');
-						//$('#content').unblock();
 					}
 				});
-			});
+			};
+			
+			el.on('click', loadFn);
 		});
 	},
 	
@@ -72,34 +61,24 @@ var cms = {
 	*/
 	registerDashboardHandlers: function() {
 		if (this.debug) console.log('registering dashboard handlers');
-		$('.dashboard-list > li').each(function(){
-			var el = $(this);
-			var urlSuffix = el.attr('href');
-			el.unbind();
-			el.on('mouseenter', function(){
-				$(this).removeClass('unhover-dashboard');
-				$(this).addClass('hover-dashboard');
-			});
-			el.on('mouseleave', function(){
-				$(this).addClass('unhover-dashboard');
-			});
-			el.on('click', function(){
+		Ext.each(Ext.query('.dashboard-list > li'), function(domEl, i, list){
+			var el = Ext.get(domEl);
+			var urlSuffix = el.getAttribute('href');
+			
+			var clickFn = function() {
 				cms.updateNavigationMenu(urlSuffix);
 				
-				//$('#content').block();
-				$.ajax({
+				Ext.Ajax.request({
 					url: 'cms/' + urlSuffix,
-					success: function(data){
-						$('#content').html(data);
+					success: function(response){
+						Ext.get(Ext.query('#content')).setHTML(response.responseText);
 						cms.callerMapping(urlSuffix);
-						$('#content').unblock();
-					},
-					failure: function(){
-						alert('Oops. An ajax error happened.');
-						//$('#content').unblock();
 					}
 				});
-			});
+			};
+
+			el.addClsOnOver('hover-dashboard');
+			el.on('click', clickFn);
 		});
 	},
 	
@@ -108,11 +87,23 @@ var cms = {
 	*/
 	updateNavigationMenu: function(categoryLink) {
 		if (this.debug) console.log('resetting navigation menu to: ' + categoryLink);
-		$('#navmenu > ul > li > a').removeClass('big bold');
-		$('#navmenu > ul > li > span').remove();
-		var el = $('#navmenu > ul > li > a[ajax=' + categoryLink + ']');
-		el.addClass('big bold');
-		el.parent().append('<span class="icon right very-big">=</span>');
+		
+		// remove big letters
+		Ext.each(Ext.query('#navmenu > ul > li > a'), function(domEl){
+			Ext.get(domEl).removeCls('big bold');
+		});
+		
+		// remove category indicator
+		Ext.each(Ext.query('#navmenu > ul > li > a > span'), function(domEl){
+			Ext.get(domEl).destroy();
+		});
+		
+		// add new big lettering and category indicator
+		var el = Ext.get(Ext.query('#navmenu > ul > li > a[ajax=' + categoryLink + ']'));
+		el.addCls('big bold');
+		var t = document.createElement('span'); //<span class="icon right very-big">=</span>
+		Ext.get(t).addCls('icon right very-big').setHTML('=');
+		el.appendChild(t);
 	},
 	
 	/**
@@ -142,7 +133,7 @@ var cms = {
 		    title: 'Templates',
 		    renderTo: Ext.get('templates-grid'),
 		    autoShow: true,
-		    store: Ext.data.StoreManager.lookup('templatesStore'),
+		    store: Ext.getStore('templatesStore'),
 		    columns: [
 		    	{ text: 'Active?', xtype: 'templatecolumn', width:50,
 		    		tpl: '<tpl if="active"><span class="icon green very-big">&Atilde;</span>'
@@ -181,7 +172,7 @@ var cms = {
 		    						url: 'cms/templates/import',
 		    						success: function() {
 		    							Ext.MessageBox.alert('Status', 'Templates were imported successfully. Do not forget to set one to active.');
-		    							Ext.data.StoreManager.lookup('templatesStore').load();
+		    							Ext.getStore('templatesStore').load();
 		    						}
 		    					});
 		    				}
@@ -198,7 +189,7 @@ var cms = {
 		    			url: 'cms/templates/settemplate/' + selection.data.id,
 		    			success: function() {
 		    				Ext.MessageBox.alert('Status', 'The template <i>' + selection.data.name + '</i> was successfully set to active.');
-		    				Ext.data.StoreManager.lookup('templatesStore').load();
+		    				Ext.getStore('templatesStore').load();
 		    			}
 		    		});
 		    	}
@@ -279,7 +270,7 @@ var cms = {
 		    	write: function(store, op) {
 		    		// if last operation was "create" and now we have an update,
 		    		// we want to reload the store afterwards to get the objects new id
-		    		var s = Ext.data.StoreManager.lookup('structuresStore');
+		    		var s = Ext.getStore('structuresStore');
 		    		if (s.lastOperation == 'create'
 		    			&& op.action == 'update') {
 		    			s.load();
@@ -304,7 +295,7 @@ var cms = {
 			},
 			autoLoad: false
 		});
-		Ext.data.StoreManager.lookup('layoutsStore').load(); // have to load manually, else the combobox bugs
+		Ext.getStore('layoutsStore').load(); // have to load manually, else the combobox bugs
 
 		// load modules of current template
 		Ext.create('Ext.data.Store', {
@@ -320,7 +311,7 @@ var cms = {
 			},
 			autoLoad: false
 		});
-		Ext.data.StoreManager.lookup('modulesStore').load();
+		Ext.getStore('modulesStore').load();
 
 		// define column mapping store
 		Ext.create('Ext.data.Store', {
@@ -335,7 +326,7 @@ var cms = {
 			},
 			autoLoad: false
 		});
-		Ext.data.StoreManager.lookup('columnMappingStore').load();
+		Ext.getStore('columnMappingStore').load();
 
 		var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
 	        clicksToMoveEditor: 1,
@@ -356,7 +347,7 @@ var cms = {
 				id: 'categoriesGrid',
 				title: 'Categories',
 				plugins: [rowEditing],
-				store: Ext.data.StoreManager.lookup('structuresStore'),
+				store: Ext.getStore('structuresStore'),
 				columns: [
 			        { text: '#',  dataIndex: 'position', width:30, editor:{ allowBlank:false }},
 			        { text: 'Active?', dataIndex: 'active', width: 50, xtype: 'checkcolumn',
@@ -369,7 +360,7 @@ var cms = {
 			    	text: '<span class="icon very-big">@</span> Add category',
 			    	handler: function() {
 			    		rowEditing.cancelEdit();
-			    		Ext.data.StoreManager.lookup('structuresStore').insert(0,new Structure());
+			    		Ext.getStore('structuresStore').insert(0,new Structure());
 			    		rowEditing.startEdit(0,0);
 			    	}
 			    },'-',{
@@ -384,7 +375,7 @@ var cms = {
 			    			fn: function(btn) {
 			    				if (btn == 'yes') {
 			    					var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
-						    		Ext.data.StoreManager.lookup('structuresStore').remove(selection);
+						    		Ext.getStore('structuresStore').remove(selection);
 						    		// finally select 1st entry again
 						    		Ext.getCmp('categoriesGrid').getSelectionModel().select(0);
 			    				}
@@ -397,7 +388,7 @@ var cms = {
 	                    // link to formpanel on selection
 	                    if (records[0]) {
 	                       	var layout_id = records[0].data.layout_id;
-	                       	var s = Ext.data.StoreManager.lookup('layoutsStore');
+	                       	var s = Ext.getStore('layoutsStore');
 	                       	var i = s.find('id', layout_id);
 	                       	
 	                       	// if a layout record is found in the store we
@@ -434,7 +425,7 @@ var cms = {
 				items:[{
 					fieldLabel: 'Layout',
 					id: 'layoutsComboBox',
-					store: Ext.data.StoreManager.lookup('layoutsStore'),
+					store: Ext.getStore('layoutsStore'),
 					emptyText: 'Choose layout...',
 					displayField: 'description',
 					valueField: 'id',
@@ -447,7 +438,7 @@ var cms = {
 						    	selection.set('layout_id', newValue);
 
 						    	// also repaint the column boxes
-						    	var s = Ext.data.StoreManager.lookup('layoutsStore');
+						    	var s = Ext.getStore('layoutsStore');
 	                       		var i = s.find('id', newValue);
 	                       		var rec = s.getAt(i);
 						    	cms.paintModuleSelectionBoxes(rec.data.columns);
@@ -480,7 +471,7 @@ var cms = {
 			cmp.add({
 				fieldLabel: 'Column ' + (i+1) + ' module',
 				id: 'moduleComboBoxColumn' + i,
-				store: Ext.data.StoreManager.lookup('modulesStore'),
+				store: Ext.getStore('modulesStore'),
 				emptyText: 'Choose module...',
 				displayField: 'description',
 				valueField: 'id',
@@ -500,7 +491,7 @@ var cms = {
 					    		},
 					    		success: function() {
 					    			// load mapping data again for correct lookup on later changes
-					    			Ext.data.StoreManager.lookup('columnMappingStore').load();
+					    			Ext.getStore('columnMappingStore').load();
 					    		}
 					    	});
 						}
@@ -510,12 +501,12 @@ var cms = {
 
 			// if a module was selected before, set the value
 			var structure_id = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0].data.id;
-			var q = Ext.data.StoreManager.lookup('columnMappingStore').query('structure_id', structure_id);
+			var q = Ext.getStore('columnMappingStore').query('structure_id', structure_id);
 			for (var j=0; j < q.items.length; j++) {
 				var data = q.items[j].data;
 				if (data.column == i) {
-					var index = Ext.data.StoreManager.lookup('modulesStore').find('id', data.module_id);
-					var d = Ext.data.StoreManager.lookup('modulesStore').getAt(index).data.description;
+					var index = Ext.getStore('modulesStore').find('id', data.module_id);
+					var d = Ext.getStore('modulesStore').getAt(index).data.description;
 					Ext.getCmp('moduleComboBoxColumn' + i).setValue(d);
 				}
 			}
@@ -526,6 +517,8 @@ var cms = {
 	* Fill the articles grid with data
 	*/
 	prepareArticlesPanel: function() {
+		if (this.debug) console.log('populating articles treeview');
+
 		Ext.Ajax.request({
 			url: 'cms/articles/treeview',
 
@@ -555,13 +548,51 @@ var cms = {
 				title: 'Category/Column selection',
 				store: treeStore,
 				rootVisible: false,
-				tbar: [
-					{ xtype: 'button', text: '<span class="icon very-big">@</span>&nbsp;Add article' },
-					'-',
-					{ xtype: 'button', text: '<span class="icon very-big">&Atilde;</span>&nbsp;Save article' },
-					'-',
-				  	{ xtype: 'button', text: '<span class="icon very-big">&Acirc;</span>&nbsp;Delete article' }
-				]
+				tbar: [ { 
+					xtype: 'button', 
+					id: 'addArticleBtn',
+					text: '<span class="icon very-big">@</span>&nbsp;Add article', 
+					disabled: true,
+					handler: function(self, e) {
+						if (cms.debug) console.log('add article button pressed');
+					}
+				},'-',{ 
+					xtype: 'button', 
+					id: 'saveArticleBtn',
+					text: '<span class="icon very-big">&Atilde;</span>&nbsp;Save article', 
+					disabled: true,
+					handler: function(self, e) {
+						if (cms.debug) console.log('save article button pressed');
+					} 
+				},'-',{ 
+					xtype: 'button', 
+					id: 'deleteArticleBtn',
+					text: '<span class="icon very-big">&Acirc;</span>&nbsp;Delete article', 
+					disabled: true,
+					handler: function(self, e) {
+						if (cms.debug) console.log('delete article button pressed');
+					}
+				}],
+				listeners: {
+					select: function(self, record, index) {
+						// first disable all buttons after click
+						var buttonIDs = ['addArticleBtn', 'saveArticleBtn', 'deleteArticleBtn'];
+						Ext.each(buttonIDs, function(id){
+							Ext.getCmp(id).disable(true);
+						});
+						
+						// on a column field we want to enable adding articles
+						// remember: columns are on 2nd level and not leafes
+						if (record.parentNode.parentNode != null && !record.data.leaf) {
+							Ext.getCmp('addArticleBtn').enable(true);
+						}
+						
+						// leafes can be deleted for now
+						if (record.data.leaf) {
+							Ext.getCmp('deleteArticleBtn').enable(true);
+						}						
+					}
+				}
 			},{
 				columnWidth: 0.69,
 				xtype: 'fieldset',
@@ -569,10 +600,11 @@ var cms = {
 				title: 'Article editing',
 				margin: '0 0 0 10',
 				defaultType: 'textfield',
+				disabled: true,
 	            defaults: {
 	                width: 300,
-	                labelWidth: 50,
-	                labelAlign: 'top',
+	                labelWidth: 70,
+	                labelAlign: 'left',
 	                margin: '0 0 10 0'
 	            },
 				items: [{
@@ -601,6 +633,6 @@ var cms = {
 }
 
 
-$(document).ready(function(){
+Ext.onReady(function(){
 	cms.init();
 });

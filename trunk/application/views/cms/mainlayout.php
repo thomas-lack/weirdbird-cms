@@ -39,7 +39,7 @@
 			<div class="col2" id="navmenu"> <!-- left -->
 				<span class="sans-serif uppercase very-small gray">navigate to:</span>
 				<ul class="sans-serif">
-					<li><a href="#" ajax="dashboard" class="big bold">Dashboard</a><span class="icon right very-big">=</span></li>
+					<li><a href="#" ajax="dashboard" class="big bold">Dashboard<span class="icon right very-big">=</span></a></li>
 					<li><a href="#" ajax="templates">Templates</a></li>
 					<li><a href="#" ajax="structures">Structures</a></li>
 					<li><a href="#" ajax="articles">Articles</a></li>
