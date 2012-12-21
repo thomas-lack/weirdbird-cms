@@ -604,7 +604,7 @@ var cms = {
 	            defaults: {
 	                width: 300,
 	                labelWidth: 70,
-	                labelAlign: 'left',
+	                labelAlign: 'top',
 	                margin: '0 0 10 0'
 	            },
 				items: [{
@@ -621,10 +621,10 @@ var cms = {
 
 				},{
 					fieldLabel: 'Article',
-					xtype: 'htmleditor',
+					xtype: 'tinymce_textarea',
 					width: 580,
 					height: 300,
-					resizable: true
+					resizable: false //true
 				}]
 			}]
 		});		
