@@ -23,7 +23,7 @@
 		foreach ($styles as $file) 
 			echo HTML::style($file), "\n";
 		foreach ($externalScripts as $file)
-			echo HTML::script($file), "\n";
+			echo '<script type="text/javascript" src="' . $file . '"></script>' . "\n";
 		foreach ($scripts as $file) 
 			echo HTML::script($file), "\n";
 	?>
@@ -35,7 +35,7 @@
 	</style>
 	
 </head>
-<body>
+<body class="bodybg">
 <div id="page_margins">
 	<div id="page">
 		<div id="javascriptWarning">
