@@ -28,6 +28,40 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		die();
 	}
 
+	public function action_read()
+	{
+		// get new active id
+		$id = $this->request->param('id');
+
+		echo json_encode(ORM::factory('article',$id)->as_array());
+		die();
+	}
+
+	/**
+	* 	Returns the path to the css file so that an editor like tinymce can
+	*	load the additional css classes.
+	*/
+	public function action_css()
+	{
+		$template = ORM::factory('template')->where('active','=','1')->find();
+
+		$cssfiles = ORM::factory('loadfile')
+						->where('template_id','=',$template->id)
+						->where('type','=','css')
+						->find_all();
+
+		$outArr = array();
+
+		foreach($cssfiles as $css) {
+			$outArr[] = array(
+				'path' => $template->folder . '/' . $template->folder_css . '/' . $css->filename
+			);
+		}
+
+		echo json_encode($outArr);
+		die();
+	}
+
 	/**
 	*	Returns the mapped categories/columns/articles, so that EXTJS can
 	*	handle it as nested data and produce a nice treeview

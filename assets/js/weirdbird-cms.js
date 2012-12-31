@@ -24,7 +24,16 @@ var cms = {
 				cms.populateStructuresGrid();
 				break;
 			case 'articles' :
-				cms.prepareArticlesPanel();
+				// first we need to load the css files of the current template
+				// (for the tinyMCE article editor)
+				// afterwards the panel can be painted
+				Ext.Ajax.request({
+					url: 'cms/articles/css',
+
+					success: function(response) {
+						cms.prepareArticlesPanel(Ext.JSON.decode(response.responseText));
+					}
+				});
 				break;
 			default:
 				cms.registerDashboardHandlers();
@@ -515,9 +524,16 @@ var cms = {
 
 	/*
 	* Fill the articles grid with data
+	*
+	* cssdata: array containing objects with paths to used css files e.g. [{path:'../styles.css'}]
 	*/
-	prepareArticlesPanel: function() {
+	prepareArticlesPanel: function(cssdata) {
 		if (this.debug) console.log('populating articles treeview');
+
+		// bugfix: manually destroy the tinyMCE editor object if it exists, else
+		// the article editing page cannot be created a second time because of dom errors
+		if (typeof Ext.getCmp('articleFieldContent') != 'undefined')
+			Ext.getCmp('articleFieldContent').destroy();
 
 		Ext.Ajax.request({
 			url: 'cms/articles/treeview',
@@ -527,7 +543,7 @@ var cms = {
 				var storeConfig = Ext.JSON.decode(response.responseText);
 				var treeStore = Ext.create('Ext.data.TreeStore', storeConfig);
 				
-				cms.paintArticlesPanel(treeStore);
+				cms.paintArticlesPanel(treeStore, cssdata);
 			}
 		});
 	},
@@ -535,11 +551,19 @@ var cms = {
 	* After loading the prepared tree store data for the articles panel,
 	* it can be added to the DOM
 	*/
-	paintArticlesPanel: function(treeStore) {
+	paintArticlesPanel: function(treeStore, cssdata) {
 		Ext.create('Ext.panel.Panel', {
+			id: 'articlesParentPanel',
 			layout: 'column',
 			renderTo: 'article-editing',
 			frame: true,
+			listeners: {
+				afterrender: function(self) {
+					// bugfix for height rendering error of tinymce extjs wrapper
+					Ext.getCmp('articlesTreePanel').expandAll();
+					Ext.getCmp('articlesTreePanel').collapseAll();
+				}
+			},
 			//border: 0,
 			items: [{
 				columnWidth: 0.31,
@@ -563,6 +587,7 @@ var cms = {
 					disabled: true,
 					handler: function(self, e) {
 						if (cms.debug) console.log('save article button pressed');
+						cms.saveArticle();
 					} 
 				},'-',{ 
 					xtype: 'button', 
@@ -590,6 +615,16 @@ var cms = {
 						// leafes can be deleted for now
 						if (record.data.leaf) {
 							Ext.getCmp('deleteArticleBtn').enable(true);
+							Ext.getCmp('saveArticleBtn').disable(true);
+
+							// load leaf data
+							Ext.Ajax.request({
+								url: 'cms/articles/read/' + record.data.id,
+
+								success: function(response) {
+									cms.updateArticlesPanel(Ext.JSON.decode(response.responseText));
+								}
+							});
 						}						
 					}
 				}
@@ -610,26 +645,68 @@ var cms = {
 				items: [{
 					fieldLabel: 'Active',
 					xtype: 'checkbox',
-					labelAlign: 'left'
+					id: 'articleFieldActive',
+					labelAlign: 'left',
+					listeners: {
+						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+					}
 				},{
-					fieldLabel: 'Title'
+					fieldLabel: 'Title',
+					id: 'articleFieldTitle',
+					listeners: {
+						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+					}
 				},{
 					fieldLabel: 'Description',
 					xtype: 'textareafield',
+					id: 'articleFieldDescription',
 					width: 580,
-					height: 100
-
+					height: 70,
+					listeners: {
+						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+					}
 				},{
 					fieldLabel: 'Article',
 					xtype: 'tinymce_textarea',
+					id: 'articleFieldContent',
 					width: 580,
-					height: 300,
-					resizable: false //true
+					height: 350,
+					resizable: false, //true
+					tinyMCEConfig: {
+						theme_advanced_row_height: 27,
+                        delta_height: 0,
+                        schema: 'html5',
+                        plugins : "autolink,lists,pagebreak,style,table,advhr,advimage,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
+                        theme_advanced_toolbar_align : "left",
+                        theme_advanced_buttons1 : 'undo,redo,|,bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,formatselect', //styleselect,fontselect,fontsizeselect
+                        theme_advanced_buttons2 : 'table,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,image,|,code,preview,fullscreen',
+                        content_css: cssdata[0].path, //TODO: add more than one css file
+                        theme_advanced_containers_default_align : 'left'
+					},
+					listeners: {
+						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+					}
 				}]
 			}]
 		});		
+	},
+
+	updateArticlesPanel: function(data) {
+		Ext.getCmp('articleFieldActive').setValue(data.active);
+		Ext.getCmp('articleFieldTitle').setValue(data.title);
+		Ext.getCmp('articleFieldDescription').setValue(data.description);
+		Ext.getCmp('articleFieldContent').setValue(data.content);
+
+		Ext.getCmp('articlesEditPanel').enable();
+	},
+
+	saveArticle: function() {
+		var active = Ext.getCmp('articleFieldActive').getValue();
+		var title = Ext.getCmp('articleFieldTitle').getValue();
+		var description = Ext.getCmp('articleFieldDescription').getValue();
+		var content = Ext.getCmp('articleFieldContent').getValue();
+		console.log(active, title, description, content, Ext.getCmp('articleFieldContent'));
 	}
-	
 }
 
 
