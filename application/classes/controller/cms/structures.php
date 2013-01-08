@@ -65,7 +65,7 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 		$structure->save();
 		
 		// TODO : save user who changed something
-		
+
 		echo '{"success":"true"}';
 		die();
 	}
@@ -79,7 +79,19 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 		$mappings = ORM::factory('structurecolumnmapping')
 			->where('structure_id','=',$d->id)
 			->find_all();
+		
 		foreach ($mappings as $m) {
+			// also delete the reference of articles to the deleted mappings
+			$articles = ORM::factory('article')
+				->where('structure_column_mapping_id','=',$m->id)
+				->find_all();
+
+			foreach ($articles as $article) {
+				$article->structure_column_mapping_id = null;
+				$article->active = 0;
+				$article->save();
+			}
+
 			$m->delete();
 		}
 		

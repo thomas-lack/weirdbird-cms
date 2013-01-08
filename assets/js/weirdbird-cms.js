@@ -535,12 +535,21 @@ var cms = {
 		if (typeof Ext.getCmp('articleFieldContent') != 'undefined')
 			Ext.getCmp('articleFieldContent').destroy();
 
+		// define a new model, because the standard treeview model does not contain the mapping_id field
+		Ext.define('ArticleNode', {
+			extend: 'Ext.data.Model',
+			fields: ['mapping_id', 'id', 'text'],
+			proxy: {
+				type: 'localstorage'
+			}
+		});
+
 		Ext.Ajax.request({
 			url: 'cms/articles/treeview',
 
 			success: function(response) {
-				
 				var storeConfig = Ext.JSON.decode(response.responseText);
+				storeConfig.model = 'ArticleNode'; // add custom model reference
 				var treeStore = Ext.create('Ext.data.TreeStore', storeConfig);
 				
 				cms.paintArticlesPanel(treeStore, cssdata);
@@ -564,7 +573,6 @@ var cms = {
 					Ext.getCmp('articlesTreePanel').collapseAll();
 				}
 			},
-			//border: 0,
 			items: [{
 				columnWidth: 0.31,
 				xtype: 'treepanel',
@@ -572,6 +580,9 @@ var cms = {
 				title: 'Category/Column selection',
 				store: treeStore,
 				rootVisible: false,
+				viewConfig: {
+					plugins: { ptype: 'treeviewdragdrop' }
+				},
 				tbar: [ { 
 					xtype: 'button', 
 					id: 'addArticleBtn',
@@ -579,6 +590,7 @@ var cms = {
 					disabled: true,
 					handler: function(self, e) {
 						if (cms.debug) console.log('add article button pressed');
+						cms.addArticle();
 					}
 				},'-',{ 
 					xtype: 'button', 
@@ -596,11 +608,15 @@ var cms = {
 					disabled: true,
 					handler: function(self, e) {
 						if (cms.debug) console.log('delete article button pressed');
+						cms.deleteArticle();
 					}
 				}],
 				listeners: {
 					select: function(self, record, index) {
-						// first disable all buttons after click
+						// first check, if the user is leaving a currently edited article
+						cms.leaveArticle(record, Ext.getCmp('articlesEditPanel').record);
+
+						// disable all buttons after click
 						var buttonIDs = ['addArticleBtn', 'saveArticleBtn', 'deleteArticleBtn'];
 						Ext.each(buttonIDs, function(id){
 							Ext.getCmp(id).disable(true);
@@ -616,16 +632,20 @@ var cms = {
 						if (record.data.leaf) {
 							Ext.getCmp('deleteArticleBtn').enable(true);
 							Ext.getCmp('saveArticleBtn').disable(true);
+						}						
+					},
 
-							// load leaf data
+					// handling a (via drag&drop) moved item
+					itemmove: function(node, oldParent, newParent, index, eopts) {
+						if (newParent != oldParent) {
 							Ext.Ajax.request({
-								url: 'cms/articles/read/' + record.data.id,
-
-								success: function(response) {
-									cms.updateArticlesPanel(Ext.JSON.decode(response.responseText));
+								url: 'cms/articles/changemapping/' + node.data.id,
+								params: { mapping_id: newParent.data.mapping_id },
+								failure: function(response) {
+									Ext.MessageBox.alert('Error', 'The article could not be moved (Error code ' + response.status + ').');
 								}
 							});
-						}						
+						}
 					}
 				}
 			},{
@@ -635,6 +655,9 @@ var cms = {
 				title: 'Article editing',
 				margin: '0 0 0 10',
 				defaultType: 'textfield',
+				record: null,
+				initialDataChange: true,	// helper attribute to identify if data was loaded or really changed by user
+				initialTitle: '',			// helper attribute to remember the article title before it was edited
 				disabled: true,
 	            defaults: {
 	                width: 300,
@@ -648,13 +671,33 @@ var cms = {
 					id: 'articleFieldActive',
 					labelAlign: 'left',
 					listeners: {
-						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+						change: function(self, newValue, oldValue) { 
+							var editPanel = Ext.getCmp('articlesEditPanel');
+							if (!editPanel.initialDataChange) {
+								Ext.getCmp('saveArticleBtn').enable(true); 
+								// mark record as dirty
+								editPanel.record.setDirty();
+							}
+						}
 					}
 				},{
 					fieldLabel: 'Title',
 					id: 'articleFieldTitle',
 					listeners: {
-						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+						change: function(self, newValue, oldValue) { 
+							var editPanel = Ext.getCmp('articlesEditPanel');
+							//var record = Ext.getCmp('articlesEditPanel').record;
+							if (!editPanel.initialDataChange) {
+								Ext.getCmp('saveArticleBtn').enable(true); 
+								// mark record as dirty
+								editPanel.record.setDirty();
+								// update treepanel title
+								if (editPanel.record != null) {
+									editPanel.record.data.text = newValue;
+									editPanel.record.set('title', newValue); // used to update the treepanel -.-
+								}
+							}
+						}
 					}
 				},{
 					fieldLabel: 'Description',
@@ -663,7 +706,14 @@ var cms = {
 					width: 580,
 					height: 70,
 					listeners: {
-						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+						change: function(self, newValue, oldValue) { 
+							var editPanel = Ext.getCmp('articlesEditPanel');
+							if (!editPanel.initialDataChange) {
+								Ext.getCmp('saveArticleBtn').enable(true); 
+								// mark record as dirty
+								editPanel.record.setDirty();
+							}
+						}
 					}
 				},{
 					fieldLabel: 'Article',
@@ -684,32 +734,170 @@ var cms = {
                         theme_advanced_containers_default_align : 'left'
 					},
 					listeners: {
-						change: function() { Ext.getCmp('saveArticleBtn').enable(true); }
+						change: function() { 
+							var editPanel = Ext.getCmp('articlesEditPanel');
+							if (!editPanel.initialDataChange) {
+								Ext.getCmp('saveArticleBtn').enable(true); 
+								// mark record as dirty
+								editPanel.record.setDirty();
+							}
+						}
 					}
 				}]
 			}]
-		});		
+		});	
 	},
 
-	updateArticlesPanel: function(data) {
-		Ext.getCmp('articleFieldActive').setValue(data.active);
-		Ext.getCmp('articleFieldTitle').setValue(data.title);
-		Ext.getCmp('articleFieldDescription').setValue(data.description);
-		Ext.getCmp('articleFieldContent').setValue(data.content);
+	updateArticlesPanel: function() {
+		// load leaf data
+		Ext.Ajax.request({
+			url: 'cms/articles/read/' + Ext.getCmp('articlesEditPanel').record.data.id,
 
-		Ext.getCmp('articlesEditPanel').enable();
+			success: function(response) {
+				var editPanel = Ext.getCmp('articlesEditPanel');
+				var data = Ext.JSON.decode(response.responseText);
+
+				editPanel.initialDataChange = true;
+				editPanel.initialTitle = data.title; // remember initial title for later treeview resetting
+				
+				Ext.getCmp('articleFieldActive').setValue(data.active);
+				Ext.getCmp('articleFieldTitle').setValue(data.title);
+				Ext.getCmp('articleFieldDescription').setValue(data.description);
+				Ext.getCmp('articleFieldContent').setValue(data.content);
+
+				editPanel.initialDataChange = false;
+				editPanel.enable();
+			},
+			failure: function(response, opts) {
+				Ext.MessageBox.alert('Error', 'The article data could not be loaded (Error code ' + response.status + ').');
+			}
+		});
 	},
 
 	saveArticle: function() {
-		var active = Ext.getCmp('articleFieldActive').getValue();
-		var title = Ext.getCmp('articleFieldTitle').getValue();
-		var description = Ext.getCmp('articleFieldDescription').getValue();
-		var content = Ext.getCmp('articleFieldContent').getValue();
-		console.log(active, title, description, content, Ext.getCmp('articleFieldContent'));
+		tinymce.triggerSave(); 	// has to be done, because tinymce is an addon and the underlying 
+								// form field needs to be updated
+		var request = {};
+		request.active = Ext.getCmp('articleFieldActive').getValue();
+		request.title = Ext.getCmp('articleFieldTitle').getValue();
+		request.description = Ext.getCmp('articleFieldDescription').getValue();
+		request.content = Ext.getCmp('articleFieldContent').getValue();
+		
+		Ext.Ajax.request({
+			url: 'cms/articles/update/'+ Ext.getCmp('articlesEditPanel').record.data.id,
+			params: request, 
+
+			success: function(response) {
+				Ext.MessageBox.alert('Status', 'The article was saved successfully.');
+				Ext.getCmp('articlesEditPanel').record.save(); //remove the dirty flag
+			},
+			failure: function(response, opts) {
+				Ext.MessageBox.alert('Error', 'The article could not be saved (Error code ' + response.status + ').');
+			}
+		});
+	},
+
+	deleteArticle: function() {
+		Ext.Msg.show({
+			title: 'Delete article?',
+			msg: 'Do you really want to delete the current article?',
+			buttons: Ext.Msg.YESNO,
+			icon: Ext.Msg.QUESTION,
+			fn: function(btn) {
+				if (btn == 'yes') {
+					Ext.Ajax.request({
+						url: 'cms/articles/destroy/' + Ext.getCmp('articlesEditPanel').record.data.id,
+						success: function(response) {
+							var node = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
+							node.remove();
+						},
+						failure: function(response, opts) {
+							Ext.MessageBox.alert('Error', 'The article could not be deleted (Error code ' + response.status + ').');
+						}
+					});
+				}
+			}
+		});
+	},
+
+	addArticle: function() {
+		var node = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
+		
+		Ext.Ajax.request({
+			url: 'cms/articles/create',
+			params: { mapping_id : node.data.mapping_id },
+
+			success: function(response) {
+				var r = Ext.JSON.decode(response.responseText);
+				var id = r.id;
+				
+				var newNode = node.createNode({id: r.id, text: 'new title', leaf: true});
+				node.appendChild(newNode);
+			},
+			failure: function(response) {
+				Ext.MessageBox.alert('Error', 'The new article could not be created (Error code ' + response.status + ').');
+			}
+		});
+	},
+
+	/**
+	*	Helper method to process a context change of the treepanel
+	*	(clicking another article or whatever)
+	*/
+	leaveArticle: function(newRecord, oldRecord) {
+		// check if the current record should be saved first ?
+		if (oldRecord != null && oldRecord.dirty) {	
+			Ext.Msg.show({
+				title: 'Save changes?',
+				msg: 'The current articles data has been changed. Save changes before proceeding?',
+				buttons: Ext.Msg.YESNO,
+				icon: Ext.Msg.QUESTION,
+				fn: function(btn) {
+					// save if yes is pressed
+					if (btn == 'yes')
+						cms.saveArticle();
+					// restore the old title in the treeview if 'no' is pressed
+					else {
+						var title = Ext.getCmp('articlesEditPanel').initialTitle;
+						oldRecord.data.text = title;
+						oldRecord.set('title', title);
+					}
+
+					// anyways we save the treepanel record for now to indicate the non-dirty state
+					oldRecord.save();
+					// disable the edit panel for now if we are changing focus
+					Ext.getCmp('articlesEditPanel').disable();
+					// load new data into the articles panel if appropriate
+					if (newRecord.data.leaf) {
+						// remember the currently clicked record id in the edit panel as hidden value
+						Ext.getCmp('articlesEditPanel').record = newRecord;
+						cms.updateArticlesPanel();
+					}
+				}
+			});
+		}
+		else {
+			Ext.getCmp('articlesEditPanel').disable();
+			
+			if (newRecord != null && newRecord.data.leaf) {
+				Ext.getCmp('articlesEditPanel').record = newRecord;
+				cms.updateArticlesPanel();
+			}
+		}		
 	}
 }
 
 
 Ext.onReady(function(){
+	// override all treepanels with drag&drop, so that only leafes are draggable
+	Ext.override(Ext.tree.ViewDragZone, {
+		isPreventDrag: function(e, record) {
+			return this.callOverridden(arguments) || !record.isLeaf();
+		}
+	});
+
+	Ext.data.NodeInterface.apply
+
+	// start the cms
 	cms.init();
 });
