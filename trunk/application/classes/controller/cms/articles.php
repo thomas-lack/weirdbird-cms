@@ -37,6 +37,58 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		die();
 	}
 
+	public function action_update()
+	{
+		$id = $this->request->param('id');
+		
+		$a = ORM::factory('article', $id);
+		$a->active = ($this->request->post('active') === true) ? 1 : 0;
+		$a->title = $this->request->post('title');
+		$a->description = $this->request->post('description');
+		$a->content = $this->request->post('content');
+		$a->save();
+
+		echo '{"success":"true"}';
+		die();
+	}
+
+	public function action_create()
+	{
+		$a = ORM::factory('article');
+		$a->structure_column_mapping_id = $this->request->post('mapping_id');
+		$a->active = 0;
+		$a->user_id = Auth::instance()->get_user()->id;
+		$a->title = 'new title';
+		$a->description = '';
+		$a->content = '';
+		$a->save();
+
+		echo '{"success":"true", "id":"' . $a->id . '"}';
+		die();
+	}
+
+	public function action_destroy()
+	{
+		$id = $this->request->param('id');
+
+		ORM::factory('article',$id)->delete();
+
+		echo '{"success":"true"}';
+		die();
+	}
+
+	public function action_changemapping()
+	{
+		$id = $this->request->param('id');
+
+		$a = ORM::factory('article', $id);
+		$a->structure_column_mapping_id = $this->request->post('mapping_id');
+		$a->save();
+
+		echo '{"success":"true"}';
+		die();
+	}
+
 	/**
 	* 	Returns the path to the css file so that an editor like tinymce can
 	*	load the additional css classes.
@@ -73,7 +125,9 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		$modules = ORM::factory('module')->where('template_id','=',$template->id);
 		$mappings = ORM::factory('structurecolumnmapping')->find_all();
 
-		$outArr = array('root' => array());
+		$outArr = array(
+			'root' => array()
+		);
 		
 		$structures = ORM::factory('structure')
 			->order_by('position','asc')
@@ -104,20 +158,15 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 								'text' => $a->title,
 								'id' => $a->id,
 								'leaf' => true
-								/*'id' => $a->id,
-								'title' => $a->title*/
 							);
 						}
 
 						$columnsArr[] = array(
 							'text' => 'Column ' . ($m->column + 1),
-							'mapping_id' => $m->id,
 							'expanded' => false,
+							'allowDrop' => true,
+							'mapping_id' => $m->id,
 							'children' => $articlesArr
-							/*'column_number' => $m->column,
-							'module_name' => $module->name,
-							'editable' => $module->allowarticles,
-							'articles' => $articlesArr*/
 						);
 					}
 				}
@@ -125,16 +174,36 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 
 			// now that we have all data, the output array can be wrapped up
 			$outArr['root']['expanded'] = true;
+			$outArr['root']['allowDrop'] = false;
 			$outArr['root']['children'][] = array(
 				'text' => $s->title,
 				'expanded' => false,
+				'allowDrop' => false,
 				'children' => $columnsArr
-				/*'id' => $s->id,
-				'active' => $s->active,
-				'title' => $s->title,
-				'columns' => $columnsArr*/
 			);
 		}
+
+		// finally we can add all the "orphaned" articles that are missing a mapping
+		$articles = ORM::factory('article')
+						->where('structure_column_mapping_id','=',null)
+						->find_all();
+		if ($articles->count() > 0)	{
+			$articlesArr = array();
+			foreach ($articles as $a) {
+				$articlesArr[] = array(
+					'text' => $a->title,
+					'id' => $a->id,
+					'leaf' => true
+				);
+			}
+			$outArr['root']['children'][] = array(
+				'text' => 'ORPHANED ARTICLES',
+				'expanded' => false,
+				'allowDrop' => true,
+				'mapping_id' => null,
+				'children' => $articlesArr
+			);
+		}			
 
 		echo json_encode($outArr);
 		die();

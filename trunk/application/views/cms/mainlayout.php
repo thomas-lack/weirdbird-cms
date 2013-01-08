@@ -54,7 +54,7 @@
 	
 	<!-- -->
 	<div id="bottombar">
-		<span class="sans-serif small">&copy; 2012 Thomas Lack</span>
+		<span class="sans-serif small">Created 2012, 2013 by <a href="http://twitter.com/thomaslack">Thomas Lack</a></span>
 	</div>
 	<!-- -->
 </body>

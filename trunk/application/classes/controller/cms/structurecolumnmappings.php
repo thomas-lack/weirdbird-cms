@@ -33,6 +33,24 @@ class Controller_CMS_StructureColumnMappings extends Controller_CMS_Main
 		$mapping->module_id = $data['module_id'];
 		$mapping->save();
 
+		// since we did a possible update of a module, it is possible, that
+		// previously connected articles are not allowed anymore
+		// -> mark those articles as 'orphaned' by deleting the mapping id
+		$module = ORM::factory('module', $mapping->module_id);
+		if ($module->allowarticles == 0) 
+		{
+			$articles = ORM::factory('article')
+				->where('structure_column_mapping_id','=',$mapping->id)
+				->find_all();
+
+			foreach($articles as $article)
+			{
+				$article->structure_column_mapping_id = null;
+				$article->active = 0;
+				$article->save();
+			}
+		}
+
 		echo '{"success":"true"}';
 		die();
 	}
