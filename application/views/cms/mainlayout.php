@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
 <head>
 	<title>
@@ -12,6 +13,7 @@
 	?>
 </head>
 <body>
+	<? /*
 	<!-- title bar  -->
 	<div>
 		<div id="title">
@@ -43,7 +45,7 @@
 					<li><a href="#" ajax="templates">Templates</a></li>
 					<li><a href="#" ajax="structures">Structures</a></li>
 					<li><a href="#" ajax="articles">Articles</a></li>
-					<li><a href="#" ajax="file_manager">File Manager</a></li>
+					<li><a href="#" ajax="filemanager">File Manager</a></li>
 					<li><a href="#" ajax="user">User</a></li>
 					<li><a href="#" ajax="system">System</a></li>
 				</ul>
@@ -57,5 +59,6 @@
 		<span class="sans-serif small">Created 2012, 2013 by <a href="http://twitter.com/thomaslack">Thomas Lack</a></span>
 	</div>
 	<!-- -->
+	*/ ?>
 </body>
 </html>

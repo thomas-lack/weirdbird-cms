@@ -2,13 +2,6 @@
 
 class Controller_CMS_Structures extends Controller_CMS_Main
 {
-	public $template = 'cms/structures/template';
-	
-	public function action_index()
-	{
-		$this->template->category = 'Structures';
-	}
-	
 	public function action_data()
 	{
 		echo json_encode(

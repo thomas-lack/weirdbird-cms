@@ -2,13 +2,7 @@
 
 class Controller_CMS_Templates extends Controller_CMS_Main
 {
-	public $template = 'cms/templates/template';
 	public $siteTemplatesFolder = SITETEMPLATEPATH; // as defined in index.php
-	
-	public function action_index()
-	{
-		$this->template->category = 'Templates';
-	}
 	
 	private function getTemplateFolders()
 	{

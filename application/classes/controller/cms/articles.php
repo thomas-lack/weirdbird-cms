@@ -2,14 +2,6 @@
 
 class Controller_CMS_Articles extends Controller_CMS_Main 
 {
-
-	public $template = 'cms/articles/template';
-
-	public function action_index() 
-	{
-		$this->template->category = 'Articles';
-	}
-
 	public function action_activestructures()
 	{
 		echo json_encode(
