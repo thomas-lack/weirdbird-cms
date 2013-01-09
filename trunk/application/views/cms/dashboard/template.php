@@ -1,9 +1,6 @@
-<p class="bottom-padding-10">
-	<span class="sans-serif very-small uppercase dark-gray"><?= $category; ?></span>
-</p>
-<h1>Welcome back, <?= $username ?>. How may I serve you today ?</h1>
+<h1 class="std-left-margin">Welcome back, <?= $username ?>. How may I serve you today ?</h1>
 
-<ul class="dashboard-list">
+<ul class="dashboard-list std-left-margin">
 	<li href="templates">
 		<h2><span class="icon semi-big icon-space-top right-padding-10">B</span> Templates</h2>
 		Chose a template that defines the look of your web site.
@@ -19,7 +16,7 @@
 		Also articles can be locked or unlocked according to your
 		needs to display them on your web site.
 	</li>
-	<li href="file_manager">
+	<li href="filemanager">
 		<h2><span class="icon semi-big icon-space-top right-padding-10">&Oslash;</span> File Manager</h2>
 		Upload your new content files like images or pdf documents to
 		link them later on in your written articles.

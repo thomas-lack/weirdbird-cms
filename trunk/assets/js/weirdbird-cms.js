@@ -1,12 +1,96 @@
 var cms = {
+	// Switch between debug and productive console outputs
 	debug: true,
-	
+	// since dashoard data is loaded via AJAX, we can buffer it for later use
+	dashboardBuffer: null,
+
 	init:	function(){
+		// override all treepanels with drag&drop, so that only leafs are draggable
+		Ext.override(Ext.tree.ViewDragZone, {
+			isPreventDrag: function(e, record) {
+				return this.callOverridden(arguments) || !record.isLeaf();
+			}
+		});
+
 		Ext.tip.QuickTipManager.init();
+		
+		this.dashboardBuffer = null;
+		this.createViewport();
 		this.registerNavHandlers();
-		this.registerDashboardHandlers();
+		this.createDashboard();
 	},
-	
+
+	/**
+	* Handles the creation of a fullscreen user interface structure
+	*/
+	createViewport: function() {
+		Ext.create('Ext.container.Viewport', {
+			layout: 'border',
+			items: [{
+				region: 'north',
+				html: '<img class="left" src="/assets/images/logo.png"/>'
+					+ '<span class="sans-serif headline">weirdbird cms</span>',
+				bodyCls: 'title',
+				border: false
+			}, {
+				region: 'west',
+				html: '<span class="sans-serif uppercase very-small gray">navigate to:</span>'
+					+ '<ul class="sans-serif">'
+					+ '<li><a href="#" ajax="dashboard" class="big bold">Dashboard<span class="icon right very-big">=</span></a></li>'
+					+ '<li><a href="#" ajax="templates">Templates</a></li><li><a href="#" ajax="structures">Structures</a></li>'
+					+ '<li><a href="#" ajax="articles">Articles</a></li>'
+					+ '<li><a href="#" ajax="filemanager">File Manager</a></li>'
+					+ '<li><a href="#" ajax="user">User</a></li>'
+					+ '<li><a href="#" ajax="system">System</a></li>'
+					+ '</ul>',
+				bodyCls: 'navmenu',
+				id: 'navmenu',
+				width: 200,
+				border: false
+			}, {
+				region: 'center',
+				bodyCls: 'content',
+				id: 'contentPanel',
+				layout: 'fit',
+				border: false
+			}, {
+				region: 'south',
+				html: '<span class="sans-serif small">Created 2012, 2013 by <a href="http://twitter.com/thomaslack">Thomas Lack</a></span>',
+				bodyCls: 'bottombar',
+				border: false
+			}]
+		});
+	},
+
+	/**
+	* Handles the creation of an initial content view: the dashboard
+	*/
+	createDashboard: function() {
+		if (cms.dashboardBuffer != null) {
+			cms.fillContentPanel({
+				xtype: 'panel',
+				title: 'Dashboard amusement',
+				bodyCls: 'content',
+				border: false,
+				html: cms.dashboardBuffer
+			});
+
+			cms.registerDashboardHandlers();
+		}
+		else {
+			Ext.Ajax.request({
+				url: 'cms/dashboard',
+				success: function(response) {
+					cms.dashboardBuffer = response.responseText;
+					cms.createDashboard();
+				},
+				failure: function(response) {
+					Ext.MessageBox.alert('Error', 'The articles could not be loaded (Error code ' + response.status + ').');
+				}
+			});	
+		}
+	},
+
 	/**
 	* Helper method to provide functionality of module loading depending on the 
 	* url suffix of the corresponding ajax call
@@ -15,7 +99,7 @@ var cms = {
 	callerMapping: function(module) {
 		switch (module) {
 			case 'dashboard' : 
-				cms.registerDashboardHandlers();
+				cms.createDashboard();
 				break;
 			case 'templates' :
 				cms.populateTemplatesGrid();
@@ -29,11 +113,16 @@ var cms = {
 				// afterwards the panel can be painted
 				Ext.Ajax.request({
 					url: 'cms/articles/css',
-
 					success: function(response) {
 						cms.prepareArticlesPanel(Ext.JSON.decode(response.responseText));
+					},
+					failure: function(response) {
+						Ext.MessageBox.alert('Error', 'The articles could not be loaded (Error code ' + response.status + ').');
 					}
 				});
+				break;
+			case 'filemanager' :
+				cms.populateFilesGrid();
 				break;
 			default:
 				cms.registerDashboardHandlers();
@@ -45,23 +134,16 @@ var cms = {
 	*/
 	registerNavHandlers: function(){
 		if (this.debug) console.log('registering nav menu handlers');
-		Ext.each(Ext.query('#navmenu > ul > li > a'), function(domEl, i, list){
+		Ext.each(Ext.query('#navmenu-body > ul > li > a'), function(domEl, i, list){
 			var el = Ext.get(domEl);
-			var urlSuffix = el.getAttribute('ajax');
+			var urlSuffix = el.dom.attributes['ajax'].value;
 			
-			var loadFn = function() {
+			var clickFn = function() {
 				cms.updateNavigationMenu(urlSuffix);
-				
-				Ext.Ajax.request({
-					url: 'cms/' + urlSuffix,
-					success: function(response){
-						Ext.get(Ext.query('#content')).setHTML(response.responseText);
-						cms.callerMapping(urlSuffix);
-					}
-				});
+				cms.callerMapping(urlSuffix);
 			};
 			
-			el.on('click', loadFn);
+			el.on('click', clickFn);
 		});
 	},
 	
@@ -72,23 +154,28 @@ var cms = {
 		if (this.debug) console.log('registering dashboard handlers');
 		Ext.each(Ext.query('.dashboard-list > li'), function(domEl, i, list){
 			var el = Ext.get(domEl);
-			var urlSuffix = el.getAttribute('href');
+			var urlSuffix = el.dom.attributes['href'].value;
 			
 			var clickFn = function() {
 				cms.updateNavigationMenu(urlSuffix);
-				
-				Ext.Ajax.request({
-					url: 'cms/' + urlSuffix,
-					success: function(response){
-						Ext.get(Ext.query('#content')).setHTML(response.responseText);
-						cms.callerMapping(urlSuffix);
-					}
-				});
+				cms.callerMapping(urlSuffix);
 			};
 
 			el.addClsOnOver('hover-dashboard');
 			el.on('click', clickFn);
 		});
+	},
+	
+	/**
+	* Helper method to add new panels to the content panel (replacing the old ones).
+	* 
+	* Please note: parameter cmp has to be a component or component config object
+	*/
+	fillContentPanel: function(cmp) {
+		var p = Ext.getCmp('contentPanel');
+		p.removeAll();
+		p.add(cmp);
+		p.doLayout();
 	},
 	
 	/*
@@ -98,17 +185,17 @@ var cms = {
 		if (this.debug) console.log('resetting navigation menu to: ' + categoryLink);
 		
 		// remove big letters
-		Ext.each(Ext.query('#navmenu > ul > li > a'), function(domEl){
+		Ext.each(Ext.query('#navmenu-body > ul > li > a'), function(domEl){
 			Ext.get(domEl).removeCls('big bold');
 		});
 		
 		// remove category indicator
-		Ext.each(Ext.query('#navmenu > ul > li > a > span'), function(domEl){
+		Ext.each(Ext.query('#navmenu-body > ul > li > a > span'), function(domEl){
 			Ext.get(domEl).destroy();
 		});
 		
 		// add new big lettering and category indicator
-		var el = Ext.get(Ext.query('#navmenu > ul > li > a[ajax=' + categoryLink + ']'));
+		var el = Ext.get(Ext.query('#navmenu-body > ul > li > a[ajax=' + categoryLink + ']'));
 		el.addCls('big bold');
 		var t = document.createElement('span'); //<span class="icon right very-big">=</span>
 		Ext.get(t).addCls('icon right very-big').setHTML('=');
@@ -139,9 +226,9 @@ var cms = {
 
 		Ext.create('Ext.grid.Panel', {
 			id: 'templatesGrid',
-		    title: 'Templates',
-		    renderTo: Ext.get('templates-grid'),
-		    autoShow: true,
+		    title: 'Available Site Templates',
+		    border: false,
+		    bodyCls: 'content',
 		    store: Ext.getStore('templatesStore'),
 		    columns: [
 		    	{ text: 'Active?', xtype: 'templatecolumn', width:50,
@@ -209,6 +296,8 @@ var cms = {
 		Ext.getCmp('templatesGrid').getSelectionModel().on('selectionchange', function(selModel, selections){
 	        Ext.getCmp('templatesGrid').down('#activateTemplate').setDisabled(selections.length === 0);
 	    });
+
+	    cms.fillContentPanel(Ext.getCmp('templatesGrid'));
 	},
 	
 	/**
@@ -345,13 +434,15 @@ var cms = {
 		//create outer formpanel
 		Ext.create('Ext.form.Panel', {
 			id: 'structuresForm',
-			renderTo: 'structures-form',
-			frame: true,
+			title: 'Manage categories and according layouts / column modules',
 			layout: 'column',
+			bodyCls: 'content',
+			border: false,
 			items: [
 			// left gridpanel
 			{
 				columnWidth: 0.60,
+				height: '100%',
 				xtype: 'gridpanel',
 				id: 'categoriesGrid',
 				title: 'Categories',
@@ -457,6 +548,8 @@ var cms = {
 				}]
 			}]
 		});
+		
+		cms.fillContentPanel(Ext.getCmp('structuresForm'));
 	},
 
 	/*
@@ -563,9 +656,10 @@ var cms = {
 	paintArticlesPanel: function(treeStore, cssdata) {
 		Ext.create('Ext.panel.Panel', {
 			id: 'articlesParentPanel',
+			title: 'Manage article positioning and edit content',
+			bodyCls: 'content',
+			border: false,
 			layout: 'column',
-			renderTo: 'article-editing',
-			frame: true,
 			listeners: {
 				afterrender: function(self) {
 					// bugfix for height rendering error of tinymce extjs wrapper
@@ -745,7 +839,9 @@ var cms = {
 					}
 				}]
 			}]
-		});	
+		});
+
+		cms.fillContentPanel(Ext.getCmp('articlesParentPanel'));	
 	},
 
 	updateArticlesPanel: function() {
@@ -884,20 +980,46 @@ var cms = {
 				cms.updateArticlesPanel();
 			}
 		}		
+	},
+
+	/**
+	*	Manages the grid that is responsible for the file management
+	*/
+	populateFilesGrid: function() {
+		if (this.debug) console.log('populating files grid');
+		Ext.create('Ext.grid.Panel', {
+			id: 'filesGrid',
+		    title: 'Manage image and document (pdf) files',
+		    //store: Ext.getStore('templatesStore'),
+		    /*columns: ['Active?', 'Type', 'Description', 'Filename'],
+		    tbar: [{
+		    	text: '<span class="icon very-big">@</span> Add file',
+		    	handler: function() {
+		    		console.log('Add file');
+		    	}
+		    },'-',{
+		    	text: '<span class="icon very-big">A</span> Delete file',
+		    	disabled: true,
+		    	itemId: 'deleteFile',
+		    	handler: function() {
+		    		console.log('delete file');
+		    	}
+		    }]*/
+		});
+	
+		// make "delete file" button clickable if a row is selected
+		/*
+		Ext.getCmp('filesGrid').getSelectionModel().on('selectionchange', function(selModel, selections){
+	        Ext.getCmp('filesGrid').down('#deleteFile').setDisabled(selections.length === 0);
+	    });
+		*/
+
+		cms.fillContentPanel(Ext.getCmp('filesGrid'));
 	}
 }
 
 
 Ext.onReady(function(){
-	// override all treepanels with drag&drop, so that only leafes are draggable
-	Ext.override(Ext.tree.ViewDragZone, {
-		isPreventDrag: function(e, record) {
-			return this.callOverridden(arguments) || !record.isLeaf();
-		}
-	});
-
-	Ext.data.NodeInterface.apply
-
 	// start the cms
 	cms.init();
 });

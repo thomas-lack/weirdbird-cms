@@ -64,8 +64,8 @@
 /* --------------------------------------------------------------------------------------------------- */
 /* Standard HTML tags */
 /* --------------------------------------------------------------------------------------------------- */
-body { background-color:#085e73; padding:0; margin:30; -moz-border-radius:3px; border-radius:3px; -moz-box-shadow: 0 0 1px #054b5c; -webkit-box-shadow: 0 0 5px #054b5c; box-shadow: 0 0 5px #054b5c;}
-h1 { font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; font-size:1.5em; font-weight:600; color:#589da6; }
+body { background-color:#085e73; padding:0; margin:0; width:100%; height:100%; overflow:hidden; }
+h1 { font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; font-size:1.5em; font-weight:600; color:#589da6; margin-top:15px; }
 h2 { font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; font-size:1.2em; font-weight:normal; color:#9cacb3; margin:0;}
 ul { padding:0; list-style-type:none; }
 li { display:block; }
@@ -97,6 +97,7 @@ li { display:block; }
 .blue { color:#085e73; }
 .red { color:#DE1826;}
 .negative-left-margin-2 { margin-left:-3px; }
+.std-left-margin { margin-left: 20px; }
 .bottom-padding-10 { padding-bottom:10px; }
 .right-padding-10 { padding-right:10px; }
 .no-margin { margin:0; }
@@ -111,6 +112,14 @@ li { display:block; }
 /* --------------------------------------------------------------------------------------------------- */
 /* Special classes */
 /* --------------------------------------------------------------------------------------------------- */
+.title { background-color:#f0f0ed; padding:5px 20px 5px 20px;}
+.bottombar { color:#0c3546; background-color:#f0f0ed; padding:20px; clear:both; }
+.bottombar a { text-decoration:none; border-bottom:1px dotted; color:#0c3546; }
+.navmenu { background-color:#2e505d; color:white; padding:15px;}
+.navmenu ul { margin-top:10px; list-style-type:none; }
+.navmenu ul li { display:block; padding:5px 0; font-size:1em;}
+.navmenu ul li a { color:white; text-decoration:none; }
+.content { background-color:#E0E0E0; }
 .dashboard-list { width:73%; }
 .dashboard-list li { text-align:justify; text-justify:newspaper; padding:15px; cursor:pointer; }
 .hover-dashboard { background-color:#2e505d/*EDEB87*/; -moz-border-radius:5px; border-radius: 5px; color:white;}
@@ -121,18 +130,14 @@ li { display:block; }
 /* --------------------------------------------------------------------------------------------------- */
 /* Standard IDs */
 /* --------------------------------------------------------------------------------------------------- */
-#title { background-color:white; padding:20px; -moz-border-radius:3px 3px 0 0; border-radius:3px 3px 0 0; }
+#title { background-color:white; padding:20px;}
 #infobar { background-color:#f0f0ed; padding:10px 20px; }
-#infobar a { text-decoration:none; background-color:#dededc; padding:4px 9px; -moz-border-radius:3px; border-radius:3px; color:#0c3546; }
+#infobar a { text-decoration:none; background-color:#dededc; padding:4px 9px; color:#0c3546; }
 #infobar a:hover {text-decoration:none; background-color:#b0b0af; transition:.2s linear;-moz-transition:.2s linear;-webkit-transition:.2s linear; }
 #category-description { color:#0c3546; font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; font-size:1.0em; font-weight:600; margin-left:10px; letter-spacing:0.4; }
 #content-wrapper { background-color:#2e505d; }
-#navmenu { background-color:#2e505d; color:white; padding:30px 0;}
-#navmenu ul { margin:30px 0 0 0; padding:0; list-style-type:none; }
-#navmenu ul li { display:block; padding:5px 0; font-size:1em;}
-#navmenu ul li a { color:white; text-decoration:none; }
-#content { background-color:white; }
-#bottombar { color:#0c3546; background-color:#f0f0ed; padding:20px; -moz-border-radius:0 0 3px 3px; border-radius:0 0 3px 3px; clear:both; }
+/*#content { background-color:white; }*/
+#bottombar { color:#0c3546; background-color:#f0f0ed; padding:20px; clear:both; }
 #bottombar a { text-decoration:none; border-bottom:1px dotted; color:#0c3546; }
 #template-list { font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; font-size:0.8em; text-align:justify; text-justify:newspaper; line-height:1.4em; }
 #template-list a { text-decoration:none; background-color:#dededc; padding:4px 9px; -moz-border-radius:3px; border-radius:3px; color:#0c3546; }

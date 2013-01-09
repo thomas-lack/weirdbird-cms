@@ -4,6 +4,8 @@ class Controller_CMS_Main extends Controller_Template
 {
 	public $template = 'cms/mainlayout';
 	
+	public function action_index() {}
+
 	public function before() 
 	{
         // Load the user information
@@ -52,13 +54,4 @@ class Controller_CMS_Main extends Controller_Template
         
 		parent::after();
     }
-	
-	public function action_index()
-	{
-		// start cms screen presentation with dashboard as standard
-		$this->template->content = View::factory('cms/dashboard/template')
-			->bind('username', $this->template->username)
-			->bind('category', $this->template->category);
-	}
-
 }
