@@ -30,6 +30,15 @@ $system = 'system';
 $siteTemplates = 'site-templates';
 
 /**
+ * The directory in which the user uploads go
+ */
+$userUploads = 'user-upload';
+$userUploadsImages = 'images';
+$userUploadsImageThumbnails = 'thumbs';
+$userUploadsPdf	= 'pdf';
+$userUploadsMisc = 'misc';
+
+/**
  * The default extension of resource files. If you change this, all resources
  * must be renamed to use the new extension.
  *
@@ -59,6 +68,14 @@ error_reporting(E_ALL | E_STRICT);
  * @see  http://kohanaframework.org/guide/using.configuration
  */
 
+// Define the web paths
+define('SITETEMPLATEPATH', $siteTemplates);
+define('UPLOADDIR', $userUploads);
+define('UPLOADIMAGEDIR', $userUploadsImages);
+define('UPLOADPDFDIR', $userUploadsPdf);
+define('UPLOADMISCDIR', $userUploadsMisc);
+define('IMAGETHUMBSDIR', $userUploadsImageThumbnails);
+
 // Set the full path to the docroot
 define('DOCROOT', realpath(dirname(__FILE__)).DIRECTORY_SEPARATOR);
 
@@ -74,14 +91,19 @@ if ( ! is_dir($modules) AND is_dir(DOCROOT.$modules))
 if ( ! is_dir($system) AND is_dir(DOCROOT.$system))
 	$system = DOCROOT.$system;
 
+// Make the user uploads relative to the docroot, for symlink'd index.php
+if ( ! is_dir($userUploads) AND is_dir(DOCROOT.$userUploads))
+	$userUploads = DOCROOT.$userUploads;
+
 // Define the absolute paths for configured directories
 define('APPPATH', realpath($application).DIRECTORY_SEPARATOR);
 define('MODPATH', realpath($modules).DIRECTORY_SEPARATOR);
 define('SYSPATH', realpath($system).DIRECTORY_SEPARATOR);
-define('SITETEMPLATEPATH', $siteTemplates);
+define('UPLOADPATH', realpath($userUploads).DIRECTORY_SEPARATOR);
+
 
 // Clean up the configuration vars
-unset($application, $modules, $system, $siteTemplates);
+unset($application, $modules, $system, $siteTemplates, $userUploads);
 
 if (file_exists('install'.EXT))
 {

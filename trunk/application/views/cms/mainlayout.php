@@ -13,52 +13,6 @@
 	?>
 </head>
 <body>
-	<? /*
-	<!-- title bar  -->
-	<div>
-		<div id="title">
-			<img class="left" src="/assets/images/logo.png"/>
-			<span class="sans-serif headline"><? echo $title; ?></span>
-		</div>
-	</div>
-	<!-- end title bar -->
-	
-	<!-- info bar -->
-	<div id="infobar">
-		<a href="#" ajax="previous" class="icon semi-big icon-space-top">&lt;</a>
-		<a href="#" ajax="next" class="negative-left-margin-2 icon semi-big icon-space-top">=</a>
-		<a href="#" ajax="dashboard" class="sans-serif small">Home</a>
-		<span id="category-description">Lorem Ipsum dolor sit amet</span>
-	</div>
-	<!-- end info bar -->
-	
-	<!-- nav & content -->
-	<div class="colmask leftmenu">
-		<div class="colleft">
-			<div id="content" class="col1 sans-serif normal dark-gray normal-lh"> <!-- right -->
-				<? echo $content; ?>
-			</div>
-			<div class="col2" id="navmenu"> <!-- left -->
-				<span class="sans-serif uppercase very-small gray">navigate to:</span>
-				<ul class="sans-serif">
-					<li><a href="#" ajax="dashboard" class="big bold">Dashboard<span class="icon right very-big">=</span></a></li>
-					<li><a href="#" ajax="templates">Templates</a></li>
-					<li><a href="#" ajax="structures">Structures</a></li>
-					<li><a href="#" ajax="articles">Articles</a></li>
-					<li><a href="#" ajax="filemanager">File Manager</a></li>
-					<li><a href="#" ajax="user">User</a></li>
-					<li><a href="#" ajax="system">System</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
-	<!-- end nav & content -->
-	
-	<!-- -->
-	<div id="bottombar">
-		<span class="sans-serif small">Created 2012, 2013 by <a href="http://twitter.com/thomaslack">Thomas Lack</a></span>
-	</div>
-	<!-- -->
-	*/ ?>
+	<!-- content is created via extjs viewport in weirdbird.js -->
 </body>
 </html>
