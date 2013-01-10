@@ -24,7 +24,6 @@ class Controller_CMS_Main extends Controller_Template
             $this->template->title   	= 'weirdbird cms';
 			$this->template->content 	= '';
             $this->template->username	= $user->username;
-			$this->template->category	= 'Dashboard';
 			$this->template->styles 	= array();
             $this->template->scripts	= array();
         }

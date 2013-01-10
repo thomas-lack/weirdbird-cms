@@ -987,33 +987,178 @@ var cms = {
 	*/
 	populateFilesGrid: function() {
 		if (this.debug) console.log('populating files grid');
+		
+		Ext.define('File', {
+			extend: 'Ext.data.Model',
+			fields: [
+				{name:'id', type:'int'}, 
+				{name:'active', type:'bool'}, 
+				'user_id', 'filename', 'type', 'description', 'link',
+				{name:'creationdate', type:'date'}
+			]
+		});
+
+		Ext.create('Ext.data.Store', {
+		    storeId: 'filesStore',
+		    model: 'File',
+		    lastOperation: '',
+		    proxy: {
+		        type: 'ajax',
+		       	api: {
+		       		read: 'cms/filemanager/read',
+		       		create : 'cms/filemanager/create',
+		            update : 'cms/filemanager/update',
+		            destroy : 'cms/filemanager/destroy'
+		       	},
+		        reader: {
+		            type: 'json',
+		            successProperty: 'success'
+		        },
+		        writer: {
+		        	type: 'json'
+		        }
+		    },
+		    autoLoad: true,
+		    autoSync: true,
+		    listeners: {
+		    	load: function() {
+		    		// after loading select the first entry to populate the 2nd form panel
+		    		//Ext.getCmp('filesGrid').getSelectionModel().select(0);
+		    	},
+		    	write: function(store, op) {
+		    		// if last operation was "create" and now we have an update,
+		    		// we want to reload the store afterwards to get the objects new id
+		    		var s = Ext.getStore('filesStore');
+		    		if (s.lastOperation == 'create'
+		    			&& op.action == 'update') {
+		    			s.load();
+		    		}
+		    		
+		    		s.lastOperation = op.action;
+		    	}
+		    }
+		});
+
+		var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+	        clicksToMoveEditor: 1,
+	        autoCancel: false
+	    });
+
+		var previewTpl = new Ext.XTemplate(
+			'<tpl if="this.isImage(type)">',
+		    '<img src="{link}" />',
+		    '<tpl else>',
+		    '<a href="{link}" target="new" style="text-decoration:none; border-bottom:1px dotted; color:#0c3546;">',
+		    '<span class="icon very-big">E</span> open file</a>',
+		    '</tpl>',
+		    {
+		    	isImage: function(type) {
+		    		return (type.indexOf('image') !== -1);
+		    	}
+		    }
+		);
+
 		Ext.create('Ext.grid.Panel', {
 			id: 'filesGrid',
 		    title: 'Manage image and document (pdf) files',
-		    //store: Ext.getStore('templatesStore'),
-		    /*columns: ['Active?', 'Type', 'Description', 'Filename'],
+		    bodyCls: 'content',
+		    border: false,
+		    store: Ext.getStore('filesStore'),
+		    plugins: [rowEditing],
+		 	columns: [
+		   			{ text: 'Active?', dataIndex: 'active', width: 50, xtype: 'checkcolumn',
+			        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
+			       	},
+			        { text: 'Creation', dataIndex: 'creationdate', xtype:'datecolumn', format: 'd.m.Y',
+			    		editor: {allowBlank:false, xtype:'datefield', format: 'd.m.Y'} },
+			        { text: 'Uploader', dataIndex: 'user_id' },
+			        { text: 'Filename', dataIndex: 'filename', width: 120 },
+			        { text: 'Type', dataIndex: 'type', width: 90 },
+			        { text: 'Description', dataIndex: 'description', flex: 1, editor:{ allowBlank:true } },
+			        { text: 'Preview', xtype: 'templatecolumn', width: 70, tpl: previewTpl }
+			],
 		    tbar: [{
-		    	text: '<span class="icon very-big">@</span> Add file',
+		    	text: '<span class="icon very-big">n</span> Upload file',
 		    	handler: function() {
-		    		console.log('Add file');
+		    		Ext.create('Ext.window.Window', {
+					    id: 'uploadWindow',
+					    title: 'Upload file',
+					    width: 500,
+					    
+					    items: [{
+					    	xtype: 'form',
+					    	id: 'file-form',
+					    	border: false,
+					    	bodyCls: 'content',
+					    	margin: 10,
+					    	defaults: {
+						    	anchor: '100%',
+						    	allowBlank: false,
+						    	msgTarget: 'side',
+						    	labelWidth: 75
+						    },
+						    items: [{  
+						    	xtype: 'textfield',
+						    	name: 'form-description',
+						    	fieldLabel: 'Description'
+						    },{
+						    	xtype: 'filefield',
+						    	id: 'form-file',
+						    	emptyText: 'Select an image or pdf document...',
+						    	fieldLabel: 'File',
+						    	buttonText: '<span class="icon very-big">&Oslash;</span>'
+					    	}]
+					    }],
+
+					    buttons: [{
+					    	text: 'Save',
+					    	handler: function() {
+					    		var form = Ext.getCmp('file-form').getForm(); //this.up('form').getForm();
+					    		if(form.isValid()){
+					    			form.submit({
+					    				url: 'cms/filemanager/create',
+					    				waitMsg: 'Uploading file...',
+					    				success: function(fp, o) {
+					    					Ext.getCmp('uploadWindow').close();
+					    					Ext.getStore('filesStore').reload();
+					    				}
+					    			});
+					    		}
+					    	}
+					    },{
+					    	text: 'Reset',
+					    	handler: function() {
+					    		Ext.getCmp('file-form').getForm().reset();
+					    	}
+					    }]
+					}).show();
 		    	}
 		    },'-',{
-		    	text: '<span class="icon very-big">A</span> Delete file',
+		    	text: '<span class="icon very-big">m</span> Delete file',
 		    	disabled: true,
 		    	itemId: 'deleteFile',
 		    	handler: function() {
-		    		console.log('delete file');
+		    		Ext.Msg.show({
+		    			title: 'Really delete file?',
+		    			msg: 'Do you really want to delete the selected file?',
+		    			buttons: Ext.Msg.YESNO,
+		    			icon: Ext.Msg.WARNING,
+		    			fn: function(btn) {
+		    				if (btn == 'yes') {
+		    					var record = Ext.getCmp('filesGrid').getSelectionModel().getSelection()[0];
+		    					Ext.getStore('filesStore').remove(record);
+		    				}
+		    			}
+		    		});
 		    	}
-		    }]*/
+		    }]
 		});
 	
 		// make "delete file" button clickable if a row is selected
-		/*
 		Ext.getCmp('filesGrid').getSelectionModel().on('selectionchange', function(selModel, selections){
 	        Ext.getCmp('filesGrid').down('#deleteFile').setDisabled(selections.length === 0);
 	    });
-		*/
-
+		
 		cms.fillContentPanel(Ext.getCmp('filesGrid'));
 	}
 }
