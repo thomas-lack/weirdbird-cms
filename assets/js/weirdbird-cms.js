@@ -442,7 +442,7 @@ var cms = {
 			// left gridpanel
 			{
 				columnWidth: 0.60,
-				height: '100%',
+				height: Ext.getCmp('navmenu').getHeight(),
 				xtype: 'gridpanel',
 				id: 'categoriesGrid',
 				title: 'Categories',
@@ -628,6 +628,20 @@ var cms = {
 		if (typeof Ext.getCmp('articleFieldContent') != 'undefined')
 			Ext.getCmp('articleFieldContent').destroy();
 
+		// begin loading image data
+		Ext.create('Ext.data.Store', {
+			storeId: 'imageStore',
+			fields: ['id', 'description', 'link', 'thumb', 'filename'],
+			proxy: {
+				type: 'ajax',
+				url: 'cms/file/images',
+				reader: {
+					type: 'json'
+				}
+			},
+			autoLoad: true
+		});
+
 		// define a new model, because the standard treeview model does not contain the mapping_id field
 		Ext.define('ArticleNode', {
 			extend: 'Ext.data.Model',
@@ -669,6 +683,7 @@ var cms = {
 			},
 			items: [{
 				columnWidth: 0.31,
+				height: Ext.getCmp('navmenu').getHeight() - 25,
 				xtype: 'treepanel',
 				id: 'articlesTreePanel',
 				title: 'Category/Column selection',
@@ -814,18 +829,84 @@ var cms = {
 					xtype: 'tinymce_textarea',
 					id: 'articleFieldContent',
 					width: 580,
-					height: 350,
+					height: cms.calculateEditArticleHeight(),
 					resizable: false, //true
 					tinyMCEConfig: {
 						theme_advanced_row_height: 27,
                         delta_height: 0,
                         schema: 'html5',
-                        plugins : "autolink,lists,pagebreak,style,table,advhr,advimage,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
+                        plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
                         theme_advanced_toolbar_align : "left",
                         theme_advanced_buttons1 : 'undo,redo,|,bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,formatselect', //styleselect,fontselect,fontsizeselect
-                        theme_advanced_buttons2 : 'table,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,image,|,code,preview,fullscreen',
+                        theme_advanced_buttons2 : 'table,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,unlink,wbimage,|,code,preview,fullscreen',
                         content_css: cssdata[0].path, //TODO: add more than one css file
-                        theme_advanced_containers_default_align : 'left'
+                        theme_advanced_containers_default_align : 'left',
+                        setup: function(editor) {
+                        	// Add a custom button
+                        	editor.addButton('wbimage', {
+                        		title: 'Image',
+                        		image: 'assets/images/icons_48x48/Picture.png',//'assets/images/image.png',
+                        		onclick: function() {
+                        			Ext.create('Ext.window.Window', {
+									    id: 'selectImageWindow',
+									    title: 'Select image',
+									    width: 500,
+									    
+									    items: [{
+									    	xtype: 'dataview',
+									    	id: 'selectImageDataView',
+									    	store: Ext.getStore('imageStore'),
+									    	tpl: Ext.create('Ext.XTemplate',
+									    		'<tpl for=".">',
+									    		'<div class="imageselect">',
+									    		'<img src="{thumb}" />',
+									    		'<p><span class="small light-blue">{shortFilename}</span>',
+									    		'<br/><span class="small dark-gray">{shortDescription}</span></p>',
+									    		'</div>',
+									    		'</tpl>',
+									    		'<div class="x-clear"></div>'
+									    	),
+									    	itemSelector: 'div.imageselect',
+									    	selectedItemCls: 'imageselect-hover',
+									    	trackOver: true,
+									    	overItemCls: 'x-item-over',
+									    	emptyText: 'No images available',
+									    	multiselect: false,
+									    	autoScroll: true,
+									    	maxHeight: 450,
+									    	prepareData: function(data) {
+									    		Ext.apply(data, {
+									    			shortFilename: Ext.util.Format.ellipsis(data.filename, 15),
+									    			shortDescription: Ext.util.Format.ellipsis(data.description, 32)
+									    		});
+									    		return data;
+									    	}
+									    }],
+
+									    buttons: [{
+									    	text: 'Select image',
+									    	handler: function() {
+									    		var records = Ext.getCmp('selectImageDataView').getSelectionModel().getSelection();
+									    		if (records.length === 0) {
+									    			Ext.MessageBox.alert('Notification', 'No image was selected.');
+									    		}
+									    		else {
+									    			var record = records[0];
+									    			editor.focus();
+										    		editor.selection.setContent('<img src="' + record.get('link') + '" alt="' + record.get('description') + '"/>');
+										    		Ext.getCmp('selectImageWindow').close();
+									    		}
+									    	}
+									    },{
+									    	text: 'Cancel',
+									    	handler: function() {
+									    		Ext.getCmp('selectImageWindow').close();
+									    	}
+									    }]
+									}).show();
+                        		}
+                        	});
+                        }
 					},
 					listeners: {
 						change: function() { 
@@ -842,6 +923,14 @@ var cms = {
 		});
 
 		cms.fillContentPanel(Ext.getCmp('articlesParentPanel'));	
+	},
+
+	/**
+	 * Helper method to calculate the optimum height of the editor textarea
+	 */
+	calculateEditArticleHeight: function() {
+		var bestHeight = Ext.getCmp('navmenu').getHeight() - 261;
+		return ((bestHeight < 350) ? 350 : bestHeight);
 	},
 
 	updateArticlesPanel: function() {
@@ -1113,7 +1202,7 @@ var cms = {
 					    buttons: [{
 					    	text: 'Save',
 					    	handler: function() {
-					    		var form = Ext.getCmp('file-form').getForm(); //this.up('form').getForm();
+					    		var form = Ext.getCmp('file-form').getForm();
 					    		if(form.isValid()){
 					    			form.submit({
 					    				url: 'cms/filemanager/create',
