@@ -122,10 +122,12 @@ li { display:block; }
 .content { background-color:#E0E0E0; }
 .dashboard-list { width:73%; }
 .dashboard-list li { text-align:justify; text-justify:newspaper; padding:15px; cursor:pointer; }
-.hover-dashboard { background-color:#2e505d/*EDEB87*/; -moz-border-radius:5px; border-radius: 5px; color:white;}
+.hover-dashboard { background-color:#2e505d; -moz-border-radius:5px; border-radius: 5px; color:white;}
 .unhover-dashboard { background-color: white; color:#0c3546; -moz-border-radius:5px; border-radius: 5px; }
 .tbl-fullwidth { width:100%; border-color:black;}
 .tbl-fullwidth tr td { vertical-align:top;padding-right:20px;}
+.imageselect { width:120px; height:100px; margin:10px; border:1px solid #99BBE8; text-align:center; border:1px solid #E0E0E0; float:left; padding:5px;}
+.imageselect-hover { background-color:#eff5fb; border:1px solid #99bbe8; padding:5px;}
 
 /* --------------------------------------------------------------------------------------------------- */
 /* Standard IDs */
