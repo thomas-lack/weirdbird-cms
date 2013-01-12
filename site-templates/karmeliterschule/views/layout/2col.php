@@ -5,6 +5,11 @@
 *	Template: 	Karmeliterschule
 *	Purpose:	2 column (Main) Layout
 *
+*	Variables the cms backend has to deliver:
+*	$currentStructure 		string 		Name of the structure currently in use
+* 	$structures				array 		Array of strings containing all structures
+*	$columnContent			array 		Array of strings containing the column html's
+*
 ************************************************************************************/
 ?>
 
@@ -38,9 +43,6 @@
 <body class="bodybg">
 <div id="page_margins">
 	<div id="page">
-		<div id="javascriptWarning">
-			<p>Bitte beachten Sie, dass Javascript aktiviert sein muss, um die volle Funktionalit&auml;t dieser Webseite zu garantieren!</p>
-		</div>
 		<div id="header">
 			<div id="header_logo"></div>
 			
@@ -49,8 +51,8 @@
 				<a class="skip" href="#navigation" title="skip link">Skip to the navigation</a><span class="hideme">.</span>
 				<a class="skip" href="#content" title="skip link">Skip to the content</a><span class="hideme">.</span>
 				<!-- end: skip link navigation -->
-				<a href="/show:kontakt">Kontakt</a> | 
-				<a href="impressum">Impressum</a></span> 
+				<a href="/Kontakt">Kontakt</a> | 
+				<a href="/Impressum">Impressum</a></span> 
 			</div>
 		</div>
 		<!-- begin: main navigation #nav -->
@@ -60,9 +62,13 @@
 				<ul>
 					<? 
 						foreach($structures as $s) {
-							// TODO: mark current rubrik as <li id="current">
-							// TODO: add links
-							echo '<li><a href="#">' . $s->title . '</a></li>';
+							// legal info shall not be printend in the main navigation bar
+							if ($s->title != 'Impressum')
+								echo '<li'
+									. (($s->title == $currentStructure) ? ' id="current"' : '') 
+									.'><a href="/' . $s->title . '">' 
+									. $s->title 
+									. '</a></li>';
 						}
 					?>
 				</ul>
@@ -75,7 +81,10 @@
 			<div id="col1">
 				<div id="col1_content" class="clearfix"> <a id="content" name="content"></a>
 					
-					
+					<? 
+						if (isset($columnContent) && sizeof($columnContent) > 0)
+							echo $columnContent[0]; 
+					?>
 				
 				</div>
 			</div>
@@ -85,7 +94,10 @@
 			<div id="col3">
 				<div id="col3_content" class="clearfix">
 					
-					
+					<?
+						if (isset($columnContent) && sizeof($columnContent) > 1)
+							echo $columnContent[1]; 
+					?>
 	
 				</div>
 				<div id="ie_clearing">&nbsp;</div>
@@ -104,6 +116,9 @@
 		</div>
 		<!-- end: #footer -->
 	</div>
+</div>
+<div id="javascriptWarning">
+	<p>Bitte beachten Sie, dass Javascript aktiviert sein muss, um die volle Funktionalit&auml;t dieser Webseite zu garantieren!</p>
 </div>
 </body>
 </html>

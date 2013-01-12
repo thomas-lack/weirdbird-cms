@@ -120,8 +120,8 @@
   	height: 160px;
   	width: 901px;
   }
-  
- #topnav { color: #aaa; background: transparent; }
+ 
+  #topnav { color: #aaa; background: transparent; }
 
   /* (en) adjustment of main navigation */
   /* (de) Anpassung der Hauptnavigation */
@@ -166,17 +166,40 @@
   	line-height:1.1em;
   	border: 0px solid #B8B8B8;
   }
+  /* add alternativ colors to table rows */
+  tr:nth-child(odd) { background-color: #DCDCDC; }
+  tr:nth-child(even) { background-color:#FFF;}
 
   #karmi
   {
   	background-image: url(../../images/karmipost_bubble.gif);
   	background-repeat:no-repeat;
-  	background-position: 170px 170px;
+  	background-position: 170px 70px;
+    height:750px;
+    position:relative;
   	/*width: 180px;
   	height: 628px;*/ 
   }
-   
-    
+
+  #karmiWelcome
+  {
+    position:absolute;
+    top:83px;
+    left:182px;
+    height:267px;
+    width:137px;
+    overflow:hidden;
+    padding:10px;
+  }
+
+  .pdficon { 
+    background-image: url(../../images/pdf_button.jpg);
+    background-repeat: no-repeat;
+    width:170px;
+    margin-bottom:15px;
+    padding-left:20px;
+  }
+
   /**
   * Definitionen fuer Schulprogramm und mitSprache Texte
   */
@@ -253,6 +276,7 @@
     padding: 15px;
     border-top: 5px #efefef solid;
   }
+
 
   /*------------------------------------------------------------------------------------------------------*/
 

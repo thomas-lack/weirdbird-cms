@@ -155,12 +155,20 @@ class Controller_CMS_FileManager extends Controller_CMS_Main
 	{
 		list($srcWidth, $srcHeight, $type) = getimagesize($imgSrc);
 		
-		// keep aspect ratio for new image
-		$ratio = $srcWidth / $srcHeight;
-		if ($maxWidth/$maxHeight > $ratio)
-			$maxWidth = floor($maxHeight * $ratio);
+		// keep aspect ratio for new image if necessary
+		if ($srcWidth <= $maxWidth && $srcHeight <= $maxHeight)
+		{
+			$maxWidth = $srcWidth;
+			$maxHeight = $srcHeight;
+		}
 		else
-			$maxHeight = floor($maxWidth / $ratio);
+		{
+			$ratio = $srcWidth / $srcHeight;
+			if ($maxWidth/$maxHeight > $ratio)
+				$maxWidth = floor($maxHeight * $ratio);
+			else
+				$maxHeight = floor($maxWidth / $ratio);	
+		}
 		
 		// create temporary jpg image
 		switch ($type)

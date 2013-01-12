@@ -1,11 +1,13 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Frontend_Structure extends Controller_Template {
+class Controller_Frontend_Structure extends Controller_Frontend_Main {
 	
-	public $template = 'cms/mainlayout';
+	public function before()
+	{
+		// save a reference to the current structure
+		$this->structureRef = $this->request->param('structure');
 
-	public function action_index(){
-		//from within a controller, normally Request::instance()->param('key_name');
-		var_dump($this->request->param('structure'));
+		// and call the standard loader for the site afterwards
+		parent::before();
 	}
 }

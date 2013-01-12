@@ -839,7 +839,7 @@ var cms = {
                         theme_advanced_toolbar_align : "left",
                         theme_advanced_buttons1 : 'undo,redo,|,bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,formatselect', //styleselect,fontselect,fontsizeselect
                         theme_advanced_buttons2 : 'table,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,unlink,wbimage,|,code,preview,fullscreen',
-                        content_css: cssdata[0].path, //TODO: add more than one css file
+                        content_css: ((cssdata.length > 0) ? cssdata[0].path : null), //TODO: add more than one css file
                         theme_advanced_containers_default_align : 'left',
                         setup: function(editor) {
                         	// Add a custom button
