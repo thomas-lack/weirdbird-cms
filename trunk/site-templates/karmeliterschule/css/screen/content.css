@@ -83,7 +83,7 @@
   /* ### text formatting | Textauszeichnung ### */
 
   cite { font-style:italic }
-  blockquote { margin: 1em; font-family:'YanoneKaffeesatzBold',times,serif; color:#000; font-size:2em; float:left;}
+  blockquote { margin: 1em; font-family:'YanoneKaffeesatzBold',times,serif; color:#000; font-size:2em; float:right;}
 
   strong,b { font-weight: bold }
   em,i { font-style:italic }

@@ -73,9 +73,9 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 		foreach(ORM::factory('module')->find_all() as $m) $m->delete();
 		foreach(ORM::factory('loadfile')->find_all() as $l) $l->delete();
 		// remove all article <-> structure_column_mappings mappings
-		foreach(ORM::factory('structurecolumnmapping')->find_all() as $m) {
-			$m->structure_column_mapping_id = null;
-			$m->save();
+		foreach(ORM::factory('article')->find_all() as $a) {
+			$a->structure_column_mapping_id = null;
+			$a->save();
 		}
 		// remove alle structure <-> column mappings
 		foreach(ORM::factory('structurecolumnmapping')->find_all() as $s) $s->delete();

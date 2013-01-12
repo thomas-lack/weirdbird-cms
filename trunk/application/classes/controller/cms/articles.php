@@ -34,7 +34,7 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		$id = $this->request->param('id');
 		
 		$a = ORM::factory('article', $id);
-		$a->active = ($this->request->post('active') === true) ? 1 : 0;
+		$a->active = ($this->request->post('active') == 'true') ? 1 : 0;
 		$a->title = $this->request->post('title');
 		$a->description = $this->request->post('description');
 		$a->content = $this->request->post('content');
