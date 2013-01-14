@@ -48,6 +48,15 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 	{
 		$d = json_decode($this->request->body());
 		
+		// the structure title 'mail' is not allowed, since it is used for mailing 
+		// functionality of the cms AND the website 
+		// (for reference see 'application/classes/controller/mail.php')
+		if ($d->title == 'mail')
+		{
+			echo '{"success":"false", "message":"The title is not allowed."}';
+			die();
+		}
+
 		// UPDATE query
 		$structure = ORM::factory('structure', $d->id);
 		$structure->active = ($d->active) ? 1 : 0;

@@ -1,0 +1,57 @@
+html{
+	background:url('../images/login-bg3.jpg') no-repeat center center;
+	min-height:100%;
+	background-size:cover;
+}
+
+body { min-height:100%; }
+
+h5 {
+	font-family:Calibri,Verdana,Arial,Times,Serif;
+	color:white;
+}
+
+input{
+	background-color:white;
+	width:240px;
+	padding:10px;
+	font-family: Calibri,Verdana,Arial,Times,Serif;
+	margin:5px 0;
+	border:none;
+	border:1px solid white;
+}
+input[type=submit]{
+	background-color:#2e505d;
+	color:white;
+	width:60px;
+	border:none;
+	position:absolute;
+	left:200px;
+	margin-top:7px;
+}
+
+.error {
+    color: red;
+}
+.message {
+    padding: 10px;
+    background-color: yellow;
+    color:black;
+}
+
+a {
+	color:white;
+	font-family:Calibri,Verdana,Arial,Times,Serif;
+	font-size:12px;
+}
+
+#centerBox {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -150px;
+  margin-left: -130px;
+  /*border:1px solid white;*/
+  width:260px;
+  height:300px;
+}

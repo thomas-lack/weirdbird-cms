@@ -86,7 +86,6 @@ class Controller_CMS_User extends Controller_Template {
         Auth::instance()->logout();
          
         // Redirect to login page
-        Request::current()->redirect('cms');
+        HTTP::redirect('cms');
     }
- 
 }
