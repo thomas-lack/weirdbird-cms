@@ -129,6 +129,13 @@ Route::set('cms', 'cms(/<controller>(/<action>(/<id>)))')
 		'action'		=> 'index',
 	));
 
+Route::set('mail', 'mail(/<action>(/<id>))')
+	->defaults(array(
+		'directory'		=> '',
+		'controller'	=> 'mail',
+		'action'		=> 'index'
+	));
+
 // route to load template structures
 Route::set('tplstruct', '<structure>(/<id>)',
 	array(

@@ -1,24 +1,16 @@
-<h2>Login</h2>
-<? if ($message) : ?>
-    <h3 class="message">
-        <?= $message; ?>
-    </h3>
-<? endif; ?>
- 
 <?= Form::open('cms/user/login'); ?>
  
-<?= Form::label('username', 'Username'); ?>
 <?= Form::input('username', HTML::chars(Arr::get($_POST, 'username'))); ?>
  
-<?= Form::label('password', 'Password'); ?>
 <?= Form::password('password'); ?>
- 
-<?= Form::label('remember', 'Remember Me'); ?>
-<?= Form::checkbox('remember'); ?>
- 
-<p>(Remember Me keeps you logged in for 2 weeks)</p>
- 
-<?= Form::submit('login', 'Login'); ?>
+
+<p><?= Form::submit('login', 'Login'); ?></p>
 <?= Form::close(); ?>
  
-<p>Or <?= HTML::anchor('cms/user/create', 'create a new account'); ?></p>
+<? if ($message) : ?>
+    <h5 class="message">
+        <?= $message; ?>
+    </h5>
+<? endif; ?>
+
+<p><?= HTML::anchor('cms/user/rest', 'Forgot your password?'); ?></p>

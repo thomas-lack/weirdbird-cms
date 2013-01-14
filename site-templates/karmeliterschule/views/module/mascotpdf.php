@@ -6,7 +6,13 @@
 *	Purpose:	School mascot with speech bubble Module
 *
 *	Variables the cms backend has to deliver:
-*	none (via ORM::factory() the template view can get all information it needs)
+* 	$articles				array 		Array of ORM objects representing a row in the 
+*										'articles' database table (possibly null if no 
+*										articles are allowed for this column)
+*	$module 				ORM object 	The current module row of the according db table
+*	$mapping				ORM object 	Table row of the structure <-> module/column mapping
+*	$column 				int 		Number of the column this view is rendered to
+* 	$structureId 			int 		ID of the current structure
 *
 ************************************************************************************/
 

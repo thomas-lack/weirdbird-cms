@@ -109,8 +109,8 @@
 		<!-- end: #main -->
 		<!-- begin: #footer -->
 		<div id="footer">
-			<a href="kontakt">Kontakt</a> &nbsp; 
-			<a href="impressum">Impressum</a> &nbsp; 
+			<a href="Kontakt">Kontakt</a> &nbsp; 
+			<a href="Impressum">Impressum</a> &nbsp; 
 			<a href="http://www.stadtschulamt.stadt-frankfurt.de/">Stadtschulamt</a> &nbsp;
 			<a href="http://dms.bildung.hessen.de/news/index.html">Bildungsserver Hessen</a> &nbsp;
 		</div>

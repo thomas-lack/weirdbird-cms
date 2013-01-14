@@ -8,20 +8,14 @@
 <meta name="copyright" content="Copyright 2011 Thomas Lack." />
 <meta name="language" content="de-DE" />
 <title>WeirdBird cms login</title>
-<style type="text/css">
-.error {
-    color: red;
-}
-.message {
-    padding: 10px;
-    background-color: yellow;
-}
-</style>
+<link href="/assets/css/cms_login_screen.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-    <h1>WeirdBird cms</h1>
-    <div id="content">
-        <?= $content; ?>
-    </div>
+    <div id="centerBox">
+		<h5>weirdbird cms // login</h5>
+		<div id="content">
+		    <?= $content; ?>
+		</div>
+	</div>
 </body>
 </html>
