@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Templates extends Controller_CMS_Main
+class Controller_CMS_Templates extends Controller_CMS_Data
 {
 	public $siteTemplatesFolder = SITETEMPLATEPATH; // as defined in index.php
 	
@@ -49,8 +49,12 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 			$ret .= json_encode($t);
 		}
 
-		echo $ret . ']';
-		die();
+		$ret .= ']';
+		//die();
+
+		$this->template->encoding = 'standard';	// since we are building a json string here, double
+												// JSON encoding would make no sense
+		$this->template->result = $ret;
 	}
 
 	public function action_read()
@@ -152,8 +156,7 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 			}
 		}
 
-		echo '{"import":"success"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 	
 	/**
@@ -174,8 +177,7 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 			$t->save();
 		}
 
-		echo '{"save":"success"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 
 	/**
@@ -183,17 +185,21 @@ class Controller_CMS_Templates extends Controller_CMS_Main
 	*/
 	public function action_activelayouts()
 	{
-		$template = ORM::factory('template')->where('active','=','1')->find();
+		$template = ORM::factory('template')
+						->where('active','=','1')
+						->find();
 		
-		echo json_encode(
-			array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
-				ORM::factory('layout')->where('template_id','=',$template->id)->find_all()->as_array()		
-			)
+		$result = array_map(
+			create_function(
+				'$obj',
+				'return $obj->as_array();'
+			),
+			ORM::factory('layout')
+				->where('template_id','=',$template->id)
+				->find_all()
+				->as_array()		
 		);
-		die();
+		
+		$this->template->result = $result;
 	}
 }

@@ -24,14 +24,22 @@ class Controller_Mail extends Controller
 			. 'This message was sent by a standard contact formular of the following website:\n'
 			. 'http://' . $_SERVER['HTTP_HOST'];
 
-		// TODO: standard email auslesen und einfuegen
-		$receiver = 'post.thomas.lack@gmail.com';
+		// get standard email as posted in the cms
+		$receiver = ORM::factory('system_setting')
+						->where('fieldname','=','contactemail')
+						->find();
 		$about = '[wb cms] Contact message from ' . $_SERVER['HTTP_HOST'];
 		
 		// now fly little bird (\(°v°)/)
-		mail($receiver, $about, $message, 'From: '.$sender);
+		try
+		{
+			mail($receiver->content, $about, $message, 'From: '.$sender);	
+		}
+		catch(Exception $e)
+		{
+			echo '{"success":"false","message":"' . $e->getMessage() . '"}';
+		}
 
 		echo '{"success":"true"}';
-		die();
 	}
 }

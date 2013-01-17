@@ -49,11 +49,23 @@ class Controller_Frontend_Main extends Controller_Template {
 
 			// get the content for all the columns
 			$columnContent = array();
-			for ($i=0; $i < $layout->columns; $i++)
+			if ($layout == null || $layout->columns == null)
 			{
-				$columnContent[] = $this->generateColumnContent($i, $structureId);
+				// provide standard fields containing error messages
+				for ($i=0; $i < 5; $i++)
+				{
+					$error = 'No module defined for this data field.';
+					$columnContent[] = (string) View::factory('frontend/error')
+													->bind('error', $error);
+				}
 			}
-
+			else {
+				for ($i=0; $i < $layout->columns; $i++)
+				{
+					$columnContent[] = $this->generateColumnContent($i, $structureId);
+				}	
+			}
+			
 			// do the kohana magic
 			parent::before();
 

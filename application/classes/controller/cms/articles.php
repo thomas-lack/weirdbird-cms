@@ -1,23 +1,22 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Articles extends Controller_CMS_Main 
+class Controller_CMS_Articles extends Controller_CMS_Data 
 {
 	public function action_activestructures()
 	{
-		echo json_encode(
-			array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
-				ORM::factory('structure')
-					->where('active','=','true')
-					->order_by('position', 'asc')
-					->find_all()
-					->as_array()
-			)
+		$result = array_map(
+			create_function(
+				'$obj',
+				'return $obj->as_array();'
+			),
+			ORM::factory('structure')
+				->where('active','=','true')
+				->order_by('position', 'asc')
+				->find_all()
+				->as_array()
 		);
-		die();
+		
+		$this->template->result = $result;
 	}
 
 	public function action_read()
@@ -25,8 +24,7 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		// get new active id
 		$id = $this->request->param('id');
 
-		echo json_encode(ORM::factory('article',$id)->as_array());
-		die();
+		$this->template->result = ORM::factory('article',$id)->as_array();
 	}
 
 	public function action_update()
@@ -40,8 +38,7 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		$a->content = $this->request->post('content');
 		$a->save();
 
-		echo '{"success":"true"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 
 	public function action_create()
@@ -55,8 +52,10 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		$a->content = '';
 		$a->save();
 
-		echo '{"success":"true", "id":"' . $a->id . '"}';
-		die();
+		$this->template->result = array( 
+			'success' => true ,
+			'id' => $a->id
+		);
 	}
 
 	public function action_destroy()
@@ -65,8 +64,7 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 
 		ORM::factory('article',$id)->delete();
 
-		echo '{"success":"true"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 
 	public function action_changemapping()
@@ -77,8 +75,7 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 		$a->structure_column_mapping_id = $this->request->post('mapping_id');
 		$a->save();
 
-		echo '{"success":"true"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 
 	/**
@@ -102,8 +99,7 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 			);
 		}
 
-		echo json_encode($outArr);
-		die();
+		$this->template->result = $outArr;
 	}
 
 	/**
@@ -197,7 +193,6 @@ class Controller_CMS_Articles extends Controller_CMS_Main
 			);
 		}			
 
-		echo json_encode($outArr);
-		die();
+		$this->template->result = $outArr;
 	}
 }

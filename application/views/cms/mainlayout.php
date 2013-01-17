@@ -12,7 +12,7 @@
 			echo HTML::script($file), "\n";
 	?>
 </head>
-<body>
+<body username="<? echo $username ?>">
 	<!-- content is created via extjs viewport in weirdbird.js -->
 </body>
 </html>
