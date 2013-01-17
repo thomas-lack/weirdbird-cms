@@ -2,6 +2,8 @@
  
 class Model_Template extends ORM {
     
+    protected $_table_name = 'wb_templates';
+
     // access the loadfiles of the current template via $template->loadfiles
     // (and the layouts, models, etc...)
     protected $_has_many = array(

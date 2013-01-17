@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_FileManager extends Controller_CMS_Main 
+class Controller_CMS_FileManager extends Controller_CMS_Data 
 {
 	public function action_data()
 	{
@@ -32,8 +32,7 @@ class Controller_CMS_FileManager extends Controller_CMS_Main
 			}
 		}
 
-		echo json_encode($files);
-		die();
+		$this->template->result = $files;
 	}
 
 	public function action_read() 
@@ -78,8 +77,10 @@ class Controller_CMS_FileManager extends Controller_CMS_Main
 			}
 		}
 
-		echo '{"success":"' . (($result) ? 'true' : 'false') . '"}';
-		die();
+		$this->template->result = array(
+			'success' => $result
+
+		);
 	}
 
 	public function action_destroy()
@@ -98,9 +99,8 @@ class Controller_CMS_FileManager extends Controller_CMS_Main
 		unlink($typeDir.DIRECTORY_SEPARATOR.$filename);
 		if ($this->isImage($type))
 			unlink($typeDir.DIRECTORY_SEPARATOR.IMAGETHUMBSDIR.DIRECTORY_SEPARATOR.$filename);
-				
-		echo '{"success":"true"}';
-		die();
+		
+		$this->template->result = array( 'success' => true );		
 	}
 
 	public function action_update()
@@ -115,8 +115,7 @@ class Controller_CMS_FileManager extends Controller_CMS_Main
 		$f->description = $r->description;
 		$f->save();
 
-		echo '{"success":"true"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 
 	/**

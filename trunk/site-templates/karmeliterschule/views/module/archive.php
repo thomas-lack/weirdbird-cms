@@ -32,11 +32,11 @@ foreach($files as $f)
 	{
 		$archive[$year][] = array(
 			'link' => $link,
-			'title' => 'Schulzeitung ' . date('d.m.Y', $datetime),
+			'title' => 'Schulzeitung vom ' . date('d.m.Y', $datetime),
 			'description' => null
 		);
 	}
-	else
+	else if (substr_count($f->description, '###') > 0)
 	{
 		$dArr = explode('###', $f->description);
 		
@@ -44,6 +44,14 @@ foreach($files as $f)
 			'link' => $link,
 			'title' => $dArr[0],
 			'description' => $dArr[1]
+		);
+	}
+	else
+	{
+		$archive[$year][] = array(
+			'link' => $link,
+			'title' => $f->description,
+			'description' => null
 		);
 	}
 }

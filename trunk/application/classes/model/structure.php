@@ -2,6 +2,8 @@
  
 class Model_Structure extends ORM {
  
+    protected $_table_name = 'wb_structures';
+
     protected $_has_one = array(
     	'layout' => array()
     );

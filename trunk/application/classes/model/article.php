@@ -2,6 +2,8 @@
  
 class Model_Article extends ORM {
     
+    protected $_table_name = 'wb_articles';
+
     protected $_belongs_to = array(
         'structurecolumnmapping' => array()
     );

@@ -39,6 +39,12 @@ $userUploadsPdf	= 'pdf';
 $userUploadsMisc = 'misc';
 
 /**
+ * Revision - the current number of checkins the google code page shows 
+ * (e.g. "r30")
+ */
+$revision = "r29";
+
+/**
  * The default extension of resource files. If you change this, all resources
  * must be renamed to use the new extension.
  *
@@ -101,9 +107,11 @@ define('MODPATH', realpath($modules).DIRECTORY_SEPARATOR);
 define('SYSPATH', realpath($system).DIRECTORY_SEPARATOR);
 define('UPLOADPATH', realpath($userUploads).DIRECTORY_SEPARATOR);
 
+// Define the cms revision
+define('REVISION', $revision);
 
 // Clean up the configuration vars
-unset($application, $modules, $system, $siteTemplates, $userUploads);
+unset($application, $modules, $system, $siteTemplates, $userUploads, $revision);
 
 if (file_exists('install'.EXT))
 {

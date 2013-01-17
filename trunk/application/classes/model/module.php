@@ -2,6 +2,8 @@
  
 class Model_Module extends ORM {
     
+    protected $_table_name = 'wb_modules';
+
     // access the template of the current loadfile via $loadfile->template
     protected $_belongs_to = array(
         'template' => array()

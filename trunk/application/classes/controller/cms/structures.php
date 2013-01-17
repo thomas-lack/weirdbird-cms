@@ -1,19 +1,26 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Structures extends Controller_CMS_Main
+class Controller_CMS_Structures extends Controller_CMS_Data
 {
 	public function action_data()
 	{
-		echo json_encode(
-			array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
-				ORM::factory('structure')->order_by('position', 'asc')->find_all()->as_array()		
-			)
+		$result = array_map(
+			create_function(
+				'$obj',
+				'return $obj->as_array();'
+			),
+			ORM::factory('structure')
+				->order_by('position', 'asc')
+				->find_all()
+				->as_array()		
 		);
-		die();
+		
+		for ($i = 0; $i < count($result); $i++)
+		{
+			$result[$i]['user_name'] = ORM::factory('user',$result[$i]['user_id'])->username;
+		}
+		
+		$this->template->result = $result;
 	}
 	
 	public function action_read()
@@ -24,6 +31,7 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 	public function action_create()
 	{
 		$d = json_decode($this->request->body());
+		$user = Auth::instance()->get_user();
 
 		// upon first creation (no entries) just return a success
 		if (!$d->active && $d->position == "" && $d->title == "" && $d->description == "") {
@@ -38,38 +46,41 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 		$structure->title = $d->title;
 		$structure->description = $d->description;
 		$structure->layout_id = null;
+		$structure->user_id = $user->id;
 		$structure->save();
 		
-		echo '{"success":"true"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 	
 	public function action_update()
 	{
 		$d = json_decode($this->request->body());
-		
+		$user = Auth::instance()->get_user();
+
 		// the structure title 'mail' is not allowed, since it is used for mailing 
 		// functionality of the cms AND the website 
 		// (for reference see 'application/classes/controller/mail.php')
 		if ($d->title == 'mail')
 		{
-			echo '{"success":"false", "message":"The title is not allowed."}';
-			die();
+			$this->template->result = array(
+				'success' => false,
+				'message' => 'This title is not allowed.'
+			);
 		}
-
-		// UPDATE query
-		$structure = ORM::factory('structure', $d->id);
-		$structure->active = ($d->active) ? 1 : 0;
-		$structure->position = $d->position;
-		$structure->title = $d->title;
-		$structure->description = $d->description;
-		$structure->layout_id = (isset($d->layout_id)) ? $d->layout_id : null;
-		$structure->save();
-		
-		// TODO : save user who changed something
-
-		echo '{"success":"true"}';
-		die();
+		else
+		{
+			// UPDATE query
+			$structure = ORM::factory('structure', $d->id);
+			$structure->active = ($d->active) ? 1 : 0;
+			$structure->position = $d->position;
+			$structure->title = $d->title;
+			$structure->description = $d->description;
+			$structure->layout_id = (isset($d->layout_id)) ? $d->layout_id : null;
+			$structure->user_id = $user->id;
+			$structure->save();
+			
+			$this->template->result = array( 'success' => true );
+		}
 	}
 	
 	public function action_destroy()
@@ -97,7 +108,6 @@ class Controller_CMS_Structures extends Controller_CMS_Main
 			$m->delete();
 		}
 		
-		echo '{"success":"true"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 }

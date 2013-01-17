@@ -2,6 +2,8 @@
  
 class Model_File extends ORM {
     
+    protected $_table_name = 'wb_files';
+
     // data verification at saving
     protected $_rules = array(
         'active' => array(
@@ -26,4 +28,12 @@ class Model_File extends ORM {
             'not_empty'  => NULL
         )
     );
+
+    public function get_files_by_type($type)
+    {
+        return ORM::factory('file')
+                ->where('type','=',$type)
+                ->order_by('filename', 'asc')
+                ->find_all();
+    }
 }

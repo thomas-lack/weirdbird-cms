@@ -1,8 +1,12 @@
-var cms = {
+Ext.define('WeirdbirdCMS', {
 	// Switch between debug and productive console outputs
 	debug: true,
 	// since dashoard data is loaded via AJAX, we can buffer it for later use
 	dashboardBuffer: null,
+	// the current username buffer
+	username: null,
+	// get the current language definitions on a shortcut
+	lang: new WeirdbirdCMS.language.Definition(),
 
 	init:	function(){
 		// override all treepanels with drag&drop, so that only leafs are draggable
@@ -14,7 +18,11 @@ var cms = {
 
 		Ext.tip.QuickTipManager.init();
 		
+		// set initial values of buffer variables
 		this.dashboardBuffer = null;
+		this.username = Ext.get(Ext.query('body')[0]).dom.attributes['username'].value;
+		
+		// proceed with creating what the user sees and register the click handlers
 		this.createViewport();
 		this.registerNavHandlers();
 		this.createDashboard();
@@ -29,19 +37,26 @@ var cms = {
 			items: [{
 				region: 'north',
 				html: '<img class="left" src="/assets/images/logo.png"/>'
-					+ '<span class="sans-serif headline">weirdbird cms</span>',
+					+ '<span class="serif headline dark-gray">weirdbird cms</span>'
+					+ '<span class="right"><a href="cms/user/logout">Logout '
+					+ '<span class="icon big dark-gray icon-space-top">v</span></a>'
+					+ '</span>'
+					+ '<span class="right right-padding-10">'
+					+ '<span class="icon big dark-gray icon-space-top">L</span> ' + this.username
+					+ '</span>',
 				bodyCls: 'title',
 				border: false
 			}, {
 				region: 'west',
-				html: '<span class="sans-serif uppercase very-small gray">navigate to:</span>'
+				html: '<span class="sans-serif uppercase very-small gray">'+cms.lang.nav.headline+'</span>'
 					+ '<ul class="sans-serif">'
-					+ '<li><a href="#" ajax="dashboard" class="big bold">Dashboard<span class="icon right very-big">=</span></a></li>'
-					+ '<li><a href="#" ajax="templates">Templates</a></li><li><a href="#" ajax="structures">Structures</a></li>'
-					+ '<li><a href="#" ajax="articles">Articles</a></li>'
-					+ '<li><a href="#" ajax="filemanager">File Manager</a></li>'
-					+ '<li><a href="#" ajax="user">User</a></li>'
-					+ '<li><a href="#" ajax="system">System</a></li>'
+					+ '<li><a href="#" ajax="dashboard" class="big bold">'+cms.lang.nav.dashboard+'<span class="icon right very-big">=</span></a></li>'
+					+ '<li><a href="#" ajax="templates">'+cms.lang.nav.templates+'</a></li>'
+					+ '<li><a href="#" ajax="structures">'+cms.lang.nav.structures+'</a></li>'
+					+ '<li><a href="#" ajax="articles">'+cms.lang.nav.articles+'</a></li>'
+					+ '<li><a href="#" ajax="filemanager">'+cms.lang.nav.filemanager+'</a></li>'
+					+ '<li><a href="#" ajax="user">'+cms.lang.nav.user+'</a></li>'
+					+ '<li><a href="#" ajax="system">'+cms.lang.nav.system+'</a></li>'
 					+ '</ul>',
 				bodyCls: 'navmenu',
 				id: 'navmenu',
@@ -55,7 +70,17 @@ var cms = {
 				border: false
 			}, {
 				region: 'south',
-				html: '<span class="sans-serif small">Created 2012, 2013 by <a href="http://twitter.com/thomaslack">Thomas Lack</a></span>',
+				html: '<span class="sans-serif small">' 
+					+ cms.lang.bottom.created
+					+ ' '
+					+ '<a href="http://twitter.com/thomaslack">Thomas Lack</a>'
+					+ '. '
+					+ cms.lang.bottom.moreinfo
+					+ ' '
+					+ '<a href="http://code.google.com/p/weirdbird-cms/">'
+					+ cms.lang.bottom.moreinfo2
+					+ '</a>.'
+					+ '</span>',
 				bodyCls: 'bottombar',
 				border: false
 			}]
@@ -69,7 +94,7 @@ var cms = {
 		if (cms.dashboardBuffer != null) {
 			cms.fillContentPanel({
 				xtype: 'panel',
-				title: 'Dashboard amusement',
+				title: cms.lang.dashboard.title,
 				bodyCls: 'content',
 				border: false,
 				html: cms.dashboardBuffer
@@ -85,7 +110,7 @@ var cms = {
 					cms.createDashboard();
 				},
 				failure: function(response) {
-					Ext.MessageBox.alert('Error', 'The articles could not be loaded (Error code ' + response.status + ').');
+					Ext.MessageBox.alert('Error', cms.lang.dashboard.message.error + ' (Error code ' + response.status + ').');
 				}
 			});	
 		}
@@ -117,12 +142,18 @@ var cms = {
 						cms.prepareArticlesPanel(Ext.JSON.decode(response.responseText));
 					},
 					failure: function(response) {
-						Ext.MessageBox.alert('Error', 'The articles could not be loaded (Error code ' + response.status + ').');
+						Ext.MessageBox.alert('Error', cms.lang.articles.message.error + ' (Error code ' + response.status + ').');
 					}
 				});
 				break;
 			case 'filemanager' :
 				cms.populateFilesGrid();
+				break;
+			case 'user':
+				cms.populateUsersGrid();
+				break;
+			case 'system':
+				cms.populateSystemPanel();
 				break;
 			default:
 				cms.registerDashboardHandlers();
@@ -226,18 +257,18 @@ var cms = {
 
 		Ext.create('Ext.grid.Panel', {
 			id: 'templatesGrid',
-		    title: 'Available Site Templates',
+		    title: cms.lang.templates.title,
 		    border: false,
 		    bodyCls: 'content',
 		    store: Ext.getStore('templatesStore'),
 		    columns: [
-		    	{ text: 'Active?', xtype: 'templatecolumn', width:50,
+		    	{ text: cms.lang.templates.grid.active, xtype: 'templatecolumn', width:50,
 		    		tpl: '<tpl if="active"><span class="icon green very-big">&Atilde;</span>'
 		    			+ '<tpl else><span class="icon red very-big">&Acirc;</span></tpl>'},
-		    	{ text: 'Preview' , width: 270, xtype: 'templatecolumn',
+		    	{ text: cms.lang.templates.grid.preview , width: 270, xtype: 'templatecolumn',
 		    		tpl: '<p><img src="{folder}/{folder_preview}/{previewimage_filename}" /></p>'
 		    			+ '<p class="sans-serif very-small uppercase dark-gray normal-lh">{previewimage_description}</p>'},
-		    	{ text: 'Description', flex: 1, xtype: 'templatecolumn',
+		    	{ text: cms.lang.templates.grid.description, flex: 1, xtype: 'templatecolumn',
 		    		tpl: '<h2>{name}</h2>'
 						+'<p class="justified normal normal-lh">{description}</p>'
 						+'<h2>Layouts</h2>'
@@ -255,11 +286,11 @@ var cms = {
 				}
 		    ],
 		    tbar: [{
-		    	text: '<span class="icon">&Ntilde;</span> Import Templates',
+		    	text: '<span class="icon very-big">&Ntilde;</span> ' + cms.lang.templates.button.import,
 		    	handler: function() {
 		    		Ext.Msg.show({
-		    			title: 'Really import templates?',
-		    			msg: 'If you proceed, all your layout and module mappings will be lost. Do you really want to import all templates again?',
+		    			title: cms.lang.templates.message.title,
+		    			msg: cms.lang.templates.message.content,
 		    			buttons: Ext.Msg.YESNO,
 		    			icon: Ext.Msg.WARNING,
 		    			fn: function(btn) {
@@ -267,7 +298,7 @@ var cms = {
 		    					Ext.Ajax.request({
 		    						url: 'cms/templates/import',
 		    						success: function() {
-		    							Ext.MessageBox.alert('Status', 'Templates were imported successfully. Do not forget to set one to active.');
+		    							Ext.MessageBox.alert('Status', cms.lang.templates.message.success);
 		    							Ext.getStore('templatesStore').load();
 		    						}
 		    					});
@@ -276,7 +307,7 @@ var cms = {
 		    		});
 		    	}
 		    },'-',{
-		    	text: '<span class="icon very-big">G</span> Set Template Active',
+		    	text: '<span class="icon very-big">G</span> ' + cms.lang.templates.button.active,
 		    	disabled: true,
 		    	itemId: 'activateTemplate',
 		    	handler: function() {
@@ -284,7 +315,7 @@ var cms = {
 		    		Ext.Ajax.request({
 		    			url: 'cms/templates/settemplate/' + selection.data.id,
 		    			success: function() {
-		    				Ext.MessageBox.alert('Status', 'The template <i>' + selection.data.name + '</i> was successfully set to active.');
+		    				Ext.MessageBox.alert('Status', cms.lang.templates.message2.success + ' <i>' + selection.data.name + '</i>');
 		    				Ext.getStore('templatesStore').load();
 		    			}
 		    		});
@@ -330,7 +361,7 @@ var cms = {
 			fields: [
 				{name:'id', type:'int'}, 
 				{name:'active', type:'bool'}, 
-				'position', 'title', 'description', 
+				'position', 'title', 'description', 'user_name',
 				{name:'layout_id', type:'int'}
 			],
 			validation: [
@@ -434,7 +465,7 @@ var cms = {
 		//create outer formpanel
 		Ext.create('Ext.form.Panel', {
 			id: 'structuresForm',
-			title: 'Manage categories and according layouts / column modules',
+			title: cms.lang.structures.title,
 			layout: 'column',
 			bodyCls: 'content',
 			border: false,
@@ -445,31 +476,32 @@ var cms = {
 				height: Ext.getCmp('navmenu').getHeight(),
 				xtype: 'gridpanel',
 				id: 'categoriesGrid',
-				title: 'Categories',
+				title: cms.lang.structures.grid.title,
 				plugins: [rowEditing],
 				store: Ext.getStore('structuresStore'),
 				columns: [
 			        { text: '#',  dataIndex: 'position', width:30, editor:{ allowBlank:false }},
-			        { text: 'Active?', dataIndex: 'active', width: 50, xtype: 'checkcolumn',
+			        { text: cms.lang.structures.grid.active, dataIndex: 'active', width: 50, xtype: 'checkcolumn',
 			        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
 			       	},
-			        { text: 'Title', dataIndex: 'title', editor:{ allowBlank:false } },
-			        { text: 'Description', dataIndex: 'description', flex: 1, editor:{ allowBlank:true } }
+			        { text: cms.lang.structures.grid.titleCol, dataIndex: 'title', editor:{ allowBlank:false } },
+			        { text: cms.lang.structures.grid.description, dataIndex: 'description', flex: 1, editor:{ allowBlank:true } },
+			        { text: cms.lang.structures.grid.user, dataIndex: 'user_name', width: 60}
 			    ],
 			    tbar: [{
-			    	text: '<span class="icon very-big">@</span> Add category',
+			    	text: '<span class="icon very-big">@</span> ' + cms.lang.structures.button.add,
 			    	handler: function() {
 			    		rowEditing.cancelEdit();
 			    		Ext.getStore('structuresStore').insert(0,new Structure());
 			    		rowEditing.startEdit(0,0);
 			    	}
 			    },'-',{
-			    	text: '<span class="icon very-big">A</span> Remove category',
+			    	text: '<span class="icon very-big">A</span> ' + cms.lang.structures.button.remove,
 			    	itemId: 'deleteCategory',
 			    	handler: function() {
 			    		Ext.Msg.show({
-			    			title: 'Really delete category?',
-			    			msg: 'Do you really want to delete the selected category?',
+			    			title: cms.lang.structures.message.title,
+			    			msg: cms.lang.structures.message.content,
 			    			buttons: Ext.Msg.YESNO,
 			    			icon: Ext.Msg.WARNING,
 			    			fn: function(btn) {
@@ -516,17 +548,17 @@ var cms = {
 				columnWidth: 0.4,
 	            margin: '0 0 0 10',
 	            xtype: 'fieldset',
-	            title:'Layout and module selection',
+	            title: cms.lang.structures.form.title,
 	            defaultType: 'combo',
 	            defaults: {
 	                width: 300,
 	                labelWidth: 90
 	            },
 				items:[{
-					fieldLabel: 'Layout',
+					fieldLabel: cms.lang.structures.form.layout,
 					id: 'layoutsComboBox',
 					store: Ext.getStore('layoutsStore'),
-					emptyText: 'Choose layout...',
+					emptyText: cms.lang.structures.form.emptyText,
 					displayField: 'description',
 					valueField: 'id',
 					queryMode: 'local',
@@ -571,7 +603,7 @@ var cms = {
 		// add new module comboboxes
 		for (var i = 0; i < columns; i++) {
 			cmp.add({
-				fieldLabel: 'Column ' + (i+1) + ' module',
+				fieldLabel: cms.lang.structures.form.column + ' ' + (i+1) + ' ' + cms.lang.structures.form.module,
 				id: 'moduleComboBoxColumn' + i,
 				store: Ext.getStore('modulesStore'),
 				emptyText: 'Choose module...',
@@ -642,6 +674,20 @@ var cms = {
 			autoLoad: true
 		});
 
+		// begin loading document data
+		Ext.create('Ext.data.Store', {
+			storeId: 'documentStore',
+			fields: ['id', 'description', 'filename', 'link'],
+			proxy: {
+				type: 'ajax',
+				url: 'cms/file/documents',
+				reader: {
+					type: 'json'
+				}
+			},
+			autoLoad: true
+		});
+
 		// define a new model, because the standard treeview model does not contain the mapping_id field
 		Ext.define('ArticleNode', {
 			extend: 'Ext.data.Model',
@@ -670,7 +716,7 @@ var cms = {
 	paintArticlesPanel: function(treeStore, cssdata) {
 		Ext.create('Ext.panel.Panel', {
 			id: 'articlesParentPanel',
-			title: 'Manage article positioning and edit content',
+			title: cms.lang.articles.title,
 			bodyCls: 'content',
 			border: false,
 			layout: 'column',
@@ -686,7 +732,7 @@ var cms = {
 				height: Ext.getCmp('navmenu').getHeight() - 25,
 				xtype: 'treepanel',
 				id: 'articlesTreePanel',
-				title: 'Category/Column selection',
+				title: cms.lang.articles.grid.title,
 				store: treeStore,
 				rootVisible: false,
 				viewConfig: {
@@ -695,7 +741,7 @@ var cms = {
 				tbar: [ { 
 					xtype: 'button', 
 					id: 'addArticleBtn',
-					text: '<span class="icon very-big">@</span>&nbsp;Add article', 
+					text: '<span class="icon very-big">@</span>&nbsp;' + cms.lang.articles.button.add, 
 					disabled: true,
 					handler: function(self, e) {
 						if (cms.debug) console.log('add article button pressed');
@@ -704,7 +750,7 @@ var cms = {
 				},'-',{ 
 					xtype: 'button', 
 					id: 'saveArticleBtn',
-					text: '<span class="icon very-big">&Atilde;</span>&nbsp;Save article', 
+					text: '<span class="icon very-big">&Atilde;</span>&nbsp;' + cms.lang.articles.button.save, 
 					disabled: true,
 					handler: function(self, e) {
 						if (cms.debug) console.log('save article button pressed');
@@ -713,7 +759,7 @@ var cms = {
 				},'-',{ 
 					xtype: 'button', 
 					id: 'deleteArticleBtn',
-					text: '<span class="icon very-big">&Acirc;</span>&nbsp;Delete article', 
+					text: '<span class="icon very-big">&Acirc;</span>&nbsp;' + cms.lang.articles.button.delete, 
 					disabled: true,
 					handler: function(self, e) {
 						if (cms.debug) console.log('delete article button pressed');
@@ -751,7 +797,7 @@ var cms = {
 								url: 'cms/articles/changemapping/' + node.data.id,
 								params: { mapping_id: newParent.data.mapping_id },
 								failure: function(response) {
-									Ext.MessageBox.alert('Error', 'The article could not be moved (Error code ' + response.status + ').');
+									Ext.MessageBox.alert('Error', cms.lang.articles.message.error + ' (Error code ' + response.status + ').');
 								}
 							});
 						}
@@ -761,7 +807,7 @@ var cms = {
 				columnWidth: 0.69,
 				xtype: 'fieldset',
 				id: 'articlesEditPanel',
-				title: 'Article editing',
+				title: cms.lang.articles.form.title,
 				margin: '0 0 0 10',
 				defaultType: 'textfield',
 				record: null,
@@ -775,7 +821,7 @@ var cms = {
 	                margin: '0 0 10 0'
 	            },
 				items: [{
-					fieldLabel: 'Active',
+					fieldLabel: cms.lang.articles.form.active,
 					xtype: 'checkbox',
 					id: 'articleFieldActive',
 					labelAlign: 'left',
@@ -790,7 +836,7 @@ var cms = {
 						}
 					}
 				},{
-					fieldLabel: 'Title',
+					fieldLabel: cms.lang.articles.form.titleLable,
 					id: 'articleFieldTitle',
 					listeners: {
 						change: function(self, newValue, oldValue) { 
@@ -809,7 +855,7 @@ var cms = {
 						}
 					}
 				},{
-					fieldLabel: 'Description',
+					fieldLabel: cms.lang.articles.form.description,
 					xtype: 'textareafield',
 					id: 'articleFieldDescription',
 					width: 580,
@@ -825,7 +871,7 @@ var cms = {
 						}
 					}
 				},{
-					fieldLabel: 'Article',
+					fieldLabel: cms.lang.articles.form.article,
 					xtype: 'tinymce_textarea',
 					id: 'articleFieldContent',
 					width: 580,
@@ -837,19 +883,19 @@ var cms = {
                         schema: 'html5',
                         plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
                         theme_advanced_toolbar_align : "left",
-                        theme_advanced_buttons1 : 'undo,redo,|,bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,formatselect', //styleselect,fontselect,fontsizeselect
-                        theme_advanced_buttons2 : 'table,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,unlink,wbimage,|,code,preview,fullscreen',
+                        theme_advanced_buttons1 : 'bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect', //styleselect,fontselect,fontsizeselect
+                        theme_advanced_buttons2 : 'table,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,unlink,|,wbimage,wbdocument,|,code,preview,fullscreen',
                         content_css: ((cssdata.length > 0) ? cssdata[0].path : null), //TODO: add more than one css file
                         theme_advanced_containers_default_align : 'left',
                         setup: function(editor) {
-                        	// Add a custom button
+                        	// Add a custom image button
                         	editor.addButton('wbimage', {
-                        		title: 'Image',
-                        		image: 'assets/images/icons_48x48/Picture.png',//'assets/images/image.png',
+                        		title: cms.lang.articles.form.image,
+                        		image: 'assets/images/icons_48x48/Picture.png',
                         		onclick: function() {
                         			Ext.create('Ext.window.Window', {
 									    id: 'selectImageWindow',
-									    title: 'Select image',
+									    title: cms.lang.articles.window.title,
 									    width: 500,
 									    
 									    items: [{
@@ -884,21 +930,21 @@ var cms = {
 									    }],
 
 									    buttons: [{
-									    	text: 'Select image',
+									    	text: cms.lang.articles.window.select,
 									    	handler: function() {
 									    		var records = Ext.getCmp('selectImageDataView').getSelectionModel().getSelection();
 									    		if (records.length === 0) {
-									    			Ext.MessageBox.alert('Notification', 'No image was selected.');
+									    			Ext.MessageBox.alert(cms.lang.articles.message6.title, cms.lang.articles.message6.error);
 									    		}
 									    		else {
 									    			var record = records[0];
 									    			editor.focus();
-										    		editor.selection.setContent('<img src="' + record.get('link') + '" alt="' + record.get('description') + '"/>');
+										    		editor.selection.setContent('<img src="' + record.data('link') + '" alt="' + record.get('description') + '"/>');
 										    		Ext.getCmp('selectImageWindow').close();
 									    		}
 									    	}
 									    },{
-									    	text: 'Cancel',
+									    	text: cms.lang.articles.window.cancel,
 									    	handler: function() {
 									    		Ext.getCmp('selectImageWindow').close();
 									    	}
@@ -906,6 +952,48 @@ var cms = {
 									}).show();
                         		}
                         	});
+							
+							// add a custom pdf document button
+							editor.addButton('wbdocument', {
+								title: cms.lang.articles.form.document,
+								image: 'assets/images/pdf.jpg',
+								onclick: function() {
+									Ext.create('Ext.window.Window', {
+										id: 'selectDocumentWindow',
+										title: cms.lang.articles.window2.title,
+										width: 600,
+										//height: 200,
+
+										items: [{
+											xtype: 'gridpanel',
+											id: 'selectDocumentGrid',
+											store: Ext.getStore('documentStore'),
+											//width: 400,
+											height: 250,
+											border: false,
+		    								columns: [
+		    									{ text: cms.lang.articles.window2.name, dataIndex: 'filename', width: 180 },
+		    									{ text: cms.lang.articles.window2.description, dataIndex: 'description', flex: 1 },
+		    								]
+										}],
+
+										buttons: [{
+											text: cms.lang.articles.window2.select,
+											handler: function() {
+												var record = Ext.getCmp('selectDocumentGrid').getSelectionModel().getSelection()[0];
+												editor.focus();
+												editor.selection.setContent('<a href="' + record.get('link') + '" target="_blank">' + cms.lang.articles.window2.link + '</a>');
+												Ext.getCmp('selectDocumentWindow').close();
+											}
+										},{
+											text: cms.lang.articles.window2.cancel,
+											handler: function() {
+												Ext.getCmp('selectDocumentWindow').close();
+											}
+										}]
+									}).show();
+								}
+							});						
                         }
 					},
 					listeners: {
@@ -954,7 +1042,7 @@ var cms = {
 				editPanel.enable();
 			},
 			failure: function(response, opts) {
-				Ext.MessageBox.alert('Error', 'The article data could not be loaded (Error code ' + response.status + ').');
+				Ext.MessageBox.alert('Error',  cms.lang.articles.message2.error + ' (Error code ' + response.status + ').');
 			}
 		});
 	},
@@ -973,19 +1061,19 @@ var cms = {
 			params: request, 
 
 			success: function(response) {
-				Ext.MessageBox.alert('Status', 'The article was saved successfully.');
+				Ext.MessageBox.alert('Status', cms.lang.articles.message3.success);
 				Ext.getCmp('articlesEditPanel').record.save(); //remove the dirty flag
 			},
 			failure: function(response, opts) {
-				Ext.MessageBox.alert('Error', 'The article could not be saved (Error code ' + response.status + ').');
+				Ext.MessageBox.alert('Error', cms.lang.articles.message3.error + ' (Error code ' + response.status + ').');
 			}
 		});
 	},
 
 	deleteArticle: function() {
 		Ext.Msg.show({
-			title: 'Delete article?',
-			msg: 'Do you really want to delete the current article?',
+			title: cms.lang.articles.message4.title,
+			msg: cms.lang.articles.message4.content,
 			buttons: Ext.Msg.YESNO,
 			icon: Ext.Msg.QUESTION,
 			fn: function(btn) {
@@ -997,7 +1085,7 @@ var cms = {
 							node.remove();
 						},
 						failure: function(response, opts) {
-							Ext.MessageBox.alert('Error', 'The article could not be deleted (Error code ' + response.status + ').');
+							Ext.MessageBox.alert('Error', cms.lang.articles.message4.error + ' (Error code ' + response.status + ').');
 						}
 					});
 				}
@@ -1020,7 +1108,7 @@ var cms = {
 				node.appendChild(newNode);
 			},
 			failure: function(response) {
-				Ext.MessageBox.alert('Error', 'The new article could not be created (Error code ' + response.status + ').');
+				Ext.MessageBox.alert('Error', cms.lang.articles.message5.error + ' (Error code ' + response.status + ').');
 			}
 		});
 	},
@@ -1137,8 +1225,8 @@ var cms = {
 			'<tpl if="this.isImage(type)">',
 		    '<img src="{link}" />',
 		    '<tpl else>',
-		    '<a href="{link}" target="new" style="text-decoration:none; border-bottom:1px dotted; color:#0c3546;">',
-		    '<span class="icon very-big">E</span> open file</a>',
+		    '<a href="{link}" target="_blank" style="text-decoration:none; border-bottom:1px dotted; color:#0c3546;">',
+		    '<span class="icon very-big">E</span> '+cms.lang.filemanager.tpl.openfile+'</a>',
 		    '</tpl>',
 		    {
 		    	isImage: function(type) {
@@ -1149,36 +1237,36 @@ var cms = {
 
 		Ext.create('Ext.grid.Panel', {
 			id: 'filesGrid',
-		    title: 'Manage image and document (pdf) files',
+		    title: cms.lang.filemanager.title,
 		    bodyCls: 'content',
 		    border: false,
 		    store: Ext.getStore('filesStore'),
 		    plugins: [rowEditing],
 		 	columns: [
-		   			{ text: 'Active?', dataIndex: 'active', width: 50, xtype: 'checkcolumn',
+		   			{ text: cms.lang.filemanager.grid.active, dataIndex: 'active', width: 50, xtype: 'checkcolumn',
 			        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
 			       	},
-			        { text: 'Creation', dataIndex: 'creationdate', xtype:'datecolumn', format: 'd.m.Y',
+			        { text: cms.lang.filemanager.grid.creation, dataIndex: 'creationdate', xtype:'datecolumn', format: 'd.m.Y',
 			    		editor: {allowBlank:false, xtype:'datefield', format: 'd.m.Y'} },
-			        { text: 'Uploader', dataIndex: 'user_id' },
-			        { text: 'Filename', dataIndex: 'filename', width: 120 },
-			        { text: 'Type', dataIndex: 'type', width: 90 },
-			        { text: 'Description', dataIndex: 'description', flex: 1, editor:{ allowBlank:true } },
-			        { text: 'Preview', xtype: 'templatecolumn', width: 70, tpl: previewTpl }
+			        { text: cms.lang.filemanager.grid.user, dataIndex: 'user_id' },
+			        { text: cms.lang.filemanager.grid.name, dataIndex: 'filename', width: 120 },
+			        { text: cms.lang.filemanager.grid.type, dataIndex: 'type', width: 90 },
+			        { text: cms.lang.filemanager.grid.description, dataIndex: 'description', flex: 1, editor:{ allowBlank:true } },
+			        { text: cms.lang.filemanager.grid.preview, xtype: 'templatecolumn', width: 90, tpl: previewTpl }
 			],
 		    tbar: [{
-		    	text: '<span class="icon very-big">n</span> Upload file',
+		    	text: '<span class="icon very-big">n</span> ' + cms.lang.filemanager.button.upload,
 		    	handler: function() {
 		    		Ext.create('Ext.window.Window', {
 					    id: 'uploadWindow',
-					    title: 'Upload file',
+					    title: cms.lang.filemanager.window.title,
 					    width: 500,
 					    
 					    items: [{
 					    	xtype: 'form',
 					    	id: 'file-form',
 					    	border: false,
-					    	bodyCls: 'content',
+					    	bodyCls: 'content-extjs',
 					    	margin: 10,
 					    	defaults: {
 						    	anchor: '100%',
@@ -1189,18 +1277,18 @@ var cms = {
 						    items: [{  
 						    	xtype: 'textfield',
 						    	name: 'form-description',
-						    	fieldLabel: 'Description'
+						    	fieldLabel: cms.lang.filemanager.window.description
 						    },{
 						    	xtype: 'filefield',
 						    	id: 'form-file',
-						    	emptyText: 'Select an image or pdf document...',
-						    	fieldLabel: 'File',
+						    	emptyText: cms.lang.filemanager.window.emptyText,
+						    	fieldLabel: cms.lang.filemanager.window.file,
 						    	buttonText: '<span class="icon very-big">&Oslash;</span>'
 					    	}]
 					    }],
 
 					    buttons: [{
-					    	text: 'Save',
+					    	text: cms.lang.filemanager.window.save,
 					    	handler: function() {
 					    		var form = Ext.getCmp('file-form').getForm();
 					    		if(form.isValid()){
@@ -1215,7 +1303,7 @@ var cms = {
 					    		}
 					    	}
 					    },{
-					    	text: 'Reset',
+					    	text: cms.lang.filemanager.window.reset,
 					    	handler: function() {
 					    		Ext.getCmp('file-form').getForm().reset();
 					    	}
@@ -1223,13 +1311,13 @@ var cms = {
 					}).show();
 		    	}
 		    },'-',{
-		    	text: '<span class="icon very-big">m</span> Delete file',
+		    	text: '<span class="icon very-big">m</span> ' + cms.lang.filemanager.button.delete,
 		    	disabled: true,
 		    	itemId: 'deleteFile',
 		    	handler: function() {
 		    		Ext.Msg.show({
-		    			title: 'Really delete file?',
-		    			msg: 'Do you really want to delete the selected file?',
+		    			title: cms.lang.filemanager.message.title,
+		    			msg: cms.lang.filemanager.message.content,
 		    			buttons: Ext.Msg.YESNO,
 		    			icon: Ext.Msg.WARNING,
 		    			fn: function(btn) {
@@ -1249,11 +1337,336 @@ var cms = {
 	    });
 		
 		cms.fillContentPanel(Ext.getCmp('filesGrid'));
+	},
+
+	populateUsersGrid: function() {
+		if (this.debug) console.log('populating users grid');
+
+		Ext.define('User', {
+			extend: 'Ext.data.Model',
+			fields: [
+				{name:'id', type:'int'}, 
+				{name:'email', type:'string'}, 
+				{name:'username', type:'string'},
+				{name:'logins', type:'int'}, 
+				{name:'last_login', type:'date'}
+			]
+		});
+
+		Ext.create('Ext.data.Store', {
+		    storeId: 'usersStore',
+		    model: 'User',
+		    proxy: {
+		        type: 'ajax',
+		       	api: {
+		       		read: 'cms/user/read',
+		       		create : 'cms/read/create',
+		            update : 'cms/read/update',
+		            destroy : 'cms/read/destroy'
+		       	},
+		        reader: {
+		            type: 'json',
+		            successProperty: 'success'
+		        },
+		        writer: {
+		        	type: 'json'
+		        }
+		    },
+		    lastOperation: '',
+		    autoLoad: true,
+		    autoSync: true,
+		    listeners: {
+		    	load: function() {
+		    		// after loading select the first entry to populate the 2nd form panel
+		    		//Ext.getCmp('filesGrid').getSelectionModel().select(0);
+		    	},
+		    	write: function(store, op) {
+		    		// if last operation was "create" and now we have an update,
+		    		// we want to reload the store afterwards to get the objects new id
+		    		var s = Ext.getStore('usersStore');
+		    		if (s.lastOperation == 'create'
+		    			&& op.action == 'update') {
+		    			s.load();
+		    		}
+		    		
+		    		s.lastOperation = op.action;
+		    	}
+		    }
+		});
+
+		var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+	        clicksToMoveEditor: 1,
+	        autoCancel: false
+	    });
+
+		var previewTpl = new Ext.XTemplate(
+			'<tpl if="this.isImage(type)">',
+		    '<img src="{link}" />',
+		    '<tpl else>',
+		    '<a href="{link}" target="_blank" style="text-decoration:none; border-bottom:1px dotted; color:#0c3546;">',
+		    '<span class="icon very-big">E</span> ' + cms.lang.filemanager.tpl.openfile + '</a>',
+		    '</tpl>',
+		    {
+		    	isImage: function(type) {
+		    		return (type.indexOf('image') !== -1);
+		    	}
+		    }
+		);
+
+		Ext.create('Ext.grid.Panel', {
+			id: 'usersGrid',
+		    title: cms.lang.user.title,
+		    bodyCls: 'content',
+		    border: false,
+		    store: Ext.getStore('usersStore'),
+		    plugins: [rowEditing],
+		 	columns: [
+		   			{ text: cms.lang.user.grid.name, dataIndex: 'username', width: 150, editor:{ allowBlank:false } },
+		   			{ text: cms.lang.user.grid.email, dataIndex: 'email', flex: 1, editor:{ allowBlank:false } },
+		   			{ text: cms.lang.user.grid.logins, dataIndex: 'logins', width: 80 },
+		   			{ text: cms.lang.user.grid.lastlogin, dataIndex: 'last_login', xtype:'datecolumn', format: 'd.m.Y' }
+			],
+		    tbar: [{
+		    	text: '<span class="icon very-big">K</span> ' + cms.lang.user.button.add,
+		    	handler: function() {
+		    		Ext.create('Ext.window.Window', {
+					    id: 'newUserWindow',
+					    title: cms.lang.user.window.title,
+					    width: 500,
+					    
+					    items: [{
+					    	xtype: 'form',
+					    	id: 'user-form',
+					    	border: false,
+					    	bodyCls: 'content',
+					    	margin: 10,
+					    	defaults: {
+						    	anchor: '100%',
+						    	allowBlank: false,
+						    	msgTarget: 'side',
+						    	labelWidth: 75
+						    },
+						    items: [{  
+						    	xtype: 'textfield',
+						    	name: 'username',
+						    	fieldLabel: cms.lang.user.window.name
+						    },{
+						    	xtype: 'textfield',
+						    	name: 'email',
+						    	fieldLabel: cms.lang.user.window.email
+					    	}]
+					    }],
+
+					    buttons: [{
+					    	text: cms.lang.user.window.save,
+					    	handler: function() {
+					    		var form = Ext.getCmp('user-form').getForm();
+					    		if(form.isValid()){
+					    			form.submit({
+					    				url: 'cms/user/create',
+					    				waitMsg: cms.lang.user.button.waitMsg,
+					    				success: function(fp, o) {
+					    					Ext.getCmp('newUserWindow').close();
+					    					Ext.getStore('usersStore').reload();
+					    				}
+					    			});
+					    		}
+					    	}
+					    },{
+					    	text: cms.lang.user.window.reset,
+					    	handler: function() {
+					    		Ext.getCmp('file-form').getForm().reset();
+					    	}
+					    }]
+					}).show();
+		    	}
+		    },'-',{
+		    	text: '<span class="icon very-big">L</span> ' + cms.lang.user.button.delete,
+		    	disabled: true,
+		    	itemId: 'deleteUser',
+		    	handler: function() {
+		    		Ext.Msg.show({
+		    			title: cms.lang.user.message.title,
+		    			msg: cms.lang.user.message.content,
+		    			buttons: Ext.Msg.YESNO,
+		    			icon: Ext.Msg.WARNING,
+		    			fn: function(btn) {
+		    				if (btn == 'yes') {
+		    					var record = Ext.getCmp('usersGrid').getSelectionModel().getSelection()[0];
+		    					Ext.getStore('usersStore').remove(record);
+		    				}
+		    			}
+		    		});
+		    	}
+		    },'-',{
+		    	text: '<span class="icon very-big">w</span> ' + cms.lang.user.button.reset,
+		    	disabled: true,
+		    	itemId: 'resetPassword',
+		    	handler: function() {
+		    		console.log('TODO: reset pw to newly generated one and send email to user!');
+		    	}
+		    }]
+		});
+	
+		// make "delete file" button clickable if a row is selected
+		Ext.getCmp('usersGrid').getSelectionModel().on('selectionchange', function(selModel, selections){
+	        // at least one user has to stay in the system
+	        Ext.getCmp('usersGrid').down('#deleteUser').setDisabled(selections.length === 0 
+	        	|| Ext.getStore('usersStore').count() === 1);
+	        Ext.getCmp('usersGrid').down('#resetPassword').setDisabled(selections.length === 0);
+	    });
+		
+		cms.fillContentPanel(Ext.getCmp('usersGrid'));
+	},
+
+	populateSystemPanel: function() {
+		if (this.debug) console.log('populating system panel');
+
+		Ext.define('Language', {
+			extend: 'Ext.data.Model',
+			fields: [
+				{name:'id', type:'int'}, 
+				{name:'name', type:'string'}, 
+				{name:'shortform', type:'string'}
+			]
+		});
+
+		Ext.create('Ext.data.Store', {
+		    storeId: 'languagesStore',
+		    model: 'Language',
+		    proxy: {
+		        type: 'ajax',
+		        url: 'cms/system/languages',
+		        reader: {
+		            type: 'json',
+		            successProperty: 'success'
+		        }
+		    },
+		    autoLoad: true
+		});
+
+		var systemForm = Ext.widget({
+			xtype: 'form',
+			id: 'systemForm',
+			url: 'cms/system',
+			title: cms.lang.system.title,
+			bodyCls: 'content',
+			bodyPadding: 15,
+			border: false,
+			fieldDefaults: {
+				msgTarget: 'side',
+				labelWidth: 150,
+				margin: '0 0 20px 0'
+			},
+			
+			tbar: [{
+				text:'<span class="icon very-big">&Ntilde;</span> ' + cms.lang.system.button.save,
+				handler: function() {
+					var field = Ext.getCmp('systemFormEmail');
+					if (field.validate()) {
+						Ext.Ajax.request({
+							url: 'cms/system/update',
+							params: {
+								email: field.getValue(),
+								language: Ext.getCmp('languageComboBox').getValue()
+							},
+							success: function(response) {
+								Ext.MessageBox.alert('Status', '<p>' + cms.lang.system.message.success1 + '</p>'
+									+ '<p>' + cms.lang.system.message.success2 + '</p>');
+							},
+							failure: function(response) {
+								Ext.MessageBox.alert('Error', cms.lang.system.message.error + ' (Error code ' + response.status + ').');
+							}
+						});
+					}
+				}
+			}],
+			
+			items: [{
+				xtype: 'fieldset',
+				title: cms.lang.system.form.title,
+				defaultType: 'textfield',
+				defaults: {
+					width:400
+				},
+				items: [{
+					fieldLabel : cms.lang.system.form.contactemail,
+					name: 'email',
+					allowBlank: false,
+					vtype: 'email',
+					id: 'systemFormEmail'
+				},{
+					name: 'language',
+					xtype: 'combobox',
+					fieldLabel: cms.lang.system.form.language,
+					id: 'languageComboBox',
+					store: Ext.getStore('languagesStore'),
+					emptyText: cms.lang.system.form.emptyText,
+					displayField: 'name',
+					valueField: 'id',
+					queryMode: 'local'
+				}]
+			},{
+				xtype: 'fieldset',
+				title: cms.lang.system.form2.title,
+				defaultType: 'panel',
+				id: 'systemFormRevision'
+			}]
+		});
+
+		Ext.MessageBox.wait(cms.lang.system.message2.waitMsg);
+		Ext.Ajax.request({
+			url: 'cms/system/read',
+			success: function(response) {
+				var r = Ext.JSON.decode(response.responseText);
+				
+				// update the contact email address
+				if (r.email != null)
+					Ext.getCmp('systemFormEmail').setValue(r.email);
+				if (r.language != null)
+					Ext.getCmp('languageComboBox').setValue(r.language);
+
+				// update the revision panel
+				var out = '<div id="systeminfo"><span class="icon very-big green">"</span> '+cms.lang.system.message2.success+'</div>';
+				if (r.revision.system != r.revision.current)
+					out = '<div id="systeminfo">'
+						+ '<p><span class="icon very-big red">8</span> '
+						+ cms.lang.system.message2.error2
+						+ ' '
+						+ cms.lang.system.message2.error3
+						+ ' <a href="http://code.google.com/p/weirdbird-cms/source/list">'
+						+ cms.lang.system.message2.error4
+						+'</a> '
+						+ cms.lang.system.message2.error5
+						+ '</p>'
+						+ '<p>&nbsp;</p>'
+						+ '<p> '
+						+ cms.lang.system.message2.error6
+						+ ' '
+						+ r.revision.system
+						+ '<br/>'
+						+ cms.lang.system.message2.error7 
+						+ ' '
+						+ r.revision.current + ' from ' + r.revision.creationdate
+						+ '</div>';
+				Ext.getCmp('systemFormRevision').add({html:out});
+				Ext.MessageBox.updateProgress(1);
+				Ext.MessageBox.hide();
+			},
+			failure: function(response) {
+				Ext.MessageBox.hide();
+				Ext.MessageBox.alert('Error', cms.lang.system.message2.error + ' (Error code ' + response.status + ').');
+			}
+		});
+
+		cms.fillContentPanel(Ext.getCmp('systemForm'));
 	}
-}
+});
 
 
 Ext.onReady(function(){
+	Ext.ns('cms');
+	cms = new WeirdbirdCMS();
 	// start the cms
 	cms.init();
 });
