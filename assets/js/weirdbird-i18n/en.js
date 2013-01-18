@@ -189,13 +189,14 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			name: 'Name',
 			email: 'Email',
 			logins: 'Logins',
-			lastlogin: 'Last login'
+			lastlogin: 'Last login',
+			roles: 'Roles'
 		},
 		form: {},
 		message: {
 			title: 'Really delete user?',
 			content: 'Do you really want to delete the selected user?',
-			error: 'The dashboard could not be loaded'
+			error: ''
 		},
 		window: {
 			title: 'Add new user',

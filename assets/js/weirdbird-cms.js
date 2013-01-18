@@ -1349,7 +1349,8 @@ Ext.define('WeirdbirdCMS', {
 				{name:'email', type:'string'}, 
 				{name:'username', type:'string'},
 				{name:'logins', type:'int'}, 
-				{name:'last_login', type:'date'}
+				{name:'last_login', type:'date'},
+				{name:'roles', type:'string'}
 			]
 		});
 
@@ -1360,9 +1361,9 @@ Ext.define('WeirdbirdCMS', {
 		        type: 'ajax',
 		       	api: {
 		       		read: 'cms/user/read',
-		       		create : 'cms/read/create',
-		            update : 'cms/read/update',
-		            destroy : 'cms/read/destroy'
+		       		create : 'cms/user/create',
+		            update : 'cms/user/update',
+		            destroy : 'cms/user/destroy'
 		       	},
 		        reader: {
 		            type: 'json',
@@ -1423,6 +1424,7 @@ Ext.define('WeirdbirdCMS', {
 		 	columns: [
 		   			{ text: cms.lang.user.grid.name, dataIndex: 'username', width: 150, editor:{ allowBlank:false } },
 		   			{ text: cms.lang.user.grid.email, dataIndex: 'email', flex: 1, editor:{ allowBlank:false } },
+		   			{ text: cms.lang.user.grid.roles, dataIndex: 'roles', width: 100},
 		   			{ text: cms.lang.user.grid.logins, dataIndex: 'logins', width: 80 },
 		   			{ text: cms.lang.user.grid.lastlogin, dataIndex: 'last_login', xtype:'datecolumn', format: 'd.m.Y' }
 			],

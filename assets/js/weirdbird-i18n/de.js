@@ -189,7 +189,8 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			name: 'Name',
 			email: 'Email',
 			logins: 'Logins',
-			lastlogin: 'Letzter Login'
+			lastlogin: 'Letzter Login',
+			roles: 'Nutzerrollen'
 		},
 		form: {},
 		message: {

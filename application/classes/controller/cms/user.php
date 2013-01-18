@@ -41,6 +41,19 @@ class Controller_CMS_User extends Controller_Template {
                {
                     $users[$i]['password'] = '';
                     $users[$i]['last_login'] = date('Y-m-d 00:00:00', $users[$i]['last_login']);
+
+                    // add user roles to the output
+                    $roles = ORM::factory('user',$users[$i]['id'])
+                                ->roles
+                                ->find_all();
+                    $roleStr = '';
+                    foreach($roles as $role) 
+                    {
+                        if ($roleStr != '')
+                            $roleStr .= '; ';
+                        $roleStr .= $role->name;
+                    }
+                    $users[$i]['roles'] = $roleStr;    
                }
 
                echo json_encode($users);
@@ -48,7 +61,55 @@ class Controller_CMS_User extends Controller_Template {
             }
             catch (Exception $e)
             {
-                echo '{"success":"false","message":"' . $e->getMessage() . '"}';
+                echo '{"success":false,"message":"' . $e->getMessage() . '"}';
+            }
+        }
+        die();
+    }
+
+    public function action_update()
+    {
+        // Load the user information
+        $user = Auth::instance()->get_user();
+         
+        // if a user is not logged in, redirect to login page
+        if (!$user)
+        {
+            Request::current()->redirect('cms/user/login');
+        }
+
+        if (HTTP_Request::POST == $this->request->method())
+        {
+            try
+            {
+                $d = json_decode($this->request->body());
+                $user = ORM::factory('user', $d->id);
+                // check if the name stays the same
+                if ($d->username == $user->username)
+                {
+                    $user->email = $d->email;
+                    $user->save();
+
+                    echo '{"success":true}';
+                }
+                // else check if the new name is not yet in use for another user
+                else if ( ! ORM::factory('user')->unique_key_exists($d->username, 'username'))
+                {
+                    $user->username = $d->username;
+                    $user->email = $d->email;
+                    $user->save();
+
+                    echo '{"success":true}';
+                }
+                // else give an error
+                else
+                {
+                    echo '{"success":false,"message":"This username already exists."}';
+                }
+            }
+            catch (Exception $e)
+            {
+                echo '{"success":false,"message":"' . $e->getMessage() . '"}';   
             }
         }
         die();
