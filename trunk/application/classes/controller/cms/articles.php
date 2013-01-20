@@ -117,6 +117,8 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 			'root' => array()
 		);
 		
+		$language = ORM::factory('system_setting')->get_language()->shortform;
+
 		$structures = ORM::factory('structure')
 			->order_by('position','asc')
 			->find_all();
@@ -150,7 +152,7 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 						}
 
 						$columnsArr[] = array(
-							'text' => 'Column ' . ($m->column + 1),
+							'text' => (($language == 'en') ? 'Area ' : 'Abschnitt ') . ($m->column + 1),
 							'expanded' => false,
 							'allowDrop' => true,
 							'mapping_id' => $m->id,
@@ -185,7 +187,7 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 				);
 			}
 			$outArr['root']['children'][] = array(
-				'text' => 'ORPHANED ARTICLES',
+				'text' => (($language == 'en') ? 'ORPHANED ARTICLES' : 'VERWAISTE ARTIKEL'),
 				'expanded' => false,
 				'allowDrop' => true,
 				'mapping_id' => null,

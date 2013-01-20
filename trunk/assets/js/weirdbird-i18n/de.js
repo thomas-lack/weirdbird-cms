@@ -12,6 +12,11 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		system: 'System'
 	},
 
+	// top bar
+	top: {
+		logout: 'Ausloggen'
+	},
+
 	// bottom bar
 	bottom: {
 		created: 'Erstellt 2012, 2013 von',
@@ -183,7 +188,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			add: 'Benutzer hinzuf&uuml;gen',
 			delete: 'Benutzer l&ouml;schen',
 			reset: 'Passwort zur&uuml;cksetzen',
-			waitMsg: 'F&uuml;ge neuen Benutzer hinzu und versende Best&auml;tigunsmail...'
+			change: 'Passwort &auml;ndern',
+			waitMsg: 'F&uuml;ge neuen Benutzer hinzu und versende Best&auml;tigunsmail...',
+			waitMsg2: 'Setze neues Passwort...'
 		},
 		grid: {
 			name: 'Name',
@@ -204,6 +211,15 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			email: 'Email',
 			save: 'Speichern',
 			reset: 'Zur&uuml;cksetzen'
+		},
+		window2: {
+			title: 'Passwort &auml;ndern',
+			current: 'Aktuelles Passwort',
+			new1: 'Neues Passwort',
+			new2: 'Passwort wiederholen',
+			save: 'Speichern',
+			reset: 'Zur&uuml;cksetzen',
+			error: 'Das neue Passwort stimmt nicht mit der Wiederholung des Passwortes &uuml;berein.'
 		}
 	},
 

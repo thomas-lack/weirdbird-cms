@@ -13,4 +13,21 @@ class Model_User extends Model_Auth_User {
 		'user_tokens' => array('model' => 'User_Token'),
 		'roles'       => array('model' => 'Role', 'through' => 'wb_roles_users'),
 	);
+
+	public function delete_user($id)
+	{
+		$roles = ORM::factory('user',$id)->roles->find_all();
+
+		foreach ($roles as $role)
+		{
+			$role->delete();
+		}
+
+		ORM::factory('user', $id)->delete();
+	}
+
+	public function create_user($name, $email)
+	{
+		// TODO : implement
+	}
 }

@@ -19,11 +19,22 @@ class Controller_Mail extends Controller
 		}
 
 		// add some info to the message
-		$message
+		$language = ORM::factory('System_Setting')->get_language();
+		if ($language->shortform == 'en')
+		{
+			$message
 			. '\n\n--\n'
 			. 'This message was sent by a standard contact formular of the following website:\n'
+			. 'http://' . $_SERVER['HTTP_HOST'];	
+		}
+		else if ($language->shortform == 'de')
+		{
+			$message
+			. '\n\n--\n'
+			. 'Diese Nachricht wurde versendet durch das standard Kontaktformular der folgenden Webseite:\n'
 			. 'http://' . $_SERVER['HTTP_HOST'];
-
+		}
+		
 		// get standard email as posted in the cms
 		$receiver = ORM::factory('system_setting')
 						->where('fieldname','=','contactemail')

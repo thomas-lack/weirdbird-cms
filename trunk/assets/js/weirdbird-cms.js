@@ -38,7 +38,7 @@ Ext.define('WeirdbirdCMS', {
 				region: 'north',
 				html: '<img class="left" src="/assets/images/logo.png"/>'
 					+ '<span class="serif headline dark-gray">weirdbird cms</span>'
-					+ '<span class="right"><a href="cms/user/logout">Logout '
+					+ '<span class="right"><a href="cms/user/logout">' + cms.lang.top.logout + ' '
 					+ '<span class="icon big dark-gray icon-space-top">v</span></a>'
 					+ '</span>'
 					+ '<span class="right right-padding-10">'
@@ -1440,7 +1440,7 @@ Ext.define('WeirdbirdCMS', {
 					    	xtype: 'form',
 					    	id: 'user-form',
 					    	border: false,
-					    	bodyCls: 'content',
+					    	bodyCls: 'content-extjs',
 					    	margin: 10,
 					    	defaults: {
 						    	anchor: '100%',
@@ -1470,6 +1470,9 @@ Ext.define('WeirdbirdCMS', {
 					    				success: function(fp, o) {
 					    					Ext.getCmp('newUserWindow').close();
 					    					Ext.getStore('usersStore').reload();
+					    				},
+					    				failure: function(fp,o) {
+					    					Ext.getCmp('newUserWindow').close();
 					    				}
 					    			});
 					    		}
@@ -1477,7 +1480,7 @@ Ext.define('WeirdbirdCMS', {
 					    },{
 					    	text: cms.lang.user.window.reset,
 					    	handler: function() {
-					    		Ext.getCmp('file-form').getForm().reset();
+					    		Ext.getCmp('user-form').getForm().reset();
 					    	}
 					    }]
 					}).show();
@@ -1507,6 +1510,79 @@ Ext.define('WeirdbirdCMS', {
 		    	handler: function() {
 		    		console.log('TODO: reset pw to newly generated one and send email to user!');
 		    	}
+		    },'-',{
+		    	text: '<span class="icon very-big">t</span> ' + cms.lang.user.button.change,
+		    	disabled: true,
+		    	itemId: 'changePassword',
+		    	handler: function() {
+		    		Ext.create('Ext.window.Window', {
+					    id: 'changePasswordWindow',
+					    title: cms.lang.user.window2.title,
+					    width: 500,
+					    
+					    items: [{
+					    	xtype: 'form',
+					    	id: 'changepassword-form',
+					    	border: false,
+					    	bodyCls: 'content-extjs',
+					    	margin: 10,
+					    	defaults: {
+						    	anchor: '100%',
+						    	allowBlank: false,
+						    	msgTarget: 'side',
+						    	labelWidth: 140
+						    },
+						    items: [{  
+						    	xtype: 'textfield',
+						    	name: 'currentpassword',
+						    	inputType: 'password',
+						    	fieldLabel: cms.lang.user.window2.current
+						    },{
+						    	xtype: 'textfield',
+						    	name: 'newpassword1',
+						    	id: 'newpassword1-form',
+						    	inputType: 'password',
+						    	fieldLabel: cms.lang.user.window2.new1
+					    	},{
+					    		xtype: 'textfield',
+					    		name: 'newpassword2',
+					    		inputType: 'password',
+					    		fieldLabel: cms.lang.user.window2.new2,
+					    		validator: function(value) {
+					    			if (value == Ext.getCmp('newpassword1-form').getValue())
+					    				return true;
+					    			else
+					    				return cms.lang.user.window2.error;
+					    		}
+					    	},{
+					    		xtype: 'hiddenfield',
+					    		name: 'id',
+					    		value: Ext.getCmp('usersGrid').getSelectionModel().getSelection()[0].get('id')
+					    	}]
+					    }],
+
+					    buttons: [{
+					    	text: cms.lang.user.window2.save,
+					    	handler: function() {
+					    		var form = Ext.getCmp('changepassword-form').getForm();
+					    		if(form.isValid()){
+					    			form.submit({
+					    				url: 'cms/user/changepassword',
+					    				waitMsg: cms.lang.user.button.waitMsg2,
+					    				success: function(fp, o) {
+					    					Ext.getCmp('changePasswordWindow').close();
+					    				}
+					    			});
+					    		}
+					    	}
+					    },{
+					    	text: cms.lang.user.window2.reset,
+					    	handler: function() {
+					    		Ext.getCmp('changepassword-form').getForm().reset();
+					    	}
+					    }]
+					}).show();
+		    	}
 		    }]
 		});
 	
@@ -1515,6 +1591,7 @@ Ext.define('WeirdbirdCMS', {
 	        // at least one user has to stay in the system
 	        Ext.getCmp('usersGrid').down('#deleteUser').setDisabled(selections.length === 0 
 	        	|| Ext.getStore('usersStore').count() === 1);
+	        Ext.getCmp('usersGrid').down('#changePassword').setDisabled(selections.length === 0);
 	        Ext.getCmp('usersGrid').down('#resetPassword').setDisabled(selections.length === 0);
 	    });
 		
