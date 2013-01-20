@@ -12,6 +12,11 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		system: 'System'
 	},
 
+	// top bar
+	top: {
+		logout: 'Logout'
+	},
+
 	// bottom bar
 	bottom: {
 		created: 'Created 2012, 2013 by',
@@ -183,7 +188,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			add: 'Add user',
 			delete: 'Delete user',
 			reset: 'Reset password',
-			waitMsg: 'Adding new user and sending confirmation mail...'
+			change: 'Change password',
+			waitMsg: 'Adding new user and sending confirmation mail...',
+			waitMsg2: 'Resetting password...'
 		},
 		grid: {
 			name: 'Name',
@@ -204,6 +211,15 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			email: 'Email',
 			save: 'Save',
 			reset: 'Reset'
+		},
+		window2: {
+			title: 'Change password',
+			current: 'Current password',
+			new1: 'New password',
+			new2: 'Repeat new password',
+			save: 'Save',
+			reset: 'Reset',
+			error: 'The new password and the repeated password are not the same.'
 		}
 	},
 
