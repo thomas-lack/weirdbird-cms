@@ -12,7 +12,7 @@ class Controller_CMS_Main extends Controller_Template
         $user = Auth::instance()->get_user();
 		
 		// if a user is not logged in, redirect to login page
-        if (!$user)
+		if (!$user)
         {
            HTTP::redirect('cms/user/login');
         }

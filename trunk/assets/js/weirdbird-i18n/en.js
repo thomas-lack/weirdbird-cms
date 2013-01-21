@@ -220,6 +220,10 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			save: 'Save',
 			reset: 'Reset',
 			error: 'The new password and the repeated password are not the same.'
+		},
+		window3: {
+			title: 'User notified',
+			message: 'An email notification with further instructions has been sent to the new user.'
 		}
 	},
 
