@@ -19,10 +19,10 @@ class Model_User_Pending extends ORM {
         $pendings = ORM::factory('User_Pending')
                         ->find_all();
 
-        $now = new DateTime();
+        $now = time();
         foreach ($pendings as $p)
         {
-            $date = new DateTime($p->valid_until);
+            $date = intval($p->valid_until);
             if ($date < $now)
                 $p->delete();
         }

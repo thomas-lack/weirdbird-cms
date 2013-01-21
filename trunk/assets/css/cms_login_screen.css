@@ -39,6 +39,9 @@ input[type=submit]{
     color:black;
     width:180px;
 }
+pre {
+	font-size: 13px;
+}
 
 a {
 	color:white;

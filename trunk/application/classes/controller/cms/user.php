@@ -149,7 +149,7 @@ class Controller_CMS_User extends Controller_Template {
 
                 // create new time until the validation is empty
                 $validTime = time() + (24 * 60 * 60); // add 24 hours to activate the account
-                $validTime = date('Y-m-d H:i:s', $validTime);
+                //$validTime = date('Y-m-d H:i:s', $validTime);
                 
                 // get the current post data
                 $username = $this->request->post('username');
@@ -312,7 +312,13 @@ class Controller_CMS_User extends Controller_Template {
             'password' => $password,
             'password_confirm' => $password
         );
-        ORM::factory('User')->create_user($newUser, array_keys($newUser));
+        $user = ORM::factory('user')->create_user($newUser, array(
+            'username',
+            'password',
+            'email'            
+        ));
+        //$user->add('roles', ORM::factory('role'), array('name' => 'admin'));
+        $user->add('roles', ORM::factory('role', array('name' => 'login')));
 
         // delete pending user
         $pUser->delete();
@@ -322,16 +328,16 @@ class Controller_CMS_User extends Controller_Template {
         if ($language->shortform == 'en')
         {
             $message = 'Validation successful.<br/><br/>'
-                . 'Your username:<br/>' . $newUser['username']
-                . '<br/><br/>'
-                . 'Your password:<br/>' . $password;
+                . 'Your username:<br/><pre>' . $newUser['username'] . '</pre>'
+                . '<br/>'
+                . 'Your password:<br/><pre>' . $password . '</pre>';
         }
         else if ($language->shortform == 'de')
         {
             $message = 'Validierung erfolgreich.<br/><br/>'
-                . 'Ihr Nutzername:<br/>' . $newUser['username']
-                . '<br/><br/>'
-                . 'Ihr Passwort:<br/>' . $password; 
+                . 'Ihr Nutzername:<br/><pre>' . $newUser['username'] . '</pre>'
+                . '<br/>'
+                . 'Ihr Passwort:<br/><pre>' . $password . '</pre>'; 
         }
 
         $username = $pUser->username;

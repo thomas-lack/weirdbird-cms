@@ -12,5 +12,3 @@
         <?= $message; ?>
     </h5>
 <? endif; ?>
-
-<p><?= HTML::anchor('cms/user/rest', 'Forgot your password?'); ?></p>

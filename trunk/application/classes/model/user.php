@@ -25,9 +25,4 @@ class Model_User extends Model_Auth_User {
 
 		ORM::factory('user', $id)->delete();
 	}
-
-	public function create_user($name, $email)
-	{
-		// TODO : implement
-	}
 }
