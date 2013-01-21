@@ -220,6 +220,10 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			save: 'Speichern',
 			reset: 'Zur&uuml;cksetzen',
 			error: 'Das neue Passwort stimmt nicht mit der Wiederholung des Passwortes &uuml;berein.'
+		},
+		window3: {
+			title: 'Benutzer wurde benachrichtigt',
+			message: 'Eine Nachricht mit weiterf&uuml;hrenden Informationen wurde per Email an die angegebene Adresse verschickt.'
 		}
 	},
 

@@ -1455,6 +1455,7 @@ Ext.define('WeirdbirdCMS', {
 						    },{
 						    	xtype: 'textfield',
 						    	name: 'email',
+						    	vtype: 'email',
 						    	fieldLabel: cms.lang.user.window.email
 					    	}]
 					    }],
@@ -1469,7 +1470,7 @@ Ext.define('WeirdbirdCMS', {
 					    				waitMsg: cms.lang.user.button.waitMsg,
 					    				success: function(fp, o) {
 					    					Ext.getCmp('newUserWindow').close();
-					    					Ext.getStore('usersStore').reload();
+					    					Ext.MessageBox.alert(cms.lang.user.window3.title,cms.lang.user.window3.message);
 					    				},
 					    				failure: function(fp,o) {
 					    					Ext.getCmp('newUserWindow').close();

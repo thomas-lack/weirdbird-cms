@@ -16,12 +16,15 @@ class Controller_CMS_User extends Controller_Template {
         // if a user is not logged in, redirect to login page
         if (!$user)
         {
-            Request::current()->redirect('cms/user/login');
+            HTTP::redirect('cms/user/login');
         }
     }
  
     public function action_read()
     {
+        // user validation
+        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+
         if (HTTP_Request::GET == $this->request->method())
         {
             try 
@@ -69,13 +72,16 @@ class Controller_CMS_User extends Controller_Template {
 
     public function action_update()
     {
+        // user validation
+        if (!Auth::instance()->get_user()) Request::current()->redirect('cms/user/login');
+
         // Load the user information
         $user = Auth::instance()->get_user();
          
         // if a user is not logged in, redirect to login page
         if (!$user)
         {
-            Request::current()->redirect('cms/user/login');
+            HTTP::redirect('cms/user/login');
         }
 
         if (HTTP_Request::POST == $this->request->method())
@@ -123,22 +129,33 @@ class Controller_CMS_User extends Controller_Template {
      */
     public function action_create()
     {
-        /*$this->template->content = View::factory('cms/user/create')
-            ->bind('errors', $errors)
-            ->bind('message', $message);
-        */
+        /*$user = Auth::instance()->get_user();
+        
+        // if a user is not logged in, redirect to login page
+        if (!$user)
+        {
+           HTTP::redirect('cms/user/login');
+        }*/
+        // user validation
+        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
 
         if (HTTP_Request::POST == $this->request->method())
         {          
             try {
                 // create new pending user entry: activate account
                 $reference = $this->getRandomString(16);
-                while (! ORM::factory('User_Pending')->is_unique_reference($reference))
-                    $reference = $this->getRandomString(16);
-                $validTime = time() + (2 * 60 * 60);
-                $validTime = date('Y-m-d H:i:s');
+                if (! ORM::factory('User_Pending')->is_unique_reference($reference))
+                    throw new Exception('Not able to generate unique reference. Please try again.');
+
+                // create new time until the validation is empty
+                $validTime = time() + (24 * 60 * 60); // add 24 hours to activate the account
+                $validTime = date('Y-m-d H:i:s', $validTime);
+                
+                // get the current post data
                 $username = $this->request->post('username');
                 $email = $this->request->post('email');
+                
+                // create a new db entry
                 $pending = ORM::factory('User_Pending');
                 $pending->type = 'activate';
                 $pending->reference = $reference;
@@ -146,8 +163,6 @@ class Controller_CMS_User extends Controller_Template {
                 $pending->email = $email;
                 $pending->valid_until = $validTime;
                 $pending->save();
-
-                // TODO : add valid_until field
 
                 // send email notification to user email address
                 $link = 'http://'.$_SERVER['HTTP_HOST'].'/'.'cms/user/validate/'.$reference;
@@ -166,7 +181,7 @@ class Controller_CMS_User extends Controller_Template {
                         . '<br/><br/>'
                         . 'someone added you to the <i>weirdbird cms</i> of '
                         . $_SERVER['HTTP_HOST']
-                        . '. Please validate your account by visiting the following link during the next 2 hours:'
+                        . '. Please validate your account by visiting the following link during the next 24 hours:'
                         . '<br/><br/>'
                         . '<a href="' . $link . '">' . $link . '</a>'
                         . '<br/><br/>--</br>'
@@ -180,7 +195,7 @@ class Controller_CMS_User extends Controller_Template {
                         . '<br/><br/>'
                         . 'jemand hat Sie zum <i>weirdbird cms</i> der Webseite '
                         . $_SERVER['HTTP_HOST']
-                        . ' eingeladen. Bitte validieren Sie innerhalb der n&auml;chsten 2 Stunden Ihren Account durch das Aufrufen des folgenden Links:'
+                        . ' eingeladen. Bitte validieren Sie innerhalb der n&auml;chsten 24 Stunden Ihren Account durch das Aufrufen des folgenden Links:'
                         . '<br/><br/>'
                         . '<a href="' . $link . '">' . $link . '</a>'
                         . '<br/><br/>--</br>'
@@ -188,7 +203,7 @@ class Controller_CMS_User extends Controller_Template {
                 }
 
                 //mail($email, $subject, $message, 'From: '.$sender);
-                echo '{"success":true,"message":"' . $message . '"}'; 
+                echo '{"success":true}'; 
                 
                 /*
                 $newPassword = $this->getRandomString(8);
@@ -248,36 +263,87 @@ class Controller_CMS_User extends Controller_Template {
     {
         $reference = $this->request->param('id');
 
-        // TODO : delete all pending users with valid_time in the past
+        // remove pendings that are no longer valid from the db
+        ORM::factory('User_Pending')->delete_invalid_pendings();
 
+        // get the current pending user data
         $pUser = ORM::factory('User_Pending')
                         ->where('reference','=',$reference)
                         ->find();
+        
+        // get current system language
+        $lang = ORM::factory('System_Setting')->get_language();
 
-        if ($pUser->type == 'activate')
+        // no pending entry found ?
+        if (!$pUser->loaded())
         {
-            $password = $this->getRandomString(8);
-
-            $user = ORM::factory('User');
-            $user->email = $pUser->email;
-            $user->username = $pUser->username;
-            $user->password = $password;
-            $user->save();
-
-            $message = $password;
-            $username = $pUser->username;
-            $this->template->content = View::factory('cms/user/validate')
-                ->bind('message', $message)
-                ->bind('username', $username)
-                ->bind('password', $password);
-
-            // TODO : remove errors
-            // TODO: add roles
+            $message = 'error';
+            if ($lang->shortform == 'en')
+                $message = 'No validation possible.';
+            else if ($lang->shortform == 'de')
+                $message = 'Keine Validierung m&ouml;glich.';
+            
+            // call standard login screen with error message
+            $this->template->content = View::factory('cms/user/login')
+                ->bind('message', $message);
         }
+        
+        // account activation
+        else if ($pUser->type == 'activate')
+        {
+            $this->activate_account($pUser, $lang);
+        }
+        // password resetting
         else if ($pUser->type == 'resetpw')
         {
             // TODO: implement
         }
+    }
+
+    private function activate_account($pUser, $language)
+    {
+        // generate new password
+        $password = $this->getRandomString(8);
+
+        // add new user to the db
+        $newUser = array(
+            'email' => $pUser->email,
+            'username' => $pUser->username,
+            'password' => $password,
+            'password_confirm' => $password
+        );
+        ORM::factory('User')->create_user($newUser, array_keys($newUser));
+
+        // delete pending user
+        $pUser->delete();
+
+        // go back to standard login screen with new pw as message
+        $message = 'New Password: ' . $password;
+        if ($language->shortform == 'en')
+        {
+            $message = 'Validation successful.<br/><br/>'
+                . 'Your username:<br/>' . $newUser['username']
+                . '<br/><br/>'
+                . 'Your password:<br/>' . $password;
+        }
+        else if ($language->shortform == 'de')
+        {
+            $message = 'Validierung erfolgreich.<br/><br/>'
+                . 'Ihr Nutzername:<br/>' . $newUser['username']
+                . '<br/><br/>'
+                . 'Ihr Passwort:<br/>' . $password; 
+        }
+
+        $username = $pUser->username;
+        $this->template->content = View::factory('cms/user/validate')
+            ->bind('message', $message)
+            ->bind('username', $username)
+            ->bind('password', $password);
+    }
+
+    private function reset_password($pUser)
+    {
+
     }
 
     public function action_login()
@@ -305,6 +371,9 @@ class Controller_CMS_User extends Controller_Template {
 
     public function action_destroy()
     {
+        // user validation
+        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+
         if (HTTP_Request::POST == $this->request->method())
         {
             try
@@ -333,6 +402,9 @@ class Controller_CMS_User extends Controller_Template {
 
     public function action_changepassword()
     {
+        // user validation
+        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+
         if (HTTP_Request::POST == $this->request->method())
         {
             try

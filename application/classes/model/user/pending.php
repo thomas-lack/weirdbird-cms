@@ -8,11 +8,23 @@ class Model_User_Pending extends ORM {
     {
     	$pendings = ORM::factory('User_Pending')
     					->where('reference','=',$reference)
-    					->find_all();
+    					->count_all();
 
-    	foreach ($pendings as $pending)
-    		return false;
+    	// if one or more entries are found -> return false (no unique entry)
+        return (intval($pendings) == 0);
+    }
 
-    	return true;
+    public function delete_invalid_pendings()
+    {
+        $pendings = ORM::factory('User_Pending')
+                        ->find_all();
+
+        $now = new DateTime();
+        foreach ($pendings as $p)
+        {
+            $date = new DateTime($p->valid_until);
+            if ($date < $now)
+                $p->delete();
+        }
     }
 }

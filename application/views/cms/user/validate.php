@@ -1,6 +1,6 @@
 <?= Form::open('cms/user/login'); ?>
  
-<?= Form::input('username', HTML::chars($username); ?>
+<?= Form::input('username', HTML::chars($username)); ?>
  
 <?= Form::password('password'); ?>
 
