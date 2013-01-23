@@ -19,9 +19,9 @@ return array
 			 * Ports and sockets may be appended to the hostname.
 			 */
 			'hostname'   => 'localhost',
-			'database'   => 'karmeliterschule',
-			'username'   => 'root',
-			'password'   => 'adminadmin',
+			'database'   => 'your_db_name',
+			'username'   => 'your_db_user_name',
+			'password'   => 'your_db_password',
 			'persistent' => TRUE,
 		),
 		'table_prefix' => '',

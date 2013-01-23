@@ -1,6 +1,6 @@
 Ext.define('WeirdbirdCMS', {
 	// Switch between debug and productive console outputs
-	debug: true,
+	debug: false,
 	// since dashoard data is loaded via AJAX, we can buffer it for later use
 	dashboardBuffer: null,
 	// the current username buffer
@@ -73,8 +73,6 @@ Ext.define('WeirdbirdCMS', {
 				html: '<span class="sans-serif small">' 
 					+ cms.lang.bottom.created
 					+ ' '
-					+ '<a href="http://twitter.com/thomaslack">Thomas Lack</a>'
-					+ '. '
 					+ cms.lang.bottom.moreinfo
 					+ ' '
 					+ '<a href="http://code.google.com/p/weirdbird-cms/">'
@@ -1465,17 +1463,35 @@ Ext.define('WeirdbirdCMS', {
 					    	handler: function() {
 					    		var form = Ext.getCmp('user-form').getForm();
 					    		if(form.isValid()){
-					    			form.submit({
-					    				url: 'cms/user/create',
-					    				waitMsg: cms.lang.user.button.waitMsg,
-					    				success: function(fp, o) {
-					    					Ext.getCmp('newUserWindow').close();
-					    					Ext.MessageBox.alert(cms.lang.user.window3.title,cms.lang.user.window3.message);
-					    				},
-					    				failure: function(fp,o) {
-					    					Ext.getCmp('newUserWindow').close();
-					    				}
+					    			// check if no other user has the new name / email address before
+					    			// sending the data to the backend
+					    			var dataAlreadySet = false;
+					    			var values = form.getValues();
+					    			
+					    			Ext.getStore('usersStore').each(function(record, index){
+					    				if (record.get('username') == values.username 
+					    					|| record.get('email') == values.email)
+					    					dataAlreadySet = true;
 					    			});
+					    			
+					    			if (!dataAlreadySet)
+					    			{
+					    				form.submit({
+						    				url: 'cms/user/create',
+						    				waitMsg: cms.lang.user.button.waitMsg,
+						    				success: function(fp, o) {
+						    					Ext.getCmp('newUserWindow').close();
+						    					Ext.MessageBox.alert(cms.lang.user.window3.title,cms.lang.user.window3.message);
+						    				},
+						    				failure: function(fp,o) {
+						    					Ext.getCmp('newUserWindow').close();
+						    				}
+						    			});	
+					    			}
+					    			else
+					    			{
+					    				Ext.MessageBox.alert(cms.lang.user.window5.title, cms.lang.user.window5.message);
+					    			}
 					    		}
 					    	}
 					    },{
@@ -1509,7 +1525,32 @@ Ext.define('WeirdbirdCMS', {
 		    	disabled: true,
 		    	itemId: 'resetPassword',
 		    	handler: function() {
-		    		console.log('TODO: reset pw to newly generated one and send email to user!');
+		    		Ext.Msg.show({
+		    			title: cms.lang.user.window4.title,
+		    			msg: cms.lang.user.window4.message,
+		    			buttons: Ext.Msg.YESNO,
+		    			icon: Ext.Msg.WARNING,
+		    			fn: function(btn) {
+		    				if (btn == 'yes') {
+		    					var record = Ext.getCmp('usersGrid').getSelectionModel().getSelection()[0];
+		    					Ext.Ajax.request({
+									url: 'cms/user/silentresetpassword',
+									params: {
+										id: record.get('id'),
+										email: record.get('email'),
+										username: record.get('username')
+
+									},
+									success: function(response) {
+										Ext.MessageBox.alert('Status', cms.lang.user.window4.success);
+									},
+									failure: function(response) {
+										Ext.MessageBox.alert('Error', cms.lang.user.window4.error);
+									}
+								});
+		    				}
+		    			}
+		    		});
 		    	}
 		    },'-',{
 		    	text: '<span class="icon very-big">t</span> ' + cms.lang.user.button.change,

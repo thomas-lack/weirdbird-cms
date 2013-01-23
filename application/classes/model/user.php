@@ -16,12 +16,8 @@ class Model_User extends Model_Auth_User {
 
 	public function delete_user($id)
 	{
-		$roles = ORM::factory('user',$id)->roles->find_all();
-
-		foreach ($roles as $role)
-		{
-			$role->delete();
-		}
+		// delete the user <-> role mappings manually
+		DB::query(Database::DELETE, 'DELETE FROM wb_roles_users WHERE user_id="' . $id . '"');
 
 		ORM::factory('user', $id)->delete();
 	}

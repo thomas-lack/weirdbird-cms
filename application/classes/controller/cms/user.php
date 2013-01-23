@@ -4,11 +4,21 @@ class Controller_CMS_User extends Controller_Template {
 	
 	// override standard template file 'template'
 	public $template = 'cms/user/template';
+
+    private $language = null;
+
+    public function before()
+    {
+        parent::before();
+        $this->language = ORM::factory('System_Setting')->get_language();
+    }
 	
+    /**
+     * Standard view delivered by this controller class
+     */
     public function action_index()
     {
-        $this->template->content = View::factory('cms/user/info')
-            ->bind('user', $user);
+        $this->template->content = View::factory('cms/user/login');
          
         // Load the user information
         $user = Auth::instance()->get_user();
@@ -20,6 +30,9 @@ class Controller_CMS_User extends Controller_Template {
         }
     }
  
+    /**
+     * Read all user data if a user is logged in and show the result unparsed as json string
+     */
     public function action_read()
     {
         // user validation
@@ -70,6 +83,9 @@ class Controller_CMS_User extends Controller_Template {
         die();
     }
 
+    /**
+     * Updating a user entry in the db silently (without rendering an extra view)
+     */
     public function action_update()
     {
         // user validation
@@ -122,6 +138,31 @@ class Controller_CMS_User extends Controller_Template {
     }
 
     /**
+     * Deletion of an user db entry (silently).
+     */
+    public function action_destroy()
+    {
+        // user validation
+        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+
+        if (HTTP_Request::POST == $this->request->method())
+        {
+            try
+            {
+                $request = json_decode($this->request->body());
+
+                ORM::factory('user')->delete_user($request->id);
+                echo '{"success":true}';    
+            }
+            catch (Exception $e)
+            {
+                echo '{"success":false,"message":"' . $e->getMessage() . '"}';
+            }
+        }
+        die();
+    }
+
+    /**
      * The action_create() method is a first step method in the process of 
      * creating a new user. In this step, the potential new user is written to 
      * an extra table in the database and notified via mail to activate the 
@@ -129,13 +170,6 @@ class Controller_CMS_User extends Controller_Template {
      */
     public function action_create()
     {
-        /*$user = Auth::instance()->get_user();
-        
-        // if a user is not logged in, redirect to login page
-        if (!$user)
-        {
-           HTTP::redirect('cms/user/login');
-        }*/
         // user validation
         if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
 
@@ -166,16 +200,15 @@ class Controller_CMS_User extends Controller_Template {
 
                 // send email notification to user email address
                 $link = 'http://'.$_SERVER['HTTP_HOST'].'/'.'cms/user/validate/'.$reference;
-                $language = ORM::factory('System_Setting')->get_language();
                 $message = '';
                 $subject = '';
                 $sender = ORM::factory('System_Setting')->get_email();
                 if ($sender == null)
                     $sender = 'noreply@' . $_SERVER['HTTP_HOST'];
 
-                if ($language->shortform == 'en')
+                if ($this->language->shortform == 'en')
                 {
-                    $subject = 'weirdbird cms invitation';
+                    $subject = '[weirdbird cms] invitation';
 
                     $message .= 'Hi, '
                         . '<br/><br/>'
@@ -187,9 +220,9 @@ class Controller_CMS_User extends Controller_Template {
                         . '<br/><br/>--</br>'
                         . 'This message was sent automatically. Please ignore this email in case you have no clue what all this means.';
                 }
-                else if ($language->shortform == 'de')
+                else if ($this->language->shortform == 'de')
                 {
-                    $subject = 'weirdbird cms Einladung';
+                    $subject = '[weirdbird cms] Einladung';
 
                     $message .= 'Hi, '
                         . '<br/><br/>'
@@ -202,45 +235,8 @@ class Controller_CMS_User extends Controller_Template {
                         . 'Diese Nachricht wurde automatisch versendet. Bitte ignorieren Sie diese Email falls Sie nicht wissen worum es sich hierbei handelt.';
                 }
 
-                //mail($email, $subject, $message, 'From: '.$sender);
+                mail($email, $subject, $message, 'From: '.$sender);
                 echo '{"success":true}'; 
-                
-                /*
-                $newPassword = $this->getRandomString(8);
-
-                $newUser = array(
-                    'username' => $this->request->post('username'),
-                    'password' => $newPassword,
-                    'email' => $this->request->post('email')
-                );
-                var_dump(ORM::factory('User')->values($newUser, array('username','password','email')));
-                $user = ORM::factory('User')->create_user($newUser, array(
-                    'username',
-                    'password',
-                    'email',
-                ));
-
-                $user->add('roles', ORM::factory('role'), array('name' => 'admin'));
-                */
-
-                /*
-                // Create the user using form values
-                $user = ORM::factory('user')->create_user($this->request->post(), array(
-                    'username',
-                    'password',
-                    'email'            
-                ));
-                 
-                // Grant user login role
-                $user->add('roles', ORM::factory('role', array('name' => 'login')));
-                 
-                // Reset values so form is not sticky
-                $_POST = array();
-                
-                // Set success message
-                $message = "You have added user '{$user->username}' to the database";
-                */
-                //echo '{"success":true,"message":"' . $newPassword . '"}';    
             } 
             catch (Exception $e)
             {
@@ -259,6 +255,193 @@ class Controller_CMS_User extends Controller_Template {
         die();
     }
     
+    /**
+     * Adds an entry to the db about a pending user action: reset a password
+     */
+    public function action_resetpassword()
+    {
+        if (HTTP_Request::POST == $this->request->method())
+        {          
+            try 
+            {
+                // post data was found -> so an input was given
+                // check if the input was a username or an email address
+                $user = ORM::factory('User')
+                            ->where('username','=',$this->request->post('userdata'))
+                            ->find();
+                
+                if (!$user->loaded()) 
+                {
+                    $user = ORM::factory('User')
+                                ->where('email','=',$this->request->post('userdata'))
+                                ->find();
+                }
+
+                // if still not loaded, there exists no entry with the given information
+                // -> show error message
+                if (!$user->loaded())
+                {
+                    if ($this->language->shortform == 'en')
+                    {
+                        $message = '<p>Error</p><p>No user with the given data could be found.</p>';
+                        $headline = 'weirdbird cms // password reset';
+                    }
+                    else if ($this->language->shortform == 'de')
+                    {
+                        $message = '<p>Error</p><p>Es konnte kein Nutzer gefunden werden der zu den angegebenen Daten passt.</p>';
+                        $headline = 'weirdbird cms // passwort reset';
+                    }
+
+                    $this->template->headline = $headline;
+                    $this->template->content = View::factory('cms/user/resetpassword')
+                        ->bind('message', $message);
+                }
+                // otherwise create a pending user entry in the db and send a verification email
+                else
+                {
+                    $validTime = time() + (24 * 60 * 60);
+                    $reference = $this->getRandomString(16);
+
+                    // create a new db entry
+                    $pending = ORM::factory('User_Pending');
+                    $pending->type = 'resetpw';
+                    $pending->reference = $reference;
+                    $pending->username = $user->username;
+                    $pending->email = $user->email;
+                    $pending->user_id = $user->id;
+                    $pending->valid_until = $validTime;
+                    $pending->save();
+
+                    // send email notification to user email address
+                    $link = 'http://'.$_SERVER['HTTP_HOST'].'/'.'cms/user/validate/'.$reference;
+                    $this->sendResetPasswordValidationMail($link);
+
+                    if ($this->language->shortform == 'en')
+                        $message = 'A verification email was sent to the users address. Please check your emails.';
+                    else if ($this->language->shortform == 'de')
+                        $message = 'Eine Email wurde an die Adresse des Nutzers versendet. Bitte &uuml;berpr&uuml;fen Sie Ihr Postfach.';
+                    $this->template->content = View::factory('cms/user/login')
+                        ->bind('language', $this->language)
+                        ->bind('message', $message); 
+                }
+                
+            }
+            catch (Exception $e)
+            {
+                echo '{"success":false,"message":"' . $e->getMessage() . '"}';
+            }
+        }
+        // no post data was found -> no silent mode, because 'forgot password'
+        // link at the login page was clicked
+        else
+        {
+            if ($this->language->shortform == 'en')
+            {
+                $message = 'Please enter your weirdbird cms <b>user name</b> <i>or</i> <b>email address</b> into the field above.'
+                    . ' After clicking the <i>Reset</i> button an email with further instructions will be send to your email address.';
+                $headline = 'weirdbird cms // password reset';
+            }
+            else if ($this->language->shortform == 'de')
+            {
+                $message = '<p>Bitte geben Sie Ihren weirdbird cms <i>Nutzernamen</i> oder Ihre <i>Emailadresse</i> in das obige Feld ein.</p>'
+                    . '<p>Nach klicken des <i>Reset</i> Buttons wird eine Nachricht mit weiteren Instruktionen an Ihre Emailadresse geschickt.</p>';
+                $headline = 'weirdbird cms // passwort reset';
+            }
+
+            $this->template->headline = $headline;
+            $this->template->content = View::factory('cms/user/resetpassword')
+                ->bind('message', $message);
+        }
+    }
+
+    /**
+     * Adds an entry to the db about a pending user action: reset a password
+     * (This is called silently without an extra rendered view as output)
+     */
+    public function action_silentresetpassword()
+    {
+        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+
+        if (HTTP_Request::POST == $this->request->method())
+        {          
+            try 
+            {
+                $data = $this->request->post();
+                $validTime = time() + (24 * 60 * 60);
+                $reference = $this->getRandomString(16);
+
+                // create a new db entry
+                $pending = ORM::factory('User_Pending');
+                $pending->type = 'resetpw';
+                $pending->reference = $reference;
+                $pending->username = $data['username'];
+                $pending->email = $data['email'];
+                $pending->user_id = $data['id'];
+                $pending->valid_until = $validTime;
+                $pending->save();
+
+                // send email notification to user email address
+                $link = 'http://'.$_SERVER['HTTP_HOST'].'/'.'cms/user/validate/'.$reference;
+                $this->sendResetPasswordValidationMail($link);
+
+                echo '{"success":true}';
+            }
+            catch (Exception $e)
+            {
+                echo '{"success":false,"message":"' . $e->getMessage() . '"}';
+            }
+        }
+        die();
+    }
+
+    /**
+     * Helper method to send a standard email to validate a password resetting request.
+     *
+     * $link        String          A link that is posted in the email pointing to the validation url
+     */
+    private function sendResetPasswordValidationMail($link)
+    {
+        $message = '';
+        $subject = '';
+        $sender = ORM::factory('System_Setting')->get_email();
+        if ($sender == null)
+            $sender = 'noreply@' . $_SERVER['HTTP_HOST'];
+
+        if ($this->language->shortform == 'en')
+        {
+            $subject = '[weirdbird cms] password reset';
+
+            $message .= 'Hi, '
+                . '<br/><br/>'
+                . 'you have requested a password reset for your account of the <i>weirdbird cms</i> of '
+                . $_SERVER['HTTP_HOST']
+                . '. Please validate this request by visiting the following link during the next 24 hours:'
+                . '<br/><br/>'
+                . '<a href="' . $link . '">' . $link . '</a>'
+                . '<br/><br/>--</br>'
+                . 'This message was sent automatically. Please ignore this email in case you have no clue what all this means.';
+        }
+        else if ($this->language->shortform == 'de')
+        {
+            $subject = '[weirdbird cms] Passwort Reset';
+
+            $message .= 'Hi, '
+                . '<br/><br/>'
+                . 'Sie haben eine R&uuml;cksetzung des Passwortes Ihres <i>weirdbird cms</i> Accounts auf der Webseite '
+                . $_SERVER['HTTP_HOST']
+                . ' angefordert. Bitte validieren Sie diese Anfrage innerhalb der n&auml;chsten 24 Stunden durch das Aufrufen des folgenden Links:'
+                . '<br/><br/>'
+                . '<a href="' . $link . '">' . $link . '</a>'
+                . '<br/><br/>--</br>'
+                . 'Diese Nachricht wurde automatisch versendet. Bitte ignorieren Sie diese Email falls Sie nicht wissen worum es sich hierbei handelt.';
+        }
+
+        mail($email, $subject, $message, 'From: '.$sender);
+    }
+
+    /**
+     *  2nd step in creating a new user and 
+     */
     public function action_validate()
     {
         $reference = $this->request->param('id');
@@ -271,16 +454,13 @@ class Controller_CMS_User extends Controller_Template {
                         ->where('reference','=',$reference)
                         ->find();
         
-        // get current system language
-        $lang = ORM::factory('System_Setting')->get_language();
-
         // no pending entry found ?
         if (!$pUser->loaded())
         {
             $message = 'error';
-            if ($lang->shortform == 'en')
+            if ($this->language->shortform == 'en')
                 $message = 'No validation possible.';
-            else if ($lang->shortform == 'de')
+            else if ($this->language->shortform == 'de')
                 $message = 'Keine Validierung m&ouml;glich.';
             
             // call standard login screen with error message
@@ -291,16 +471,19 @@ class Controller_CMS_User extends Controller_Template {
         // account activation
         else if ($pUser->type == 'activate')
         {
-            $this->activate_account($pUser, $lang);
+            $this->activate_account($pUser);
         }
         // password resetting
         else if ($pUser->type == 'resetpw')
         {
-            // TODO: implement
+            $this->reset_password($pUser);
         }
     }
 
-    private function activate_account($pUser, $language)
+    /**
+     * Helper method to validate and execute account activation
+     */
+    private function activate_account($pUser)
     {
         // generate new password
         $password = $this->getRandomString(8);
@@ -317,22 +500,24 @@ class Controller_CMS_User extends Controller_Template {
             'password',
             'email'            
         ));
-        //$user->add('roles', ORM::factory('role'), array('name' => 'admin'));
+        // grant user rights to login and administrate data
+        // TODO: implement better user role system
         $user->add('roles', ORM::factory('role', array('name' => 'login')));
+        $user->add('roles', ORM::factory('role', array('name' => 'admin')));    
 
         // delete pending user
         $pUser->delete();
 
         // go back to standard login screen with new pw as message
         $message = 'New Password: ' . $password;
-        if ($language->shortform == 'en')
+        if ($this->language->shortform == 'en')
         {
             $message = 'Validation successful.<br/><br/>'
                 . 'Your username:<br/><pre>' . $newUser['username'] . '</pre>'
                 . '<br/>'
                 . 'Your password:<br/><pre>' . $password . '</pre>';
         }
-        else if ($language->shortform == 'de')
+        else if ($this->language->shortform == 'de')
         {
             $message = 'Validierung erfolgreich.<br/><br/>'
                 . 'Ihr Nutzername:<br/><pre>' . $newUser['username'] . '</pre>'
@@ -340,22 +525,69 @@ class Controller_CMS_User extends Controller_Template {
                 . 'Ihr Passwort:<br/><pre>' . $password . '</pre>'; 
         }
 
-        $username = $pUser->username;
+        $username = $newUser['username'];
+        if ($this->language->shortform == 'en')
+            $headline = 'weirdbird cms // activate account';
+        else if ($this->language->shortform == 'de')
+            $headline = 'weirdbird cms // account aktivieren';
+        $this->template->headline = $headline;
         $this->template->content = View::factory('cms/user/validate')
             ->bind('message', $message)
             ->bind('username', $username)
             ->bind('password', $password);
     }
 
+    /**
+     * Helper method to validate and execute password resetting
+     */
     private function reset_password($pUser)
     {
+        $password = $this->getRandomString(8);
 
+        $changeUser = array(
+            'email' => $pUser->email,
+            'username' => $pUser->username,
+            'password' => $password,
+            'password_confirm' => $password
+        );
+
+        $user = ORM::factory('User', $pUser->user_id)
+            ->update_user($changeUser, array('email', 'username', 'password'));
+
+        $pUser->delete();
+
+        $message = 'New Password: ' . $password;
+        if ($this->language->shortform == 'en')
+        {
+            $message = 'Validation successful.<br/><br/>'
+                . 'Your new password:<br/><pre>' . $password . '</pre>';
+        }
+        else if ($this->language->shortform == 'de')
+        {
+            $message = 'Validierung erfolgreich.<br/><br/>'
+                . 'Ihr neues Passwort:<br/><pre>' . $password . '</pre>'; 
+        }
+
+        $username = $changeUser['username'];
+        if ($this->language->shortform == 'en')
+            $headline = 'weirdbird cms // password reset';
+        else if ($this->language->shortform == 'de')
+            $headline = 'weirdbird cms // passwort reset';
+        $this->template->headline = $headline;
+        $this->template->content = View::factory('cms/user/validate')
+            ->bind('message', $message)
+            ->bind('username', $username)
+            ->bind('password', $password);
     }
 
+    /**
+     * Login method for the cms
+     */
     public function action_login()
     {
-        $this->template->content = View::factory('cms/user/login')
-            ->bind('message', $message);
+       $this->template->content = View::factory('cms/user/login')
+            ->bind('message', $message)
+            ->bind('language', $this->language);
              
         if (HTTP_Request::POST == $this->request->method())
         {
@@ -370,33 +602,17 @@ class Controller_CMS_User extends Controller_Template {
             }
             else
             {
-                $message = 'Login failed';
+                if ($this->language->shortform == 'en')
+                    $message = 'Login failed';
+                else if ($this->language->shortform == 'de')
+                    $message = 'Login fehlgeschlagen';
             }
         }
     }
 
-    public function action_destroy()
-    {
-        // user validation
-        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
-
-        if (HTTP_Request::POST == $this->request->method())
-        {
-            try
-            {
-                $request = json_decode($this->request->body());
-
-                ORM::factory('user')->delete_user($request->id);
-                echo '{"success":true}';    
-            }
-            catch (Exception $e)
-            {
-                echo '{"success":false,"message":"' . $e->getMessage() . '"}';
-            }
-        }
-        die();
-    }
-     
+    /**
+     *  User logout method
+     */
     public function action_logout()
     {
         // Log user out
@@ -406,6 +622,9 @@ class Controller_CMS_User extends Controller_Template {
         HTTP::redirect('cms');
     }
 
+    /**
+     * Action to call if a user password is to be changed
+     */
     public function action_changepassword()
     {
         // user validation

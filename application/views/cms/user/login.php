@@ -7,10 +7,19 @@
 <p><?= Form::submit('login', 'Login'); ?></p>
 <?= Form::close(); ?>
  
-<? if ($message) : ?>
+<? if (isset($message)) : ?>
     <h5 class="message">
         <?= $message; ?>
     </h5>
 <? endif; ?>
 
-<p><?= HTML::anchor('cms/user/rest', 'Forgot your password?'); ?></p>
+<p>
+	<? 
+	if (!isset($language) || $language->shortform == 'en')
+		$forgotpw = 'Forgot your password?';
+	else if ($language->shortform == 'de')
+		$forgotpw = 'Passwort vergessen?';
+	
+	echo HTML::anchor('cms/user/resetpassword', $forgotpw); 
+	?>
+</p>

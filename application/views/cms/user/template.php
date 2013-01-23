@@ -12,7 +12,14 @@
 </head>
 <body>
     <div id="centerBox">
-		<h5>weirdbird cms // login</h5>
+		<h5>
+			<?
+			if (!isset($headline))
+				echo 'weirdbird cms // login';
+			else
+				echo $headline;
+			?>
+		</h5>
 		<div id="content">
 		    <?= $content; ?>
 		</div>
