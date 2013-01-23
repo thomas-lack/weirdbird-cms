@@ -19,9 +19,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 
 	// bottom bar
 	bottom: {
-		created: 'Erstellt 2012, 2013 von',
+		created: 'Erstellt 2012 / 2013.',
 		moreinfo: 'F&uuml;r mehr Informationen besuchen Sie bitte die ',
-		moreinfo2: 'google code Projektseite'
+		moreinfo2: 'Projektseite'
 	},
 
 	// Dashboard
@@ -224,6 +224,16 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		window3: {
 			title: 'Benutzer wurde benachrichtigt',
 			message: 'Eine Nachricht mit weiterf&uuml;hrenden Informationen wurde per Email an die angegebene Adresse verschickt.'
+		},
+		window4: {
+			title: 'Passwort wirklich zur&uuml;cksetzen?',
+			message: 'M&ouml;chten Sie wirklich das Passwort des aktuell ausgew&auml;hlten Benutzers zur&uuml;cksetzen?',
+			success: 'Der ausgew&auml;hlte Benutzer hat eine Email mit weiterf&uuml;hrenden Informationen erhalten.',
+			error:  'Ein Fehler ist aufgetreten bei der &Uuml;bermittlung der Benutzerinformation. Bitte versuchen Sie es sp&auml;ter erneut.'
+		},
+		window5: {
+			title: 'Daten bereits vorhanden',
+			message: 'Der Name und / oder die Emailadresse sind bereits vergeben. Jeder Nutzer muss einen einzigartigen Namen und Emailadresse besitzen.'
 		}
 	},
 

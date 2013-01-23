@@ -19,9 +19,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 
 	// bottom bar
 	bottom: {
-		created: 'Created 2012, 2013 by',
+		created: 'Created 2012 / 2013.',
 		moreinfo: 'For more information please visit the',
-		moreinfo2: 'google code project page'
+		moreinfo2: 'project page'
 	},
 
 	// Dashboard
@@ -224,6 +224,16 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		window3: {
 			title: 'User notified',
 			message: 'An email notification with further instructions has been sent to the new user.'
+		},
+		window4: {
+			title: 'Really reset password?',
+			message: 'Do you really want to reset the password of the currently selected user?',
+			success: 'The selected user received an email with further instructions.',
+			error:  'An error occurred during the user notification. Please try again later.'
+		},
+		window5: {
+			title: 'Data already set',
+			message: 'The new user name and / or email address is already in use by another user. The name and email address for a user must be unique.'
 		}
 	},
 
