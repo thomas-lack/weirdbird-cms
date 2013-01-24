@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Main extends Controller_Template
+class Controller_Cms_Main extends Controller_Template
 {
 	public $template = 'cms/mainlayout';
 	
-	public function action_index() {}
+	public function action_index() { }
 
 	public function before() 
 	{
@@ -14,7 +14,7 @@ class Controller_CMS_Main extends Controller_Template
 		// if a user is not logged in, redirect to login page
 		if (!$user)
         {
-           HTTP::redirect('cms/user/login');
+           HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . '/cms/user/login');
         }
 		
 		// set standard variables 
@@ -39,11 +39,11 @@ class Controller_CMS_Main extends Controller_Template
 					'assets/css/cms_screen2.css' => 'screen, projection'
 				);
             
-            $lang = ORM::factory('system_setting')->get_language()->shortform;
+            $lang = ORM::factory('System_Setting')->get_language()->shortform;
 
             $scripts = array(
-					//'assets/js/ext-all.js',					// extjs framework (productive version)
-					'assets/js/ext-all-debug.js',				// extjs framework (debug version)
+					'assets/js/ext-all.js',					// extjs framework (productive version)
+					//'assets/js/ext-all-debug.js',				// extjs framework (debug version)
 					'assets/js/CheckColumn.js',					// ext plugin for checkboxes in grid columns
 					'assets/js/tiny_mce.js',					// tinymce wysiwyg editor
 					'assets/js/ext-tinymce-ux.js',				// setup for tinymce as ext plugin

@@ -21,17 +21,17 @@
 <p>
 	<ul class="program_nav">
 	<?
-	$mappings = ORM::factory('structurecolumnmapping')
+	$mappings = ORM::factory('StructureColumnMapping')
 					->where('structure_id','=',$structureId)
 					->where('column','!=',$column)
 					->find_all();
 
 	foreach($mappings as $m)
 	{
-		$tmpModule = ORM::factory('module', $m->module_id);
+		$tmpModule = ORM::factory('Module', $m->module_id);
 		if ($tmpModule->allowarticles == 1)
 		{
-			$articles = ORM::factory('article')
+			$articles = ORM::factory('Article')
 						->where('active','=',1)
 						->where('structure_column_mapping_id','=',$m->id)
 						->order_by('id','asc')

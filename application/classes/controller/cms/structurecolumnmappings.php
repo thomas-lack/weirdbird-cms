@@ -1,28 +1,27 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_StructureColumnMappings extends Controller_CMS_Main
+class Controller_Cms_StructureColumnMappings extends Controller_Cms_Data
 {
 	public function action_index() {}
 
 	public function action_read()
 	{
-		echo json_encode(
-			array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
-				ORM::factory('structurecolumnmapping')->find_all()->as_array()		
-			)
+		$result = array_map(
+			create_function(
+				'$obj',
+				'return $obj->as_array();'
+			),
+			ORM::factory('StructureColumnMapping')->find_all()->as_array()		
 		);
-		die();
+		
+		$this->template->result = $result;
 	}
 
 	public function action_update()		// works as UPDATE and CREATE method
 	{
 		$data = $this->request->post();
 		
-		$mapping = ORM::factory('structurecolumnmapping')
+		$mapping = ORM::factory('StructureColumnMapping')
 			->where('structure_id','=',$data['structure_id'])
 			->where('column','=',$data['column'])
 			->find();
@@ -36,10 +35,10 @@ class Controller_CMS_StructureColumnMappings extends Controller_CMS_Main
 		// since we did a possible update of a module, it is possible, that
 		// previously connected articles are not allowed anymore
 		// -> mark those articles as 'orphaned' by deleting the mapping id
-		$module = ORM::factory('module', $mapping->module_id);
+		$module = ORM::factory('Module', $mapping->module_id);
 		if ($module->allowarticles == 0) 
 		{
-			$articles = ORM::factory('article')
+			$articles = ORM::factory('Article')
 				->where('structure_column_mapping_id','=',$mapping->id)
 				->find_all();
 
@@ -51,7 +50,6 @@ class Controller_CMS_StructureColumnMappings extends Controller_CMS_Main
 			}
 		}
 
-		echo '{"success":"true"}';
-		die();
+		$this->template->result = array( 'success' => true );
 	}
 }

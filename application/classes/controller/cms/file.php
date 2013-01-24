@@ -1,14 +1,14 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_File extends Controller_CMS_Data 
+class Controller_Cms_File extends Controller_Cms_Data 
 {
 	public function action_images()
 	{
 		if (HTTP_Request::GET == $this->request->method())
         { 
-			$imageTypes = ['image/jpeg', 'image/gif', 'image/png', 'image/jpg'];
+			$imageTypes = array('image/jpeg', 'image/gif', 'image/png', 'image/jpg');
 
-			$files = ORM::factory('file')
+			$files = ORM::factory('File')
 						->where('type','IN',$imageTypes)
 						->where('active','=','1')
 						->order_by('filename', 'asc')
@@ -25,7 +25,7 @@ class Controller_CMS_File extends Controller_CMS_Data
 			
 			for ($i=0; $i<count($f); $i++)
 			{
-				$user = ORM::factory('user', $f[$i]['user_id']);
+				$user = ORM::factory('User', $f[$i]['user_id']);
 				$f[$i]['user_id'] = $user->username;
 
 				$f[$i]['link'] = UPLOADDIR.'/'.UPLOADIMAGEDIR.'/'.$f[$i]['filename'];
@@ -43,7 +43,7 @@ class Controller_CMS_File extends Controller_CMS_Data
 	{
 		if (HTTP_Request::GET == $this->request->method())
         { 
-			$files = ORM::factory('file')
+			$files = ORM::factory('File')
 					->where('type','=','application/pdf')
 					->where('active','=','1')
 					->order_by('filename', 'asc')
@@ -60,7 +60,7 @@ class Controller_CMS_File extends Controller_CMS_Data
 
 			for($i=0; $i < count($filesArr); $i++)
 			{
-				$user = ORM::factory('user', $filesArr[$i]['user_id']);
+				$user = ORM::factory('User', $filesArr[$i]['user_id']);
 				$filesArr[$i]['user_id'] = $user->username;
 
 				$filesArr[$i]['link'] = UPLOADDIR.'/'.UPLOADPDFDIR.'/'.$filesArr[$i]['filename'];
@@ -82,7 +82,7 @@ class Controller_CMS_File extends Controller_CMS_Data
 					'$obj',
 					'return $obj->as_array();'
 				),
-				ORM::factory('file')->get_files_by_type('application/pdf')->as_array()		
+				ORM::factory('File')->get_files_by_type('application/pdf')->as_array()		
 			);
 
 			for ($i = 0; $i < count($docs); $i++)

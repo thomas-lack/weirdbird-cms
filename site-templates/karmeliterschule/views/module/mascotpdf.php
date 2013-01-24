@@ -22,7 +22,7 @@
 // e.g. "Projektwoche 2011###In diesem Jahr ging es um das Thema Gesundheit."
 //
 // Schulzeitung pdf files have only "Schulzeitung" as description as defined by the author.
-$files = ORM::factory('file')
+$files = ORM::factory('File')
 			->where('active','=','1')
 			->where('type','=','application/pdf')
 			->order_by('creationdate','desc')
@@ -44,7 +44,7 @@ $path = '/'.UPLOADDIR.'/'.UPLOADPDFDIR.'/'; // as defined in index.php
 		$counter = 0;
 		foreach($files as $f)
 		{
-			if ($counter == 7)
+			if ($counter == 9)
 				break;
 
 			// check for defined project description schema
@@ -67,7 +67,7 @@ $path = '/'.UPLOADDIR.'/'.UPLOADPDFDIR.'/'; // as defined in index.php
 
 		foreach($files as $f)
 		{
-			if ($counter == 4)
+			if ($counter == 6)
 				break;
 
 			if ($f->description == 'Schulzeitung')

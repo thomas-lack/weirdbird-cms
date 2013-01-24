@@ -15,7 +15,7 @@
 * 	$structureId 			int 		ID of the current structure
 *
 ************************************************************************************/
-$files = ORM::factory('file')
+$files = ORM::factory('File')
 			->where('active','=',1)
 			->where('type','=','application/pdf')
 			->order_by('creationdate','desc')
