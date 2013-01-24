@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Data extends Controller_Template
+class Controller_Cms_Data extends Controller_Template
 {
 	public $template = 'queryresult';
 

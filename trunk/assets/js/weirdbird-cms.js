@@ -392,7 +392,8 @@ Ext.define('WeirdbirdCMS', {
 		    listeners: {
 		    	load: function() {
 		    		// after loading select the first entry to populate the 2nd form panel
-		    		Ext.getCmp('categoriesGrid').getSelectionModel().select(0);
+		    		if (Ext.getStore('structuresStore').count() > 0)
+		    			Ext.getCmp('categoriesGrid').getSelectionModel().select(0);
 		    	},
 		    	write: function(store, op) {
 		    		// if last operation was "create" and now we have an update,
@@ -565,7 +566,8 @@ Ext.define('WeirdbirdCMS', {
 							// save if new value is numeric
 							if (Ext.isNumeric(newValue)) {
 								var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
-						    	selection.set('layout_id', newValue);
+						    	if (typeof selection != 'undefined')
+						    		selection.set('layout_id', newValue);
 
 						    	// also repaint the column boxes
 						    	var s = Ext.getStore('layoutsStore');
@@ -937,7 +939,7 @@ Ext.define('WeirdbirdCMS', {
 									    		else {
 									    			var record = records[0];
 									    			editor.focus();
-										    		editor.selection.setContent('<img src="' + record.data('link') + '" alt="' + record.get('description') + '"/>');
+										    		editor.selection.setContent('<img src="' + record.get('link') + '" alt="' + record.get('description') + '"/>');
 										    		Ext.getCmp('selectImageWindow').close();
 									    		}
 									    	}
@@ -980,7 +982,7 @@ Ext.define('WeirdbirdCMS', {
 											handler: function() {
 												var record = Ext.getCmp('selectDocumentGrid').getSelectionModel().getSelection()[0];
 												editor.focus();
-												editor.selection.setContent('<a href="' + record.get('link') + '" target="_blank">' + cms.lang.articles.window2.link + '</a>');
+												editor.selection.setContent('<a href="' + record.get('link') + '" target="_blank">' + cms.lang.articles.window2.linkname + '</a>');
 												Ext.getCmp('selectDocumentWindow').close();
 											}
 										},{
@@ -1684,12 +1686,21 @@ Ext.define('WeirdbirdCMS', {
 				text:'<span class="icon very-big">&Ntilde;</span> ' + cms.lang.system.button.save,
 				handler: function() {
 					var field = Ext.getCmp('systemFormEmail');
+					
+					// if the combobox was not yet changed, the id field is not set - 
+					// we have to do this manually
+					var languageId = Ext.getCmp('languageComboBox').getValue();
+					if (!Ext.isNumeric(languageId))
+					{
+						languageId = Ext.getStore('languagesStore').findRecord('name', languageId).get('id');
+					}
+						
 					if (field.validate()) {
 						Ext.Ajax.request({
 							url: 'cms/system/update',
 							params: {
 								email: field.getValue(),
-								language: Ext.getCmp('languageComboBox').getValue()
+								language: languageId
 							},
 							success: function(response) {
 								Ext.MessageBox.alert('Status', '<p>' + cms.lang.system.message.success1 + '</p>'
@@ -1747,29 +1758,43 @@ Ext.define('WeirdbirdCMS', {
 				if (r.language != null)
 					Ext.getCmp('languageComboBox').setValue(r.language);
 
-				// update the revision panel
-				var out = '<div id="systeminfo"><span class="icon very-big green">"</span> '+cms.lang.system.message2.success+'</div>';
-				if (r.revision.system != r.revision.current)
-					out = '<div id="systeminfo">'
+				// update the revision panel (if reading from google was possible)
+				if (r.revision.error == null)
+				{
+					var out = '<div id="systeminfo"><span class="icon very-big green">"</span> '+cms.lang.system.message2.success+'</div>';
+					if (r.revision.system != r.revision.current)
+						out = '<div id="systeminfo">'
+							+ '<p><span class="icon very-big red">8</span> '
+							+ cms.lang.system.message2.error2
+							+ ' '
+							+ cms.lang.system.message2.error3
+							+ ' <a href="http://code.google.com/p/weirdbird-cms/source/list">'
+							+ cms.lang.system.message2.error4
+							+'</a> '
+							+ cms.lang.system.message2.error5
+							+ '</p>'
+							+ '<p>&nbsp;</p>'
+							+ '<p> '
+							+ cms.lang.system.message2.error6
+							+ ' '
+							+ r.revision.system
+							+ '<br/>'
+							+ cms.lang.system.message2.error7 
+							+ ' '
+							+ r.revision.current + ' from ' + r.revision.creationdate
+							+ '</p></div>';
+				}
+				else // otherwise the backend results in an error message (not able to read from google)
+				{
+					var out = '<div id="systeminfo">'
 						+ '<p><span class="icon very-big red">8</span> '
-						+ cms.lang.system.message2.error2
-						+ ' '
-						+ cms.lang.system.message2.error3
-						+ ' <a href="http://code.google.com/p/weirdbird-cms/source/list">'
-						+ cms.lang.system.message2.error4
-						+'</a> '
-						+ cms.lang.system.message2.error5
-						+ '</p>'
-						+ '<p>&nbsp;</p>'
+						+ '<p>' + r.revision.error + '</p><br/>'
 						+ '<p> '
 						+ cms.lang.system.message2.error6
 						+ ' '
 						+ r.revision.system
-						+ '<br/>'
-						+ cms.lang.system.message2.error7 
-						+ ' '
-						+ r.revision.current + ' from ' + r.revision.creationdate
-						+ '</div>';
+						+ '</p></div>';
+				}
 				Ext.getCmp('systemFormRevision').add({html:out});
 				Ext.MessageBox.updateProgress(1);
 				Ext.MessageBox.hide();

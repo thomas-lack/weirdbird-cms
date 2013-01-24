@@ -25,6 +25,9 @@ the main folder. Edit the settings to your needs.
 5) For custom templates you will have to copy them into the 
 'site-templates' folder.
 
+6) Make sure you have writing rights for the php system user on the
+'user-upload' folder.
+
 6) After all this is set up, navigate to 'http://your-domain/cms'.
 Use the name 'Administrator' and the password 'adminadmin' to access
 the cms.

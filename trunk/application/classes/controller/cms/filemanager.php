@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_FileManager extends Controller_CMS_Data 
+class Controller_Cms_FileManager extends Controller_Cms_Data 
 {
 	public function action_data()
 	{
@@ -9,13 +9,13 @@ class Controller_CMS_FileManager extends Controller_CMS_Data
 				'$obj',
 				'return $obj->as_array();'
 			),
-			ORM::factory('file')->find_all()->as_array()		
+			ORM::factory('File')->find_all()->as_array()		
 		);
 
 		for($i=0; $i<count($files); $i++)
 		{
 			// replace user id's with user names
-			$user = ORM::factory('user', $files[$i]['user_id']);
+			$user = ORM::factory('User', $files[$i]['user_id']);
 			$files[$i]['user_id'] = $user->username;
 
 			// create a suitable link for the image
@@ -63,7 +63,7 @@ class Controller_CMS_FileManager extends Controller_CMS_Data
 				
 				if ($currentResult) 
 				{
-					$fe = ORM::factory('file');
+					$fe = ORM::factory('File');
 					$fe->active = 1;
 					$fe->user_id = $user->id;
 					$fe->filename = $f['name'];
@@ -87,7 +87,7 @@ class Controller_CMS_FileManager extends Controller_CMS_Data
 	{
 		$request = json_decode($this->request->body());
 		
-		$file = ORM::factory('file', $request->id);
+		$file = ORM::factory('File', $request->id);
 
 		// get correct upload directory
 		$typeDir = $this->mapType($file->type, true);
@@ -107,7 +107,7 @@ class Controller_CMS_FileManager extends Controller_CMS_Data
 	{
 		$r = json_decode($this->request->body());
 
-		$f = ORM::factory('file', $r->id);
+		$f = ORM::factory('File', $r->id);
 
 		// update data
 		$f->active = $r->active;

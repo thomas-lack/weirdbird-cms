@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Articles extends Controller_CMS_Data 
+class Controller_Cms_Articles extends Controller_Cms_Data 
 {
 	public function action_activestructures()
 	{
@@ -9,7 +9,7 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 				'$obj',
 				'return $obj->as_array();'
 			),
-			ORM::factory('structure')
+			ORM::factory('Structure')
 				->where('active','=','true')
 				->order_by('position', 'asc')
 				->find_all()
@@ -24,14 +24,14 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 		// get new active id
 		$id = $this->request->param('id');
 
-		$this->template->result = ORM::factory('article',$id)->as_array();
+		$this->template->result = ORM::factory('Article',$id)->as_array();
 	}
 
 	public function action_update()
 	{
 		$id = $this->request->param('id');
 		
-		$a = ORM::factory('article', $id);
+		$a = ORM::factory('Article', $id);
 		$a->active = ($this->request->post('active') == 'true') ? 1 : 0;
 		$a->title = $this->request->post('title');
 		$a->description = $this->request->post('description');
@@ -43,7 +43,7 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 
 	public function action_create()
 	{
-		$a = ORM::factory('article');
+		$a = ORM::factory('Article');
 		$a->structure_column_mapping_id = $this->request->post('mapping_id');
 		$a->active = 0;
 		$a->user_id = Auth::instance()->get_user()->id;
@@ -62,7 +62,7 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 	{
 		$id = $this->request->param('id');
 
-		ORM::factory('article',$id)->delete();
+		ORM::factory('Article',$id)->delete();
 
 		$this->template->result = array( 'success' => true );
 	}
@@ -71,7 +71,7 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 	{
 		$id = $this->request->param('id');
 
-		$a = ORM::factory('article', $id);
+		$a = ORM::factory('Article', $id);
 		$a->structure_column_mapping_id = $this->request->post('mapping_id');
 		$a->save();
 
@@ -84,9 +84,9 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 	*/
 	public function action_css()
 	{
-		$template = ORM::factory('template')->where('active','=','1')->find();
+		$template = ORM::factory('Template')->where('active','=','1')->find();
 
-		$cssfiles = ORM::factory('loadfile')
+		$cssfiles = ORM::factory('Loadfile')
 						->where('template_id','=',$template->id)
 						->where('type','=','css')
 						->find_all();
@@ -108,38 +108,38 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 	*/
 	public function action_treeview()
 	{
-		$template = ORM::factory('template')->where('active','=','1')->find();
+		$template = ORM::factory('Template')->where('active','=','1')->find();
 		
-		$modules = ORM::factory('module')->where('template_id','=',$template->id);
-		$mappings = ORM::factory('structurecolumnmapping')->find_all();
+		$modules = ORM::factory('Module')->where('template_id','=',$template->id);
+		$mappings = ORM::factory('StructureColumnMapping')->find_all();
 
 		$outArr = array(
 			'root' => array()
 		);
 		
-		$language = ORM::factory('system_setting')->get_language()->shortform;
+		$language = ORM::factory('System_Setting')->get_language()->shortform;
 
-		$structures = ORM::factory('structure')
+		$structures = ORM::factory('Structure')
 			->order_by('position','asc')
 			->find_all();
 
 		foreach ($structures as $s) {
 			$columnsArr = array();
-			$mappings = ORM::factory('structurecolumnmapping')->find_all();
+			$mappings = ORM::factory('StructureColumnMapping')->find_all();
 
 			foreach($mappings as $m) {
 				// if the current mapping has the same category (structure)
 				// we want to add it with all article references in the output
 				// array
 				if ($m->structure_id == $s->id) {
-					$module = ORM::factory('module')
+					$module = ORM::factory('Module')
 						->where('id','=',$m->module_id)
 						->find();
 
 					// insert articles (if allowed by module)
 					if ($module->allowarticles == 1) {
 						$articlesArr = array();
-						$articles = ORM::factory('article')
+						$articles = ORM::factory('Article')
 							->where('structure_column_mapping_id','=',$m->id)
 							->find_all();
 
@@ -174,7 +174,7 @@ class Controller_CMS_Articles extends Controller_CMS_Data
 		}
 
 		// finally we can add all the "orphaned" articles that are missing a mapping
-		$articles = ORM::factory('article')
+		$articles = ORM::factory('Article')
 						->where('structure_column_mapping_id','=',null)
 						->find_all();
 		if ($articles->count() > 0)	{

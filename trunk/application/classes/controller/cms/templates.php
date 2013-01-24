@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Templates extends Controller_CMS_Data
+class Controller_Cms_Templates extends Controller_Cms_Data
 {
 	public $siteTemplatesFolder = SITETEMPLATEPATH; // as defined in index.php
 	
@@ -21,7 +21,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 				'$obj', 
 				'return $obj->as_array();'
 			),
-			ORM::factory('template')->find_all()->as_array()
+			ORM::factory('Template')->find_all()->as_array()
 		);
 
 		foreach ($templateArr as $t) {
@@ -30,7 +30,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 					'$obj',
 					'return $obj->as_array();'
 				),
-				ORM::factory('module')->where('template_id','=',$t['id'])->find_all()->as_array()		
+				ORM::factory('Module')->where('template_id','=',$t['id'])->find_all()->as_array()		
 			);
 
 			$layoutsArr = array_map(
@@ -38,7 +38,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 					'$obj',
 					'return $obj->as_array();'
 				),
-				ORM::factory('layout')->where('template_id','=',$t['id'])->find_all()->as_array()		
+				ORM::factory('Layout')->where('template_id','=',$t['id'])->find_all()->as_array()		
 			);
 
 			$t['modules'] = $modulesArr;
@@ -68,21 +68,21 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 	public function action_import()
 	{
 		// remove all current templates from db
-		foreach(ORM::factory('template')->find_all() as $t) $t->delete();
-		foreach(ORM::factory('structure')->find_all() as $s) {
+		foreach(ORM::factory('Template')->find_all() as $t) $t->delete();
+		foreach(ORM::factory('Structure')->find_all() as $s) {
 			$s->layout_id = null;
 			$s->save();
 		}
-		foreach(ORM::factory('layout')->find_all() as $l) $l->delete();
-		foreach(ORM::factory('module')->find_all() as $m) $m->delete();
-		foreach(ORM::factory('loadfile')->find_all() as $l) $l->delete();
+		foreach(ORM::factory('Layout')->find_all() as $l) $l->delete();
+		foreach(ORM::factory('Module')->find_all() as $m) $m->delete();
+		foreach(ORM::factory('Loadfile')->find_all() as $l) $l->delete();
 		// remove all article <-> structure_column_mappings mappings
-		foreach(ORM::factory('article')->find_all() as $a) {
+		foreach(ORM::factory('Article')->find_all() as $a) {
 			$a->structure_column_mapping_id = null;
 			$a->save();
 		}
 		// remove alle structure <-> column mappings
-		foreach(ORM::factory('structurecolumnmapping')->find_all() as $s) $s->delete();
+		foreach(ORM::factory('StructureColumnMapping')->find_all() as $s) $s->delete();
 
 		// read data from config.xml and write it to db
 		$templateFolders = $this->getTemplateFolders();
@@ -94,7 +94,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 			//var_dump($xml->views);
 
 			// add general template informations
-			$template = ORM::factory('template');
+			$template = ORM::factory('Template');
 			$template->active = false;
 			$template->name = $xml->name;
 			$template->description = $xml->description;
@@ -110,7 +110,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 
 			// add layouts
 			foreach($xml->layouts->layout as $layout) {
-				$l = ORM::factory('layout');
+				$l = ORM::factory('Layout');
 				$l->template_id = $template->id;
 				$l->name = $layout->name;
 				$l->description = $layout->description;
@@ -127,7 +127,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 
 			// add modules
 			foreach ($xml->modules->module as $module) {
-				$m = ORM::factory('module');
+				$m = ORM::factory('Module');
 				$m->template_id = $template->id;
 				$m->name = $module->name;
 				$m->description = $module->description;
@@ -138,14 +138,14 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 
 			// add css and js files we want to load automatically
 			foreach ($xml->stylesheet->load as $css) {
-				$lf = ORM::factory('loadfile');
+				$lf = ORM::factory('Loadfile');
 				$lf->template_id = $template->id;
 				$lf->filename = $css;
 				$lf->type = 'css';
 				$lf->save();
 			}
 			foreach ($xml->javascript->load as $js) {
-				$lf = ORM::factory('loadfile');
+				$lf = ORM::factory('Loadfile');
 				$lf->template_id = $template->id;
 				$lf->filename = $js;
 				$lf->type = 'js';
@@ -168,7 +168,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 		$id = $this->request->param('id');
 		
 		// set all but the template with the new active id to 'not active'
-		$templates = ORM::factory('template')->find_all();
+		$templates = ORM::factory('Template')->find_all();
 		foreach ($templates as $t) {
 			if ($t->id == $id)
 				$t->active = true;
@@ -185,7 +185,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 	*/
 	public function action_activelayouts()
 	{
-		$template = ORM::factory('template')
+		$template = ORM::factory('Template')
 						->where('active','=','1')
 						->find();
 		
@@ -194,7 +194,7 @@ class Controller_CMS_Templates extends Controller_CMS_Data
 				'$obj',
 				'return $obj->as_array();'
 			),
-			ORM::factory('layout')
+			ORM::factory('Layout')
 				->where('template_id','=',$template->id)
 				->find_all()
 				->as_array()		

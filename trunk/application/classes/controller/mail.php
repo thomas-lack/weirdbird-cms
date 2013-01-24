@@ -11,6 +11,7 @@ class Controller_Mail extends Controller
 	{
 		$sender = $this->request->post('email');
 		$message = $this->request->post('message');
+		$about = '[wb cms]';
 
 		if ($sender == '' || $message == '')
 		{
@@ -22,35 +23,34 @@ class Controller_Mail extends Controller
 		$language = ORM::factory('System_Setting')->get_language();
 		if ($language->shortform == 'en')
 		{
-			$message
-			. '\n\n--\n'
-			. 'This message was sent by a standard contact formular of the following website:\n'
-			. 'http://' . $_SERVER['HTTP_HOST'];	
+			$message .= '<br/><br/>--<br/>'
+			. 'This message was sent by a standard contact formular of the following website:<br/>'
+			. 'http://' . $_SERVER['HTTP_HOST'];
+			$about .= ' Contact message from ' . $_SERVER['HTTP_HOST'];
 		}
 		else if ($language->shortform == 'de')
 		{
-			$message
-			. '\n\n--\n'
-			. 'Diese Nachricht wurde versendet durch das standard Kontaktformular der folgenden Webseite:\n'
+			$message .= '<br/><br/>--<br/>'
+			. 'Diese Nachricht wurde versendet durch das standard Kontaktformular der folgenden Webseite:<br/>'
 			. 'http://' . $_SERVER['HTTP_HOST'];
+			$about .= ' Kontaktanfrage von ' . $_SERVER['HTTP_HOST'];
 		}
 		
 		// get standard email as posted in the cms
 		$receiver = ORM::factory('system_setting')
 						->where('fieldname','=','contactemail')
 						->find();
-		$about = '[wb cms] Contact message from ' . $_SERVER['HTTP_HOST'];
 		
-		// now fly little bird (\(°v°)/)
-		try
-		{
-			mail($receiver->content, $about, $message, 'From: '.$sender);	
-		}
-		catch(Exception $e)
-		{
-			echo '{"success":"false","message":"' . $e->getMessage() . '"}';
-		}
+		// define mail header
+		$header = "From: <" . $sender . ">\r\n"
+			. "Reply-To: " . $sender . "\r\n"
+			. "Content-Type: text/html\r\n";
 
-		echo '{"success":"true"}';
+		// now fly little bird (\(°v°)/)
+		$mailResult = mail($receiver->content, $about, $message, $header, '-f '.$receiver->content);
+		// !! fifth parameter is hosteurope.de specific and has to be set to an email address that is !!s
+		// !! registered within hosteurope !!
+		
+		echo '{"success":'.$mailResult.'}';
 	}
 }

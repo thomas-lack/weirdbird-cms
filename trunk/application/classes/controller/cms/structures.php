@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_CMS_Structures extends Controller_CMS_Data
+class Controller_Cms_Structures extends Controller_Cms_Data
 {
 	public function action_data()
 	{
@@ -9,7 +9,7 @@ class Controller_CMS_Structures extends Controller_CMS_Data
 				'$obj',
 				'return $obj->as_array();'
 			),
-			ORM::factory('structure')
+			ORM::factory('Structure')
 				->order_by('position', 'asc')
 				->find_all()
 				->as_array()		
@@ -17,7 +17,7 @@ class Controller_CMS_Structures extends Controller_CMS_Data
 		
 		for ($i = 0; $i < count($result); $i++)
 		{
-			$result[$i]['user_name'] = ORM::factory('user',$result[$i]['user_id'])->username;
+			$result[$i]['user_name'] = ORM::factory('User',$result[$i]['user_id'])->username;
 		}
 		
 		$this->template->result = $result;
@@ -40,7 +40,7 @@ class Controller_CMS_Structures extends Controller_CMS_Data
 		}
 
 		// INSERT query
-		$structure = ORM::factory('structure');
+		$structure = ORM::factory('Structure');
 		$structure->active = ($d->active) ? 1 : 0;
 		$structure->position = $d->position;
 		$structure->title = $d->title;
@@ -70,7 +70,7 @@ class Controller_CMS_Structures extends Controller_CMS_Data
 		else
 		{
 			// UPDATE query
-			$structure = ORM::factory('structure', $d->id);
+			$structure = ORM::factory('Structure', $d->id);
 			$structure->active = ($d->active) ? 1 : 0;
 			$structure->position = $d->position;
 			$structure->title = $d->title;
@@ -89,7 +89,7 @@ class Controller_CMS_Structures extends Controller_CMS_Data
 		
 		// delete the structure and all corresponding mappings
 		ORM::factory('structure', $d->id)->delete();
-		$mappings = ORM::factory('structurecolumnmapping')
+		$mappings = ORM::factory('StructureColumnMapping')
 			->where('structure_id','=',$d->id)
 			->find_all();
 		

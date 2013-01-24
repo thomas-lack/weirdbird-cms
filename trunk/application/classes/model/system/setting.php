@@ -6,18 +6,18 @@ class Model_System_Setting extends ORM {
 
 	public function get_language()
 	{
-		$setting = ORM::factory('system_setting')
+		$setting = ORM::factory('System_Setting')
 					->where('fieldname','=','language_id')
 					->find();
 
-		$language = ORM::factory('language', $setting->content);
+		$language = ORM::factory('Language', $setting->content);
 
 		return $language;
 	}
 
 	public function get_email()
 	{
-		$setting = ORM::factory('system_setting')
+		$setting = ORM::factory('System_Setting')
 					->where('fieldname','=','contactemail')
 					->find();
 
@@ -26,7 +26,7 @@ class Model_System_Setting extends ORM {
 
 	public function get_value_by_fieldname($name)
 	{
-		$setting = ORM::factory('system_setting')
+		$setting = ORM::factory('System_Setting')
 					->where('fieldname','=',$name)
 					->find();
 
@@ -35,7 +35,7 @@ class Model_System_Setting extends ORM {
 
 	public function set_value_by_fieldname($name, $value)
 	{
-		$setting = ORM::factory('system_setting')
+		$setting = ORM::factory('System_Setting')
 					->where('fieldname','=',$name)
 					->find();
 

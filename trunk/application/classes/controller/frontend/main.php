@@ -8,7 +8,7 @@ class Controller_Frontend_Main extends Controller_Template {
 
 	public function before() {
 		// get first active template we find
-		$this->config = ORM::factory('template')->where('active','=','1')->find();
+		$this->config = ORM::factory('Template')->where('active','=','1')->find();
 		
 		// if none is found send an error
 		if (!$this->config->loaded()) {
@@ -19,7 +19,7 @@ class Controller_Frontend_Main extends Controller_Template {
 		// otherwise start loading the template
 		else {
 			
-			$structures = ORM::factory('structure')
+			$structures = ORM::factory('Structure')
 				->where('active','=','1')
 				->order_by('position', 'asc')
 				->find_all();
@@ -35,7 +35,7 @@ class Controller_Frontend_Main extends Controller_Template {
 			{
 				if ($s->title == $this->structureRef)
 				{
-					$layout = ORM::factory('layout', $s->layout_id);
+					$layout = ORM::factory('Layout', $s->layout_id);
 					$structureId = $s->id;
 					break;
 				}
@@ -87,19 +87,19 @@ class Controller_Frontend_Main extends Controller_Template {
 	private function generateColumnContent($column, $structureId)
 	{
 		// get the mapping for column <-> module / articles
-		$mapping = ORM::factory('structurecolumnmapping')
+		$mapping = ORM::factory('StructureColumnMapping')
 			->where('structure_id','=',$structureId)
 			->where('column','=',$column)
 			->find();
 
 		// get the used module for this column
-		$module = ORM::factory('module', $mapping->module_id);
+		$module = ORM::factory('Module', $mapping->module_id);
 
 		// get the articles for this column
 		$articles = null;
 		if ($module->allowarticles == 1)
 		{
-			$articles = ORM::factory('article')
+			$articles = ORM::factory('Article')
 				->where('active','=',1)
 				->where('structure_column_mapping_id','=',$mapping->id)
 				->order_by('id', 'asc')
@@ -146,7 +146,7 @@ class Controller_Frontend_Main extends Controller_Template {
 		
 		if ($this->auto_render && $this->config->loaded()) {
 			
-			$loadfile = ORM::factory('loadfile')
+			$loadfile = ORM::factory('Loadfile')
 				->where('template_id','=',$this->config->id)
 				->order_by('id', 'asc')	//to maintain the correct loading order given in the config.xml
 				->find_all();

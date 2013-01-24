@@ -26,7 +26,7 @@ class Controller_CMS_User extends Controller_Template {
         // if a user is not logged in, redirect to login page
         if (!$user)
         {
-            HTTP::redirect('cms/user/login');
+            HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . 'cms/user/login');
         }
     }
  
@@ -36,7 +36,7 @@ class Controller_CMS_User extends Controller_Template {
     public function action_read()
     {
         // user validation
-        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+        if (!Auth::instance()->get_user()) HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . 'cms/user/login');
 
         if (HTTP_Request::GET == $this->request->method())
         {
@@ -89,7 +89,7 @@ class Controller_CMS_User extends Controller_Template {
     public function action_update()
     {
         // user validation
-        if (!Auth::instance()->get_user()) Request::current()->redirect('cms/user/login');
+        if (!Auth::instance()->get_user()) HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . 'cms/user/login');
 
         // Load the user information
         $user = Auth::instance()->get_user();
@@ -97,7 +97,7 @@ class Controller_CMS_User extends Controller_Template {
         // if a user is not logged in, redirect to login page
         if (!$user)
         {
-            HTTP::redirect('cms/user/login');
+            HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . 'cms/user/login');
         }
 
         if (HTTP_Request::POST == $this->request->method())
@@ -143,8 +143,8 @@ class Controller_CMS_User extends Controller_Template {
     public function action_destroy()
     {
         // user validation
-        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
-
+        if (!Auth::instance()->get_user()) HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . 'cms/user/login');
+        
         if (HTTP_Request::POST == $this->request->method())
         {
             try
@@ -171,7 +171,7 @@ class Controller_CMS_User extends Controller_Template {
     public function action_create()
     {
         // user validation
-        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+        if (!Auth::instance()->get_user()) HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . 'cms/user/login');
 
         if (HTTP_Request::POST == $this->request->method())
         {          
@@ -235,8 +235,14 @@ class Controller_CMS_User extends Controller_Template {
                         . 'Diese Nachricht wurde automatisch versendet. Bitte ignorieren Sie diese Email falls Sie nicht wissen worum es sich hierbei handelt.';
                 }
 
-                mail($email, $subject, $message, 'From: '.$sender);
-                echo '{"success":true}'; 
+                $header = $header = "From: <" . $sender . ">\r\n"
+                    . "Reply-To: " . $sender . "\r\n"
+                    . "Content-Type: text/html\r\n";
+                
+                // !! fifth parameter is hosteurope.de specific and has to be set to an email address that is !!
+				// !! registered within hosteurope !!
+				$mailResult = mail($email, $subject, $message, $header, '-f '.$sender);
+                echo '{"success":'.$mailResult.'}'; 
             } 
             catch (Exception $e)
             {
@@ -314,7 +320,7 @@ class Controller_CMS_User extends Controller_Template {
 
                     // send email notification to user email address
                     $link = 'http://'.$_SERVER['HTTP_HOST'].'/'.'cms/user/validate/'.$reference;
-                    $this->sendResetPasswordValidationMail($link);
+                    $mailResult = $this->sendResetPasswordValidationMail($link, $pending->email);
 
                     if ($this->language->shortform == 'en')
                         $message = 'A verification email was sent to the users address. Please check your emails.';
@@ -360,7 +366,7 @@ class Controller_CMS_User extends Controller_Template {
      */
     public function action_silentresetpassword()
     {
-        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+        if (!Auth::instance()->get_user()) HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . 'cms/user/login');
 
         if (HTTP_Request::POST == $this->request->method())
         {          
@@ -382,9 +388,9 @@ class Controller_CMS_User extends Controller_Template {
 
                 // send email notification to user email address
                 $link = 'http://'.$_SERVER['HTTP_HOST'].'/'.'cms/user/validate/'.$reference;
-                $this->sendResetPasswordValidationMail($link);
+                $mailResult = $this->sendResetPasswordValidationMail($link, $pending->email);
 
-                echo '{"success":true}';
+                echo '{"success":'.$mailResult.'}';
             }
             catch (Exception $e)
             {
@@ -398,8 +404,9 @@ class Controller_CMS_User extends Controller_Template {
      * Helper method to send a standard email to validate a password resetting request.
      *
      * $link        String          A link that is posted in the email pointing to the validation url
+     * $email       String          The recipient of the mail
      */
-    private function sendResetPasswordValidationMail($link)
+    private function sendResetPasswordValidationMail($link, $email)
     {
         $message = '';
         $subject = '';
@@ -436,7 +443,13 @@ class Controller_CMS_User extends Controller_Template {
                 . 'Diese Nachricht wurde automatisch versendet. Bitte ignorieren Sie diese Email falls Sie nicht wissen worum es sich hierbei handelt.';
         }
 
-        mail($email, $subject, $message, 'From: '.$sender);
+        $header = $header = "From: <" . $sender . ">\r\n"
+                    . "Reply-To: " . $sender . "\r\n"
+                    . "Content-Type: text/html\r\n";
+        
+		// !! fifth parameter is hosteurope.de specific and has to be set to an email address that is !!s
+		// !! registered within hosteurope !!
+        return mail($email, $subject, $message, $header, '-f '.$sender);
     }
 
     /**
@@ -495,15 +508,15 @@ class Controller_CMS_User extends Controller_Template {
             'password' => $password,
             'password_confirm' => $password
         );
-        $user = ORM::factory('user')->create_user($newUser, array(
+        $user = ORM::factory('User')->create_user($newUser, array(
             'username',
             'password',
             'email'            
         ));
         // grant user rights to login and administrate data
         // TODO: implement better user role system
-        $user->add('roles', ORM::factory('role', array('name' => 'login')));
-        $user->add('roles', ORM::factory('role', array('name' => 'admin')));    
+        $user->add('roles', ORM::factory('Role', array('name' => 'login')));
+        $user->add('roles', ORM::factory('Role', array('name' => 'admin')));    
 
         // delete pending user
         $pUser->delete();
@@ -598,7 +611,7 @@ class Controller_CMS_User extends Controller_Template {
             // If successful, redirect user
             if ($user)
             {
-                HTTP::redirect('cms');
+                HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . '/cms');
             }
             else
             {
@@ -619,7 +632,7 @@ class Controller_CMS_User extends Controller_Template {
         Auth::instance()->logout();
          
         // Redirect to login page
-        HTTP::redirect('cms');
+        HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . '/cms');
     }
 
     /**
@@ -628,7 +641,7 @@ class Controller_CMS_User extends Controller_Template {
     public function action_changepassword()
     {
         // user validation
-        if (!Auth::instance()->get_user()) HTTP::redirect('cms/user/login');
+        if (!Auth::instance()->get_user()) HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . '/cms/user/login');
 
         if (HTTP_Request::POST == $this->request->method())
         {

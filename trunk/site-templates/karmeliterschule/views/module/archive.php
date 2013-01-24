@@ -15,10 +15,10 @@
 * 	$structureId 			int 		ID of the current structure
 *
 ************************************************************************************/
-$files = ORM::factory('file')
+$files = ORM::factory('File')
 			->where('active','=',1)
 			->where('type','=','application/pdf')
-			->order_by('creationdate','desc')
+			->order_by('creationdate','asc')
 			->find_all();
 
 $archive = array();
@@ -70,6 +70,9 @@ foreach($files as $f)
 
 <?
 
+// reverse ordering of the array to get the newest years first in the complete overview
+$archive = array_reverse($archive, true);
+
 foreach ($archive as $year => $yearArr)
 {
 	echo '<div id="archive_' . $year . '">';
@@ -93,6 +96,7 @@ foreach ($archive as $year => $yearArr)
 	}
 
 	echo '</ul>';
+	echo '<p>&nbsp;</p>';
 	echo '</div>';
 }
 ?>
