@@ -117,10 +117,10 @@ li { display:block; }
 .title a:hover {text-decoration:none; background-color:#b0b0af; transition:.2s linear;-moz-transition:.2s linear;-webkit-transition:.2s linear; }
 .bottombar { color:#0c3546; background-color:#f0f0ed; padding:20px; clear:both; }
 .bottombar a { text-decoration:none; border-bottom:1px dotted; color:#0c3546; }
-.navmenu { background-color:#2e505d; color:white; padding:15px;}
+.navmenu { background-color:#f0f0ed;/*#2e505d*/ color:white; padding:15px;}
 .navmenu ul { margin-top:10px; list-style-type:none; }
 .navmenu ul li { display:block; padding:5px 0; font-size:1em;}
-.navmenu ul li a { color:white; text-decoration:none; }
+.navmenu ul li a { color:#0c3546; text-decoration:none; }
 .content { background-color:#efefef;/*#E0E0E0;*/ }
 .content-extjs { background-color:#e0e0e0; }
 .dashboard-list { width:73%; }
@@ -149,6 +149,18 @@ li { display:block; }
 #template-list { font-family:'DroidSansRegular',Helvetica,Arial,sans-serif; font-size:0.8em; text-align:justify; text-justify:newspaper; line-height:1.4em; }
 #template-list a { text-decoration:none; background-color:#dededc; padding:4px 9px; -moz-border-radius:3px; border-radius:3px; color:#0c3546; }
 #template-list a:hover {text-decoration:none; background-color:#b0b0af; transition:.2s linear;-moz-transition:.2s linear;-webkit-transition:.2s linear; }
+
+/* --------------------------------------------------------------------------------------------------- */
+/* EXTJS overrides */
+/* --------------------------------------------------------------------------------------------------- */
+.x-panel-header-default { background-image:none; }
+.x-toolbar-default { background-image:none; background-color:#f0f0ed; }
+.x-column-header { background-image:none; background-color:#f0f0ed; }
+.x-column-header-over { background-image:none; }
+.x-column-header-sort-ASC { background-color:#d7d2d2; }
+.x-column-header-sort-DESC { background-color:#d7d2d2; }
+.x-btn-default-toolbar-small { border-style:none; }
+.x-btn-default-toolbar-small-over { background-image:none; background-color:#d7d2d2; border-radius:0;}
 
 /* --------------------------------------------------------------------------------------------------- */
 /* 3column layout */
