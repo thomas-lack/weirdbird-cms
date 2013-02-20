@@ -1,0 +1,8 @@
+@charset "UTF-8";
+/**
+ * css loader (since tinymce cms editor only is able to load one css file currently)
+ */
+
+@import url(bootstrap.min.css);
+@import url(bootstrap-responsive.min.css);
+@import url(albertschweitzer.css);

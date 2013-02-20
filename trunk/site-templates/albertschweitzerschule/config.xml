@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitetemplate>
+	<name>Albert-Schweiter-Schule 13-02-19</name>
+	<description>A school page template based on twitter bootstrap.</description>
+
+	<views>
+		<folder>views</folder>
+		<layoutfolder>layout</layoutfolder>
+		<modulefolder>module</modulefolder>
+	</views>
+
+	<layouts>
+		<layout>
+			<name>1col</name>
+			<description>1-column page</description>
+			<view>1col</view>
+			<columns>1</columns>
+		</layout>
+		<layout standard="true">
+			<name>2col21</name>
+			<description>2-column page 2-1</description>
+			<view>2col21</view>
+			<columns>2</columns>
+		</layout>
+		<layout standard="true">
+			<name>2col12</name>
+			<description>2-column page 1-2</description>
+			<view>2col12</view>
+			<columns>2</columns>
+		</layout>
+		<layout>
+			<name>3col</name>
+			<description>3-column page</description>
+			<view>3col</view>
+			<columns>3</columns>
+		</layout>
+		<layout>
+			<name>3colfloat</name>
+			<description>3-column page (automatic float)</description>
+			<view>3colfloat</view>
+			<columns>1</columns>
+		</layout>
+	</layouts>
+	
+	<modules>
+		<module>
+			<name>content</name>
+			<description>content column</description>
+			<view>content</view>
+			<allowarticles>true</allowarticles>
+		</module>
+		<module>
+			<name>archive</name>
+			<description>archive for uploaded pdf files</description>
+			<view>archive</view>
+			<allowarticles>false</allowarticles>
+		</module>
+		<module>
+			<name>contact</name>
+			<description>contact column</description>
+			<view>contact</view>
+			<allowarticles>false</allowarticles>
+		</module>
+	</modules>
+	
+	<preview>
+		<folder>preview</folder>
+		<previewimage>
+			<filename>preview1.jpg</filename>
+			<description>Main site, featuring a one column vertical float layout</description>
+		</previewimage>
+	</preview>
+	
+	<stylesheet>
+		<folder>css</folder>
+		<load>layout_grids.css</load>
+	</stylesheet>
+	<javascript>
+		<folder>js</folder>
+		<!--<load>jquery.min.js</load>-->
+		<load type="external">//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js</load>
+		<load>modernizr-2.6.2-respond-1.1.0.min.js</load>
+		<load>bootstrap.min.js</load>
+		<load>albertschweitzer.js</load>
+	</javascript>
+	<images>
+		<folder>img</folder>
+	</images>
+
+</sitetemplate>

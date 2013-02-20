@@ -32,9 +32,17 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 		$id = $this->request->param('id');
 		
 		$a = ORM::factory('Article', $id);
+		
+		// set standard value if no language was selected
+		$language_id = $this->request->post('language_id');
+		if (!is_numeric($language_id))
+			$language_id = null;
+
+		$a->language_id = $language_id;
 		$a->active = ($this->request->post('active') == 'true') ? 1 : 0;
 		$a->title = $this->request->post('title');
 		$a->description = $this->request->post('description');
+		$a->teaser = $this->request->post('teaser');
 		$a->content = $this->request->post('content');
 		$a->save();
 
@@ -45,6 +53,7 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 	{
 		$a = ORM::factory('Article');
 		$a->structure_column_mapping_id = $this->request->post('mapping_id');
+		$a->position = 1000; // we want a new article to be positioned at the end of the articles list for the current node
 		$a->active = 0;
 		$a->user_id = Auth::instance()->get_user()->id;
 		$a->title = 'new title';
@@ -67,6 +76,13 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 		$this->template->result = array( 'success' => true );
 	}
 
+	/**
+	 * This method can be remotely called if an articles parent structure was changed
+	 * -> hence the mapping between the article and the structure has to be updated
+	 *
+	 * param: article id
+	 * post data: new 'mapping_id'
+	 */
 	public function action_changemapping()
 	{
 		$id = $this->request->param('id');
@@ -76,6 +92,28 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 		$a->save();
 
 		$this->template->result = array( 'success' => true );
+	}
+
+	/**
+	 * This method can be remotely called if the ordering of articles is to be changed
+	 *
+	 * post data: array of article id's given in the new sort order
+	 */
+	public function action_changepositions()
+	{
+		$sortOrder = $this->request->post('sortOrder');
+
+		$i = 0;
+		foreach ($sortOrder as $id) 
+		{
+			$a = ORM::factory('Article', $id);
+			$a->position = $i;
+			$a->save();
+
+			$i++;
+		}
+
+		$this->template->result = array( 'success' => true );	
 	}
 
 	/**
@@ -141,6 +179,7 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 						$articlesArr = array();
 						$articles = ORM::factory('Article')
 							->where('structure_column_mapping_id','=',$m->id)
+							->order_by('position', 'ASC')
 							->find_all();
 
 						foreach($articles as $a) {

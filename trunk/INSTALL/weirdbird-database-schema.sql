@@ -28,14 +28,17 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `wb_articles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `position` int(11) NOT NULL DEFAULT '0',
   `structure_column_mapping_id` int(11) DEFAULT NULL,
+  `language_id` int(11) DEFAULT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL,
   `title` varchar(128) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `teaser` text,
   `content` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `wb_articles`
@@ -56,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `wb_files` (
   `description` varchar(512) DEFAULT NULL,
   `creationdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=38 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `wb_files`
@@ -97,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `wb_layouts` (
   `view` varchar(128) NOT NULL,
   `columns` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=56 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `wb_layouts`
@@ -116,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `wb_loadfiles` (
   `type` varchar(128) NOT NULL,
   `custom_type` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=121 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `wb_loadfiles`
@@ -136,7 +139,7 @@ CREATE TABLE IF NOT EXISTS `wb_modules` (
   `view` varchar(128) NOT NULL,
   `allowarticles` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=289 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `wb_modules`
@@ -154,7 +157,7 @@ CREATE TABLE IF NOT EXISTS `wb_roles` (
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Daten für Tabelle `wb_roles`
@@ -195,10 +198,30 @@ CREATE TABLE IF NOT EXISTS `wb_structures` (
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=36 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `wb_structures`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `wb_structure_options`
+--
+
+CREATE TABLE IF NOT EXISTS `wb_structure_options` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `structure_id` int(11) NOT NULL,
+  `file_id` int(11) DEFAULT NULL,
+  `headline1` varchar(128) DEFAULT NULL,
+  `headline2` varchar(256) DEFAULT NULL,
+  `headline3` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Daten für Tabelle `wb_structure_options`
 --
 
 -- --------------------------------------------------------
@@ -213,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `wb_structure_column_mappings` (
   `column` tinyint(4) NOT NULL,
   `module_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `wb_structure_column_mappings`
@@ -230,7 +253,7 @@ CREATE TABLE IF NOT EXISTS `wb_system_settings` (
   `fieldname` varchar(128) NOT NULL,
   `content` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Daten für Tabelle `wb_system_settings`
@@ -238,7 +261,9 @@ CREATE TABLE IF NOT EXISTS `wb_system_settings` (
 
 INSERT INTO `wb_system_settings` (`id`, `fieldname`, `content`) VALUES
 (1, 'contactemail', ''),
-(2, 'language_id', '1');
+(2, 'language_id', '1'),
+(3, 'companyname', ''),
+(4, 'info', '');
 
 -- --------------------------------------------------------
 

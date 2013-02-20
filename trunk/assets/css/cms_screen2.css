@@ -161,6 +161,13 @@ li { display:block; }
 .x-column-header-sort-DESC { background-color:#d7d2d2; }
 .x-btn-default-toolbar-small { border-style:none; }
 .x-btn-default-toolbar-small-over { background-image:none; background-color:#d7d2d2; border-radius:0;}
+.x-panel-body-default { background-color: #f0f0ed; }
+.x-tab { border-color:#f0f0ed; }
+.x-tab-bar { background-image:none; background-color:#f0f0ed; }
+.x-tab-bar-top .x-tab-bar-body { border-width:1px 0 3px;}
+.x-tab-bar-body { border-color:#f0f0ed; }
+.x-tab-top-active { background-image:none; background-color:#d7d2d2 !important;}
+.x-tab-default-top { background-image:none; background-color:#f0f0ed; border-radius:0; box-shadow:none;}
 
 /* --------------------------------------------------------------------------------------------------- */
 /* 3column layout */
