@@ -78,7 +78,18 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			layout: 'Layout',
 			column: 'Abschnitt',
 			module: 'Modul',
-			emptyText: 'Layout w&auml;hlen...'
+			emptyText: 'Layout bestimmen...',
+			emptyText2: 'Modul bestimmen...'
+		},
+		form2: {
+			title: 'Optionale Einstellungen',
+			headline1: '&Uuml;berschrift 1 (gro&szlig;)',
+			headline2: '&Uuml;berschrift 2 (mittel)',
+			headline3: '&Uuml;berschrift 3 (klein)',
+			background: 'Hintergrundbild',
+			backgroundBtn: 'Bild ausw&auml;hlen',
+			saveBtn: 'Optionale Einstellungen speichern',
+			saveError: 'Die optionalen Daten konnten nicht gespeichert werden.'
 		},
 		message: {
 			title: 'Rubrik wirklich l&ouml;schen?',
@@ -98,14 +109,25 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		grid: {
 			title: 'Auswahl von Rubrik / Abschnitt'
 		},
-		form: {
-			title: 'Artikel bearbeiten',
+		tab1: {
+			title: 'Artikeleinstellungen',
 			active: 'Aktiv',
 			titleLable: 'Titel',
 			description: 'Beschreibung',
+			language: 'Sprache'
+		},
+		tab2: {
+			title: 'Teasereingabe',
+			teaserImage: 'Teaserbild',
+			teaserHeadline: 'Teaser&uuml;berschrift',
+			teaser: 'Teaser',
+			changeBtn: 'Bild ausw&auml;hlen'
+		},
+		tab3: {
+			title: 'Artikeleingabe',
 			article: 'Artikel',
-			image: 'Bild einsetzen',
-			document: 'Generiere Link zu einem pdf Dokument'
+			image: 'Bild einf&uuml;gen',
+			document: 'Link zu einem PDF einf&uuml;gen'
 		},
 		message: {
 			error: 'Der Artikel konnte nicht verschoben werden'
@@ -128,6 +150,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		message6: {
 			title: 'Hinweis',
 			error: 'Es wurde kein Bild ausgew&auml;hlt.'
+		},
+		message7: {
+			error: 'Die Sortierreihenfolge f&uuml;r die Artikel konnte nicht gespeichert werden.'
 		},
 		window: {
 			title: 'Bild ausw&auml;hlen',
@@ -246,6 +271,8 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		grid: {},
 		form: {
 			title: 'Systemweite Einstellungen',
+			companyname: 'Betreibername',
+			additionalinfo: 'Zusatzinformationen',
 			contactemail: 'Kontakt-Emailadresse',
 			language: 'Sprache',
 			emptyText: 'Auswahl der Sprache...'
@@ -255,7 +282,7 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		},
 		message: {
 			success1: 'Die Systemeinstellungen wurden erfolgreich gespeichert.',
-			success2: 'Bitte beachten Sie, dass sich eine &Auml;nderunge der Sprache erst bei einem erneuten Login auswirkt.',
+			success2: 'Bitte beachten Sie, dass sich eine &Auml;nderung der Sprache erst bei einem erneuten Login auswirkt.',
 			error: 'Die Systemeinstellungen konnten nicht gespeichert werden'
 		},
 		message2: {

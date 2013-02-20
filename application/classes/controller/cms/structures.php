@@ -95,7 +95,7 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 		
 		foreach ($mappings as $m) {
 			// also delete the reference of articles to the deleted mappings
-			$articles = ORM::factory('article')
+			$articles = ORM::factory('Article')
 				->where('structure_column_mapping_id','=',$m->id)
 				->find_all();
 
@@ -109,5 +109,61 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 		}
 		
 		$this->template->result = array( 'success' => true );
+	}
+
+	/**
+	 * read/write method to load or save the optional data of a given structure
+	 *
+	 * param: structure id
+	 * post data: update data
+	 */
+	public function action_optional()
+	{
+		$id = $this->request->param('id');
+
+		// load data
+		if (HTTP_REQUEST::GET == $this->request->method())
+		{
+			$result = ORM::factory('Structure_Option')
+					->where('structure_id','=',$id)
+					->find()
+					->as_array();
+			
+			if (is_numeric($result['file_id']))
+			{
+				$image = ORM::factory('File')
+						->where('id','=', $result['file_id'])
+						->find();
+				
+				$result['background'] = '<img src="' 
+					.'/'.UPLOADDIR.'/'.UPLOADIMAGEDIR.'/'.IMAGETHUMBSDIR.'/'.$image->filename
+					. '">';
+			}
+			
+
+			$this->template->result = $result;
+		}
+
+		// write data
+		else if (HTTP_REQUEST::POST == $this->request->method())
+		{
+			$data = $this->request->post();
+
+			$optional = ORM::factory('Structure_Option')
+						->where('structure_id','=',$id)
+						->find();
+
+			$optional->structure_id = $id;
+			$optional->file_id = (is_numeric($data['image_id'])) ? $data['image_id'] : null;
+			$optional->headline1 = $data['headline1'];
+			$optional->headline2 = $data['headline2'];
+			$optional->headline3 = $data['headline3'];
+			$optional->save();
+
+			$this->template->result = array( 'success' => true );
+		}
+
+		else
+			$this->template->result = array( 'success' => false );
 	}
 }

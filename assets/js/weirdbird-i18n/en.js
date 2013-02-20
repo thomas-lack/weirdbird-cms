@@ -78,7 +78,18 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			layout: 'Layout',
 			column: 'Area',
 			module: 'module',
-			emptyText: 'Choose layout...'
+			emptyText: 'Choose layout...',
+			emptyText2: 'Choose module...'
+		},
+		form2: {
+			title: 'Optional settings',
+			headline1: 'Headline 1 (big)',
+			headline2: 'Headline 2 (medium)',
+			headline3: 'Headline 3 (small)',
+			background: 'Hintergrundbild',
+			backgroundBtn: 'Choose image',
+			saveBtn: 'Save optional settings',
+			saveError: 'The optional settings could not be saved.'
 		},
 		message: {
 			title: 'Really delete category?',
@@ -98,11 +109,22 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		grid: {
 			title: 'Category/Column selection'
 		},
-		form: {
-			title: 'Article editing',
+		tab1: {
+			title: 'Edit article settings'
 			active: 'Active',
 			titleLable: 'Title',
 			description: 'Description',
+			language: 'Language'
+		},
+		tab2: {
+			title: 'Edit teaser',
+			teaserImage: 'Teaser image',
+			teaserHeadline: 'Teaser headline',
+			teaser: 'Teaser',
+			changeBtn: 'Change image'
+		},
+		tab3: {
+			title: 'Edit article',
 			article: 'Article',
 			image: 'Insert an image',
 			document: 'Generate link to a pdf document'
@@ -128,6 +150,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		message6: {
 			title: 'Notification',
 			error: 'No image was selected.'
+		},
+		message7: {
+			error: 'The sort order of the articles could not be changed.'
 		},
 		window: {
 			title: 'Select image',
@@ -246,6 +271,8 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		grid: {},
 		form: {
 			title: 'System wide settings',
+			companyname: 'Company / User name',
+			additionalinfo: 'Additional info',
 			contactemail: 'Contact email address',
 			language: 'Language',
 			emptyText: 'Choose language...'

@@ -22,6 +22,30 @@ Ext.define('WeirdbirdCMS', {
 		this.dashboardBuffer = null;
 		this.username = Ext.get(Ext.query('body')[0]).dom.attributes['username'].value;
 		
+		// load languages since this is not changeable by the cms frontend
+		Ext.define('Language', {
+			extend: 'Ext.data.Model',
+			fields: [
+				{name:'id', type:'int'}, 
+				{name:'name', type:'string'}, 
+				{name:'shortform', type:'string'}
+			]
+		});
+
+		Ext.create('Ext.data.Store', {
+		    storeId: 'languagesStore',
+		    model: 'Language',
+		    proxy: {
+		        type: 'ajax',
+		        url: 'cms/system/languages',
+		        reader: {
+		            type: 'json',
+		            successProperty: 'success'
+		        }
+		    },
+		    autoLoad: true
+		});
+
 		// proceed with creating what the user sees and register the click handlers
 		this.createViewport();
 		this.registerNavHandlers();
@@ -478,6 +502,7 @@ Ext.define('WeirdbirdCMS', {
 				title: cms.lang.structures.grid.title,
 				plugins: [rowEditing],
 				store: Ext.getStore('structuresStore'),
+				border: false,
 				columns: [
 			        { text: '#',  dataIndex: 'position', width:30, editor:{ allowBlank:false }},
 			        { text: cms.lang.structures.grid.active, dataIndex: 'active', width: 50, xtype: 'checkcolumn',
@@ -533,50 +558,136 @@ Ext.define('WeirdbirdCMS', {
 	                       	}
 	                       	else {
 	                       		var c = Ext.getCmp('layoutsComboBox');
-	                       		c.setValue('Choose layout...');
+	                       		c.setValue(cms.lang.structures.form.emptyText);
 	                       		cms.paintModuleSelectionBoxes(0);
 	                       	}
-	                       		
+	                       	
+	                       	// update optional data form panel
+	                       	Ext.Ajax.request({
+					    		url: 'cms/structures/optional/' + records[0].data.id,
+					    		method: 'GET',
+					    		success: function(response) {
+					    			var r = Ext.JSON.decode(response.responseText);
+					    			Ext.getCmp('layoutsOptionalHeadline1').setValue(r.headline1);
+					    			Ext.getCmp('layoutsOptionalHeadline2').setValue(r.headline2);
+					    			Ext.getCmp('layoutsOptionalHeadline3').setValue(r.headline3);
+					    			if (Ext.typeOf(r.background) == 'string')
+					    				Ext.getCmp('layoutsOptionalBackground').setValue(r.background);
+					    			else
+					    				Ext.getCmp('layoutsOptionalBackground').setValue('<img src="/assets/images/no-image-available.png">');
+					    			Ext.getCmp('layoutsOptionalBackground').imageId = r.file_id;
+					    		}
+					    	});
 	                    }
 	                }
 	            }
 			},
-			// right formpanel
+			// right panel
 			{
-				id: 'layoutModuleFormPanel',
 				columnWidth: 0.4,
-	            margin: '0 0 0 10',
-	            xtype: 'fieldset',
-	            title: cms.lang.structures.form.title,
-	            defaultType: 'combo',
-	            defaults: {
-	                width: 300,
-	                labelWidth: 90
-	            },
-				items:[{
-					fieldLabel: cms.lang.structures.form.layout,
-					id: 'layoutsComboBox',
-					store: Ext.getStore('layoutsStore'),
-					emptyText: cms.lang.structures.form.emptyText,
-					displayField: 'description',
-					valueField: 'id',
-					queryMode: 'local',
-					listeners: {
-						change: function(cmp, newValue, oldValue) {
-							// save if new value is numeric
-							if (Ext.isNumeric(newValue)) {
-								var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
-						    	if (typeof selection != 'undefined')
-						    		selection.set('layout_id', newValue);
+		        layout: {
+					type: 'vbox',
+					align: 'stretch',
+					padding: 10
+				},
+				border: false,
+				items: [{
+					// upper formpanel (layout / modules)
+					id: 'layoutModuleFormPanel',
+		            xtype: 'fieldset',
+		            title: cms.lang.structures.form.title,
+		            defaultType: 'combo',
+		            border: true,
+		            defaults: {
+		                width: 360,
+		                labelWidth: 90
+		            },
+					items:[{
+						fieldLabel: cms.lang.structures.form.layout,
+						id: 'layoutsComboBox',
+						store: Ext.getStore('layoutsStore'),
+						emptyText: cms.lang.structures.form.emptyText,
+						displayField: 'description',
+						valueField: 'id',
+						queryMode: 'local',
+						listeners: {
+							change: function(cmp, newValue, oldValue) {
+								// save if new value is numeric
+								if (Ext.isNumeric(newValue)) {
+									var selection = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0];
+							    	if (typeof selection != 'undefined')
+							    		selection.set('layout_id', newValue);
 
-						    	// also repaint the column boxes
-						    	var s = Ext.getStore('layoutsStore');
-	                       		var i = s.find('id', newValue);
-	                       		var rec = s.getAt(i);
-						    	cms.paintModuleSelectionBoxes(rec.data.columns);
+							    	// also repaint the column boxes
+							    	var s = Ext.getStore('layoutsStore');
+		                       		var i = s.find('id', newValue);
+		                       		var rec = s.getAt(i);
+							    	cms.paintModuleSelectionBoxes(rec.data.columns);
+								}
 							}
 						}
-					}
+					}]
+				},{
+					// lower formpanel (images / description texts)
+					id: 'layoutOptionalFormPanel',
+					title: cms.lang.structures.form2.title,
+					xtype: 'fieldset',
+					autoScroll: true,
+					border: true,
+					defaults: {
+						width: 360,
+						labelWidth: 90,
+						height: 60
+					},
+					defaultType: 'textareafield',
+					items: [{
+						xtype: 'displayfield',
+						id: 'layoutsOptionalBackground',
+						fieldLabel: cms.lang.structures.form2.background,
+						height: 60,
+						imageId: ''
+					},{
+						xtype: 'button',
+						height: 20,
+						width: 120,
+						margin: '0 0 5 95',
+						text: cms.lang.structures.form2.backgroundBtn,
+						handler: function() {
+							cms.createSelectImageWindow('layoutsOptionalBackground');
+						}
+					},{
+						fieldLabel: cms.lang.structures.form2.headline1,
+						id: 'layoutsOptionalHeadline1'
+					},{
+						fieldLabel: cms.lang.structures.form2.headline2,
+						id: 'layoutsOptionalHeadline2'
+					},{
+						fieldLabel: cms.lang.structures.form2.headline3,
+						id: 'layoutsOptionalHeadline3'
+					},{
+						xtype: 'button',
+						height: 20,
+						width: 265,
+						text: cms.lang.structures.form2.saveBtn,
+						margin: '10 0 0 95',
+						handler: function() {
+							var record = Ext.getCmp('categoriesGrid').getSelectionModel().getSelection()[0];
+							console.log(record);
+							Ext.Ajax.request({
+								url: 'cms/structures/optional/' + record.data.id,
+								method: 'POST',
+								params: { 
+									image_id: Ext.getCmp('layoutsOptionalBackground').imageId,
+									headline1: Ext.getCmp('layoutsOptionalHeadline1').getValue(),
+									headline2: Ext.getCmp('layoutsOptionalHeadline2').getValue(),
+									headline3: Ext.getCmp('layoutsOptionalHeadline3').getValue()
+								},
+								failure: function(response) {
+									Ext.MessageBox.alert('Error', cms.lang.structures.form2.saveError + ' (Error code ' + response.status + ').');
+								}
+							});
+						}
+					}]
 				}]
 			}]
 		});
@@ -606,7 +717,7 @@ Ext.define('WeirdbirdCMS', {
 				fieldLabel: cms.lang.structures.form.column + ' ' + (i+1) + ' ' + cms.lang.structures.form.module,
 				id: 'moduleComboBoxColumn' + i,
 				store: Ext.getStore('modulesStore'),
-				emptyText: 'Choose module...',
+				emptyText: cms.lang.structures.form.emptyText2,
 				displayField: 'description',
 				valueField: 'id',
 				queryMode: 'local',
@@ -735,6 +846,7 @@ Ext.define('WeirdbirdCMS', {
 				title: cms.lang.articles.grid.title,
 				store: treeStore,
 				rootVisible: false,
+				border: false,
 				viewConfig: {
 					plugins: { ptype: 'treeviewdragdrop' }
 				},
@@ -769,7 +881,7 @@ Ext.define('WeirdbirdCMS', {
 				listeners: {
 					select: function(self, record, index) {
 						// first check, if the user is leaving a currently edited article
-						cms.leaveArticle(record, Ext.getCmp('articlesEditPanel').record);
+						cms.leaveArticle(record, Ext.getCmp('articlePanel').record);
 
 						// disable all buttons after click
 						var buttonIDs = ['addArticleBtn', 'saveArticleBtn', 'deleteArticleBtn'];
@@ -778,7 +890,7 @@ Ext.define('WeirdbirdCMS', {
 						});
 						
 						// on a column field we want to enable adding articles
-						// remember: columns are on 2nd level and not leafes
+						// remember: columns are on 2nd level and not leafs
 						if (record.parentNode.parentNode != null && !record.data.leaf) {
 							Ext.getCmp('addArticleBtn').enable(true);
 						}
@@ -786,12 +898,13 @@ Ext.define('WeirdbirdCMS', {
 						// leafes can be deleted for now
 						if (record.data.leaf) {
 							Ext.getCmp('deleteArticleBtn').enable(true);
-							Ext.getCmp('saveArticleBtn').disable(true);
+							Ext.getCmp('saveArticleBtn').enable(true);
 						}						
 					},
 
 					// handling a (via drag&drop) moved item
 					itemmove: function(node, oldParent, newParent, index, eopts) {
+						// change mapping if the parent tree node has changed
 						if (newParent != oldParent) {
 							Ext.Ajax.request({
 								url: 'cms/articles/changemapping/' + node.data.id,
@@ -801,211 +914,224 @@ Ext.define('WeirdbirdCMS', {
 								}
 							});
 						}
+
+						// notify the backend, that the positioning of the current parent nodes leafs has changed
+						var leafOrder = [];
+						Ext.each(newParent.childNodes, function(node){
+							leafOrder.push(node.data.id);
+						});
+						Ext.Ajax.request({
+							url: 'cms/articles/changepositions',
+							params: { 'sortOrder[]': leafOrder },
+							failure: function(response) {
+								Ext.MessageBox.alert('Error', cms.lang.articles.message7.error + ' (Error code ' + response.status + ').');
+							}
+						});
 					}
 				}
 			},{
 				columnWidth: 0.69,
-				xtype: 'fieldset',
-				id: 'articlesEditPanel',
-				title: cms.lang.articles.form.title,
-				margin: '0 0 0 10',
-				defaultType: 'textfield',
+				xtype: 'tabpanel',
+				id: 'articlePanel',
+				disabled: true,
+				resizeTabls: true,
+				enableTabScroll: true,
+				border: false,
 				record: null,
 				initialDataChange: true,	// helper attribute to identify if data was loaded or really changed by user
 				initialTitle: '',			// helper attribute to remember the article title before it was edited
-				disabled: true,
-	            defaults: {
-	                width: 300,
-	                labelWidth: 70,
-	                labelAlign: 'top',
-	                margin: '0 0 10 0'
-	            },
+				defaults: {
+					autoScroll: true,
+					bodyPadding: 10
+				},
+				margin: '0 0 0 10',
 				items: [{
-					fieldLabel: cms.lang.articles.form.active,
-					xtype: 'checkbox',
-					id: 'articleFieldActive',
-					labelAlign: 'left',
-					listeners: {
-						change: function(self, newValue, oldValue) { 
-							var editPanel = Ext.getCmp('articlesEditPanel');
-							if (!editPanel.initialDataChange) {
-								Ext.getCmp('saveArticleBtn').enable(true); 
-								// mark record as dirty
-								editPanel.record.setDirty();
-							}
-						}
-					}
-				},{
-					fieldLabel: cms.lang.articles.form.titleLable,
-					id: 'articleFieldTitle',
-					listeners: {
-						change: function(self, newValue, oldValue) { 
-							var editPanel = Ext.getCmp('articlesEditPanel');
-							//var record = Ext.getCmp('articlesEditPanel').record;
-							if (!editPanel.initialDataChange) {
-								Ext.getCmp('saveArticleBtn').enable(true); 
-								// mark record as dirty
-								editPanel.record.setDirty();
-								// update treepanel title
-								if (editPanel.record != null) {
-									editPanel.record.data.text = newValue;
-									editPanel.record.set('title', newValue); // used to update the treepanel -.-
+					// FIRST TAB (article settings)
+					title: cms.lang.articles.tab1.title,
+					border: false,
+					id: 'articleSettingsPanel',
+					items: [{
+						xtype: 'fieldset',
+						id: 'articleSettingsPanelFieldset',
+						border: false,
+						defaults: {
+			                width: 500,
+			                labelWidth: 70,
+			                labelAlign: 'top',
+			                margin: '0 0 10 0'
+			            },
+			            items: [{
+							name: 'language',
+							xtype: 'combobox',
+							fieldLabel: cms.lang.system.form.language,
+							id: 'articleFieldLanguage',
+							store: Ext.getStore('languagesStore'),
+							emptyText: cms.lang.articles.tab1.language,
+							displayField: 'name',
+							valueField: 'id',
+							queryMode: 'local',
+							width: 200
+						},{
+			            	fieldLabel: cms.lang.articles.tab1.active,
+							xtype: 'checkbox',
+							id: 'articleFieldActive',
+							labelAlign: 'left',
+							listeners: {
+								change: function(self, newValue, oldValue) { 
+									var editPanel = Ext.getCmp('articlePanel');
+									if (!editPanel.initialDataChange) {
+										Ext.getCmp('saveArticleBtn').enable(true); 
+										// mark record as dirty
+										editPanel.record.setDirty();
+									}
 								}
 							}
-						}
-					}
-				},{
-					fieldLabel: cms.lang.articles.form.description,
-					xtype: 'textareafield',
-					id: 'articleFieldDescription',
-					width: 580,
-					height: 70,
-					listeners: {
-						change: function(self, newValue, oldValue) { 
-							var editPanel = Ext.getCmp('articlesEditPanel');
-							if (!editPanel.initialDataChange) {
-								Ext.getCmp('saveArticleBtn').enable(true); 
-								// mark record as dirty
-								editPanel.record.setDirty();
-							}
-						}
-					}
-				},{
-					fieldLabel: cms.lang.articles.form.article,
-					xtype: 'tinymce_textarea',
-					id: 'articleFieldContent',
-					width: 580,
-					height: cms.calculateEditArticleHeight(),
-					resizable: false, //true
-					tinyMCEConfig: {
-						theme_advanced_row_height: 27,
-                        delta_height: 0,
-                        schema: 'html5',
-                        plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
-                        theme_advanced_toolbar_align : "left",
-                        theme_advanced_buttons1 : 'bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect', //styleselect,fontselect,fontsizeselect
-                        theme_advanced_buttons2 : 'table,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,unlink,|,wbimage,wbdocument,|,code,preview,fullscreen',
-                        content_css: ((cssdata.length > 0) ? cssdata[0].path : null), //TODO: add more than one css file
-                        theme_advanced_containers_default_align : 'left',
-                        setup: function(editor) {
-                        	// Add a custom image button
-                        	editor.addButton('wbimage', {
-                        		title: cms.lang.articles.form.image,
-                        		image: 'assets/images/icons_48x48/Picture.png',
-                        		onclick: function() {
-                        			Ext.create('Ext.window.Window', {
-									    id: 'selectImageWindow',
-									    title: cms.lang.articles.window.title,
-									    width: 500,
-									    
-									    items: [{
-									    	xtype: 'dataview',
-									    	id: 'selectImageDataView',
-									    	store: Ext.getStore('imageStore'),
-									    	tpl: Ext.create('Ext.XTemplate',
-									    		'<tpl for=".">',
-									    		'<div class="imageselect">',
-									    		'<img src="{thumb}" />',
-									    		'<p><span class="small light-blue">{shortFilename}</span>',
-									    		'<br/><span class="small dark-gray">{shortDescription}</span></p>',
-									    		'</div>',
-									    		'</tpl>',
-									    		'<div class="x-clear"></div>'
-									    	),
-									    	itemSelector: 'div.imageselect',
-									    	selectedItemCls: 'imageselect-hover',
-									    	trackOver: true,
-									    	overItemCls: 'x-item-over',
-									    	emptyText: 'No images available',
-									    	multiselect: false,
-									    	autoScroll: true,
-									    	maxHeight: 450,
-									    	prepareData: function(data) {
-									    		Ext.apply(data, {
-									    			shortFilename: Ext.util.Format.ellipsis(data.filename, 15),
-									    			shortDescription: Ext.util.Format.ellipsis(data.description, 32)
-									    		});
-									    		return data;
-									    	}
-									    }],
-
-									    buttons: [{
-									    	text: cms.lang.articles.window.select,
-									    	handler: function() {
-									    		var records = Ext.getCmp('selectImageDataView').getSelectionModel().getSelection();
-									    		if (records.length === 0) {
-									    			Ext.MessageBox.alert(cms.lang.articles.message6.title, cms.lang.articles.message6.error);
-									    		}
-									    		else {
-									    			var record = records[0];
-									    			editor.focus();
-										    		editor.selection.setContent('<img src="' + record.get('link') + '" alt="' + record.get('description') + '"/>');
-										    		Ext.getCmp('selectImageWindow').close();
-									    		}
-									    	}
-									    },{
-									    	text: cms.lang.articles.window.cancel,
-									    	handler: function() {
-									    		Ext.getCmp('selectImageWindow').close();
-									    	}
-									    }]
-									}).show();
-                        		}
-                        	});
-							
-							// add a custom pdf document button
-							editor.addButton('wbdocument', {
-								title: cms.lang.articles.form.document,
-								image: 'assets/images/pdf.jpg',
-								onclick: function() {
-									Ext.create('Ext.window.Window', {
-										id: 'selectDocumentWindow',
-										title: cms.lang.articles.window2.title,
-										width: 600,
-										//height: 200,
-
-										items: [{
-											xtype: 'gridpanel',
-											id: 'selectDocumentGrid',
-											store: Ext.getStore('documentStore'),
-											//width: 400,
-											height: 250,
-											border: false,
-		    								columns: [
-		    									{ text: cms.lang.articles.window2.name, dataIndex: 'filename', width: 180 },
-		    									{ text: cms.lang.articles.window2.description, dataIndex: 'description', flex: 1 },
-		    								]
-										}],
-
-										buttons: [{
-											text: cms.lang.articles.window2.select,
-											handler: function() {
-												var record = Ext.getCmp('selectDocumentGrid').getSelectionModel().getSelection()[0];
-												editor.focus();
-												editor.selection.setContent('<a href="' + record.get('link') + '" target="_blank">' + cms.lang.articles.window2.linkname + '</a>');
-												Ext.getCmp('selectDocumentWindow').close();
-											}
-										},{
-											text: cms.lang.articles.window2.cancel,
-											handler: function() {
-												Ext.getCmp('selectDocumentWindow').close();
-											}
-										}]
-									}).show();
+			            },{
+							fieldLabel: cms.lang.articles.tab1.titleLable,
+							id: 'articleFieldTitle',
+							xtype: 'textfield',
+							listeners: {
+								change: function(self, newValue, oldValue) { 
+									var editPanel = Ext.getCmp('articlePanel');
+									if (!editPanel.initialDataChange) {
+										Ext.getCmp('saveArticleBtn').enable(true); 
+										// mark record as dirty
+										editPanel.record.setDirty();
+										// update treepanel title
+										if (editPanel.record != null) {
+											editPanel.record.data.text = newValue;
+											editPanel.record.set('title', newValue); // used to update the treepanel -.-
+										}
+									}
 								}
-							});						
-                        }
+							}
+						},{
+							fieldLabel: cms.lang.articles.tab1.description,
+							xtype: 'textareafield',
+							id: 'articleFieldDescription',
+							width: 580,
+							height: 70,
+							listeners: {
+								change: function(self, newValue, oldValue) { 
+									var editPanel = Ext.getCmp('articlePanel');
+									if (!editPanel.initialDataChange) {
+										Ext.getCmp('saveArticleBtn').enable(true); 
+										// mark record as dirty
+										editPanel.record.setDirty();
+									}
+								}
+							}
+						}]
+					}]
+				},{
+					// SECOND TAB (edit teaser)
+					title: cms.lang.articles.tab2.title,
+					id: 'articleTeaserPanel',
+					border: false,
+					defaults: {
+						border:false
 					},
-					listeners: {
-						change: function() { 
-							var editPanel = Ext.getCmp('articlesEditPanel');
-							if (!editPanel.initialDataChange) {
-								Ext.getCmp('saveArticleBtn').enable(true); 
-								// mark record as dirty
-								editPanel.record.setDirty();
+					items: [{
+						xtype: 'tinymce_textarea',
+						id: 'articleFieldTeaserContent',
+						width: 640,
+						height: cms.calculateEditArticleHeight(77),
+						resizable: false, //true
+						tinyMCEConfig: {
+							border:false,
+							theme_advanced_row_height: 27,
+	                        delta_height: 0,
+	                        schema: 'html5',
+	                        plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
+	                        theme_advanced_toolbar_align : "left",
+	                        theme_advanced_buttons1 : 'bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect', //styleselect,fontselect,fontsizeselect
+	                        theme_advanced_buttons2 : 'table,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,unlink,|,wbimage,wbdocument,|,code,preview,fullscreen',
+	                        content_css: ((cssdata.length > 0) ? cssdata[0].path : null), //TODO: add more than one css file
+	                        theme_advanced_containers_default_align : 'left',
+	                        setup: function(editor) {
+	                        	// Add a custom image button
+	                        	editor.addButton('wbimage', {
+	                        		title: cms.lang.articles.tab3.image,
+	                        		image: 'assets/images/icons_48x48/Picture.png',
+	                        		onclick: function() {
+	                        			cms.createSelectImageWindow(editor);
+	                        		}
+	                        	});
+								
+								// add a custom pdf document button
+								editor.addButton('wbdocument', {
+									title: cms.lang.articles.tab3.document,
+									image: 'assets/images/pdf.jpg',
+									onclick: function() {
+										cms.createSelectDocumentWindow(editor);
+									}
+								});						
+	                        }
+						},
+						listeners: {
+							change: function() { 
+								var editPanel = Ext.getCmp('articlePanel');
+								if (!editPanel.initialDataChange) {
+									Ext.getCmp('saveArticleBtn').enable(true); 
+									// mark record as dirty
+									editPanel.record.setDirty();
+								}
 							}
 						}
-					}
+					}]
+				},{
+					// THIRD TAB (edit article)
+					title: cms.lang.articles.tab3.title,
+					id: 'articleEditPanel',
+					border: false,
+					items: [{
+						xtype: 'tinymce_textarea',
+						id: 'articleFieldContent',
+						width: 640,
+						height: cms.calculateEditArticleHeight(77),
+						resizable: false, //true
+						tinyMCEConfig: {
+							border:false,
+							theme_advanced_row_height: 27,
+	                        delta_height: 0,
+	                        schema: 'html5',
+	                        plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
+	                        theme_advanced_toolbar_align : "left",
+	                        theme_advanced_buttons1 : 'bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect', //styleselect,fontselect,fontsizeselect
+	                        theme_advanced_buttons2 : 'table,|,bullist,numlist,|,blockquote,hr,|,search,replace,|,link,unlink,|,wbimage,wbdocument,|,code,preview,fullscreen',
+	                        content_css: ((cssdata.length > 0) ? cssdata[0].path : null), //TODO: add more than one css file
+	                        theme_advanced_containers_default_align : 'left',
+	                        setup: function(editor) {
+	                        	// Add a custom image button
+	                        	editor.addButton('wbimage', {
+	                        		title: cms.lang.articles.tab3.image,
+	                        		image: 'assets/images/icons_48x48/Picture.png',
+	                        		onclick: function() {
+	                        			cms.createSelectImageWindow(editor);
+	                        		}
+	                        	});
+								
+								// add a custom pdf document button
+								editor.addButton('wbdocument', {
+									title: cms.lang.articles.tab3.document,
+									image: 'assets/images/pdf.jpg',
+									onclick: function() {
+										cms.createSelectDocumentWindow(editor);
+									}
+								});						
+	                        }
+						},
+						listeners: {
+							change: function() { 
+								var editPanel = Ext.getCmp('articlePanel');
+								if (!editPanel.initialDataChange) {
+									Ext.getCmp('saveArticleBtn').enable(true); 
+									// mark record as dirty
+									editPanel.record.setDirty();
+								}
+							}
+						}
+					}]
 				}]
 			}]
 		});
@@ -1014,28 +1140,197 @@ Ext.define('WeirdbirdCMS', {
 	},
 
 	/**
+	 * Creates a new window with all available images to chose from
+	 *
+	 * Please note: ideally an image store is present before calling this method,
+	 * 				otherwise image data has to be loaded on the fly
+	 *
+	 * caller 		can be of type object - then it has to be the tinymce editor object
+	 *				or of type string - then it has to be the callers ext-component string
+	 */
+	createSelectImageWindow: function(caller) {
+		var callByEditor = (Ext.typeOf(caller) == 'object');
+
+		if (Ext.typeOf(Ext.getStore('imageStore')) != 'object') {
+			// begin loading image data
+			Ext.create('Ext.data.Store', {
+				storeId: 'imageStore',
+				fields: ['id', 'description', 'link', 'thumb', 'filename'],
+				proxy: {
+					type: 'ajax',
+					url: 'cms/file/images',
+					reader: {
+						type: 'json'
+					}
+				},
+				autoLoad: true
+			});
+		}
+
+		Ext.create('Ext.window.Window', {
+		    id: 'selectImageWindow',
+		    title: cms.lang.articles.window.title,
+		    width: 500,
+		    
+		    items: [{
+		    	xtype: 'dataview',
+		    	id: 'selectImageDataView',
+		    	store: Ext.getStore('imageStore'),
+		    	tpl: Ext.create('Ext.XTemplate',
+		    		'<tpl for=".">',
+		    		'<div class="imageselect">',
+		    		'<img src="{thumb}" />',
+		    		'<p><span class="small light-blue">{shortFilename}</span>',
+		    		'<br/><span class="small dark-gray">{shortDescription}</span></p>',
+		    		'</div>',
+		    		'</tpl>',
+		    		'<div class="x-clear"></div>'
+		    	),
+		    	itemSelector: 'div.imageselect',
+		    	selectedItemCls: 'imageselect-hover',
+		    	trackOver: true,
+		    	overItemCls: 'x-item-over',
+		    	emptyText: 'No images available',
+		    	multiselect: false,
+		    	autoScroll: true,
+		    	maxHeight: 450,
+		    	prepareData: function(data) {
+		    		Ext.apply(data, {
+		    			shortFilename: Ext.util.Format.ellipsis(data.filename, 15),
+		    			shortDescription: Ext.util.Format.ellipsis(data.description, 32)
+		    		});
+		    		return data;
+		    	}
+		    }],
+
+		    buttons: [{
+		    	text: cms.lang.articles.window.select,
+		    	handler: function() {
+		    		var records = Ext.getCmp('selectImageDataView').getSelectionModel().getSelection();
+		    		if (records.length === 0) {
+		    			Ext.MessageBox.alert(cms.lang.articles.message6.title, cms.lang.articles.message6.error);
+		    		}
+		    		else {
+		    			var record = records[0];
+		    			
+		    			// output to tinymce editor panel ?
+		    			if (callByEditor) {
+		    				caller.focus();
+		    				caller.selection.setContent('<img src="' + record.get('link') + '" alt="' + record.get('description') + '"/>');
+		    			}
+		    			// otherwise update calling objects 
+		    			else {
+		    				Ext.getCmp(caller).setValue('<img src="' + record.get('thumb') + '">');
+		    				Ext.getCmp(caller).imageId = record.get('id');
+		    			}
+
+		    			Ext.getCmp('selectImageWindow').close();
+		    		}
+		    	}
+		    },{
+		    	text: cms.lang.articles.window.cancel,
+		    	handler: function() {
+		    		Ext.getCmp('selectImageWindow').close();
+		    	}
+		    }]
+		}).show();
+	},
+
+	/**
+	 * Creates a new window with all available images to chose from
+	 *
+	 * Please note: an image store has to be created and filled before
+	 * this method is called
+	 *
+	 * caller 		can be of type object - then it has to be the tinymce editor object
+	 *				or of type string - then it has to be the callers ext-component string
+	 */
+	createSelectDocumentWindow: function(caller) {
+		var callByEditor = (Ext.typeOf(caller) == 'object');
+
+		Ext.create('Ext.window.Window', {
+			id: 'selectDocumentWindow',
+			title: cms.lang.articles.window2.title,
+			width: 600,
+			//height: 200,
+
+			items: [{
+				xtype: 'gridpanel',
+				id: 'selectDocumentGrid',
+				store: Ext.getStore('documentStore'),
+				//width: 400,
+				height: 250,
+				border: false,
+				columns: [
+					{ text: cms.lang.articles.window2.name, dataIndex: 'filename', width: 180 },
+					{ text: cms.lang.articles.window2.description, dataIndex: 'description', flex: 1 },
+				]
+			}],
+
+			buttons: [{
+				text: cms.lang.articles.window2.select,
+				handler: function() {
+					// output to tinymce editor panel ?
+					if (callByEditor) {
+						var record = Ext.getCmp('selectDocumentGrid').getSelectionModel().getSelection()[0];
+						caller.focus();
+						caller.selection.setContent('<a href="' + record.get('link') + '" target="_blank">' + cms.lang.articles.window2.linkname + '</a>');	
+					}
+					// otherwise to caller
+					else {
+						Ext.getCmp(caller).setValue(record.get('link'));
+					}
+					
+					Ext.getCmp('selectDocumentWindow').close();
+				}
+			},{
+				text: cms.lang.articles.window2.cancel,
+				handler: function() {
+					Ext.getCmp('selectDocumentWindow').close();
+				}
+			}]
+		}).show();
+	},
+
+	/**
 	 * Helper method to calculate the optimum height of the editor textarea
 	 */
-	calculateEditArticleHeight: function() {
-		var bestHeight = Ext.getCmp('navmenu').getHeight() - 261;
+	calculateEditArticleHeight: function(bottomWidth) {
+		if (Ext.typeOf(bottomWidth) != 'number')
+			var bottomWidth = 0;
+
+		var bestHeight = Ext.getCmp('navmenu').getHeight() - bottomWidth;
 		return ((bestHeight < 350) ? 350 : bestHeight);
 	},
 
 	updateArticlesPanel: function() {
 		// load leaf data
 		Ext.Ajax.request({
-			url: 'cms/articles/read/' + Ext.getCmp('articlesEditPanel').record.data.id,
+			url: 'cms/articles/read/' + Ext.getCmp('articlePanel').record.data.id,
 
 			success: function(response) {
-				var editPanel = Ext.getCmp('articlesEditPanel');
+				var editPanel = Ext.getCmp('articlePanel');
 				var data = Ext.JSON.decode(response.responseText);
 
 				editPanel.initialDataChange = true;
 				editPanel.initialTitle = data.title; // remember initial title for later treeview resetting
+				var ls = Ext.getStore('languagesStore');
 				
+				// set language field according to the store mapping
+				if (Ext.isNumeric(data.language_id)) {
+					Ext.getCmp('articleFieldLanguage')
+						.setValue(Ext.getStore('languagesStore')
+						.getById(parseInt(data.language_id))
+						.get('name'));
+				}
+				else
+					Ext.getCmp('articleFieldLanguage').setValue(null);
+
+				// set other field values
 				Ext.getCmp('articleFieldActive').setValue(data.active);
 				Ext.getCmp('articleFieldTitle').setValue(data.title);
 				Ext.getCmp('articleFieldDescription').setValue(data.description);
+				Ext.getCmp('articleFieldTeaserContent').setValue(data.teaser);
 				Ext.getCmp('articleFieldContent').setValue(data.content);
 
 				editPanel.initialDataChange = false;
@@ -1051,18 +1346,27 @@ Ext.define('WeirdbirdCMS', {
 		tinymce.triggerSave(); 	// has to be done, because tinymce is an addon and the underlying 
 								// form field needs to be updated
 		var request = {};
+		
+		// if the combobox was not yet changed, the id field is not set - 
+		// we have to do this manually
+		var languageId = Ext.getCmp('articleFieldLanguage').getValue();
+		if (!Ext.isNumeric(languageId) && languageId != null)
+			languageId = Ext.getStore('languagesStore').findRecord('name', languageId).get('id');
+		
+		request.language_id = languageId;
 		request.active = Ext.getCmp('articleFieldActive').getValue();
 		request.title = Ext.getCmp('articleFieldTitle').getValue();
 		request.description = Ext.getCmp('articleFieldDescription').getValue();
+		request.teaser = Ext.getCmp('articleFieldTeaserContent').getValue();
 		request.content = Ext.getCmp('articleFieldContent').getValue();
 		
 		Ext.Ajax.request({
-			url: 'cms/articles/update/'+ Ext.getCmp('articlesEditPanel').record.data.id,
+			url: 'cms/articles/update/'+ Ext.getCmp('articlePanel').record.data.id,
 			params: request, 
 
 			success: function(response) {
 				Ext.MessageBox.alert('Status', cms.lang.articles.message3.success);
-				Ext.getCmp('articlesEditPanel').record.save(); //remove the dirty flag
+				Ext.getCmp('articlePanel').record.save(); //remove the dirty flag
 			},
 			failure: function(response, opts) {
 				Ext.MessageBox.alert('Error', cms.lang.articles.message3.error + ' (Error code ' + response.status + ').');
@@ -1079,7 +1383,7 @@ Ext.define('WeirdbirdCMS', {
 			fn: function(btn) {
 				if (btn == 'yes') {
 					Ext.Ajax.request({
-						url: 'cms/articles/destroy/' + Ext.getCmp('articlesEditPanel').record.data.id,
+						url: 'cms/articles/destroy/' + Ext.getCmp('articlePanel').record.data.id,
 						success: function(response) {
 							var node = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
 							node.remove();
@@ -1131,7 +1435,7 @@ Ext.define('WeirdbirdCMS', {
 						cms.saveArticle();
 					// restore the old title in the treeview if 'no' is pressed
 					else {
-						var title = Ext.getCmp('articlesEditPanel').initialTitle;
+						var title = Ext.getCmp('articlePanel').initialTitle;
 						oldRecord.data.text = title;
 						oldRecord.set('title', title);
 					}
@@ -1139,21 +1443,21 @@ Ext.define('WeirdbirdCMS', {
 					// anyways we save the treepanel record for now to indicate the non-dirty state
 					oldRecord.save();
 					// disable the edit panel for now if we are changing focus
-					Ext.getCmp('articlesEditPanel').disable();
+					Ext.getCmp('articlePanel').disable();
 					// load new data into the articles panel if appropriate
 					if (newRecord.data.leaf) {
 						// remember the currently clicked record id in the edit panel as hidden value
-						Ext.getCmp('articlesEditPanel').record = newRecord;
+						Ext.getCmp('articlePanel').record = newRecord;
 						cms.updateArticlesPanel();
 					}
 				}
 			});
 		}
 		else {
-			Ext.getCmp('articlesEditPanel').disable();
+			Ext.getCmp('articlePanel').disable();
 			
 			if (newRecord != null && newRecord.data.leaf) {
-				Ext.getCmp('articlesEditPanel').record = newRecord;
+				Ext.getCmp('articlePanel').record = newRecord;
 				cms.updateArticlesPanel();
 			}
 		}		
@@ -1645,29 +1949,6 @@ Ext.define('WeirdbirdCMS', {
 	populateSystemPanel: function() {
 		if (this.debug) console.log('populating system panel');
 
-		Ext.define('Language', {
-			extend: 'Ext.data.Model',
-			fields: [
-				{name:'id', type:'int'}, 
-				{name:'name', type:'string'}, 
-				{name:'shortform', type:'string'}
-			]
-		});
-
-		Ext.create('Ext.data.Store', {
-		    storeId: 'languagesStore',
-		    model: 'Language',
-		    proxy: {
-		        type: 'ajax',
-		        url: 'cms/system/languages',
-		        reader: {
-		            type: 'json',
-		            successProperty: 'success'
-		        }
-		    },
-		    autoLoad: true
-		});
-
 		var systemForm = Ext.widget({
 			xtype: 'form',
 			id: 'systemForm',
@@ -1700,7 +1981,9 @@ Ext.define('WeirdbirdCMS', {
 							url: 'cms/system/update',
 							params: {
 								email: field.getValue(),
-								language: languageId
+								language: languageId,
+								companyname: Ext.getCmp('systemFormCompanyName').getValue(),
+								info: Ext.getCmp('systemFormInfo').getValue()
 							},
 							success: function(response) {
 								Ext.MessageBox.alert('Status', '<p>' + cms.lang.system.message.success1 + '</p>'
@@ -1719,9 +2002,19 @@ Ext.define('WeirdbirdCMS', {
 				title: cms.lang.system.form.title,
 				defaultType: 'textfield',
 				defaults: {
-					width:400
+					width:500
 				},
 				items: [{
+					fieldLabel: cms.lang.system.form.companyname,
+					name: 'companyname',
+					allowBlank: true,
+					id: 'systemFormCompanyName'
+				},{
+					fieldLabel: cms.lang.system.form.additionalinfo,
+					name: 'info',
+					allowBlank: true,
+					id: 'systemFormInfo'
+				},{
 					fieldLabel : cms.lang.system.form.contactemail,
 					name: 'email',
 					allowBlank: false,
@@ -1752,7 +2045,11 @@ Ext.define('WeirdbirdCMS', {
 			success: function(response) {
 				var r = Ext.JSON.decode(response.responseText);
 				
-				// update the contact email address
+				// update the form fields
+				if (r.companyname != null)
+					Ext.getCmp('systemFormCompanyName').setValue(r.companyname);
+				if (r.info != null)
+					Ext.getCmp('systemFormInfo').setValue(r.info);
 				if (r.email != null)
 					Ext.getCmp('systemFormEmail').setValue(r.email);
 				if (r.language != null)

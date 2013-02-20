@@ -7,7 +7,9 @@ class Controller_Cms_System extends Controller_Cms_Data
 	{
 		$system = array(
 			'email' => ORM::factory('System_Setting')->get_email(),
-			'language' => ORM::factory('System_Setting')->get_language()->name
+			'language' => ORM::factory('System_Setting')->get_language()->name,
+			'companyname' => ORM::factory('System_Setting')->get_companyName(),
+			'info' => ORM::factory('System_Setting')->get_info()
 		);
 		
 		// get current list of cms project changes (if allowed by the server)
@@ -65,6 +67,8 @@ class Controller_Cms_System extends Controller_Cms_Data
 		$data = $this->request->post();
 		$email = $data['email'];
 		$languageId = $data['language'];
+		$companyName = $data['companyname'];
+		$info = $data['info'];
 		$setting = ORM::factory('System_Setting');
 
 		// check if language id is an int value
@@ -73,6 +77,8 @@ class Controller_Cms_System extends Controller_Cms_Data
 			// update data
 			$setting->set_value_by_fieldname('contactemail', $email);
 			$setting->set_value_by_fieldname('language_id', $languageId);
+			$setting->set_value_by_fieldname('companyname', $companyName);
+			$setting->set_value_by_fieldname('info', $info);
 
 			$this->template->result = array( 'success' => true );
 		}
