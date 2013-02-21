@@ -110,7 +110,7 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			title: 'Category/Column selection'
 		},
 		tab1: {
-			title: 'Edit article settings'
+			title: 'Edit article settings',
 			active: 'Active',
 			titleLable: 'Title',
 			description: 'Description',
