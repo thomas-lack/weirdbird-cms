@@ -36,4 +36,18 @@ class Model_File extends ORM {
                 ->order_by('filename', 'asc')
                 ->find_all();
     }
+
+    public function get_imageFilePath($id = null, $thumb = false)
+    {
+        $filename = '';
+        if ($id == null)
+            $filename = $this->filename;
+        else
+        {
+            $f = ORM::factory('File', $id);
+            $filename = $f->filename;
+        }
+        
+        return '/'.UPLOADDIR.'/'.UPLOADIMAGEDIR.'/'. (($thumb) ? IMAGETHUMBSDIR.'/' : '') . $filename;
+    }
 }

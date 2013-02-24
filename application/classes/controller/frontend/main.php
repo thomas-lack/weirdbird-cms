@@ -76,11 +76,25 @@ class Controller_Frontend_Main extends Controller_Template {
 				$this->template->externalScripts = array();
 				$this->template->currentStructure = $this->structureRef;
 				$this->template->structures = $structures;
+				$this->template->structureOptions = ORM::factory('Structure_Option')
+														->where('structure_id','=',$structureId)
+														->find();
 				$this->template->columnContent = $columnContent;
+				$this->template->system = $this->getSystemValues();
 			}
 		}
 	}
 	
+	private function getSystemValues()
+	{
+		return array(
+			'standardlanguage' => ORM::factory('System_Setting')->get_language(),
+			'contactemail' => ORM::factory('System_Setting')->get_email(),
+			'companyname' => ORM::factory('System_Setting')->get_companyName(),
+			'info' => ORM::factory('System_Setting')->get_info()
+		);
+	}
+
 	/**
 	 * Generate a html parse string of the given column
 	 */
