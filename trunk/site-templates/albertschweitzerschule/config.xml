@@ -34,12 +34,6 @@
 			<view>3col</view>
 			<columns>3</columns>
 		</layout>
-		<layout>
-			<name>3colfloat</name>
-			<description>3-column page (automatic float)</description>
-			<view>3colfloat</view>
-			<columns>1</columns>
-		</layout>
 	</layouts>
 	
 	<modules>
@@ -47,6 +41,12 @@
 			<name>content</name>
 			<description>content column</description>
 			<view>content</view>
+			<allowarticles>true</allowarticles>
+		</module>
+		<module>
+			<name>teaser</name>
+			<description>teaser > content column</description>
+			<view>teaser</view>
 			<allowarticles>true</allowarticles>
 		</module>
 		<module>

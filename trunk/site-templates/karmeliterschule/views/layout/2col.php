@@ -8,7 +8,12 @@
 *	Variables the cms backend has to deliver:
 *	$currentStructure 		string 		Name of the structure currently in use
 * 	$structures				array 		Array of strings containing all structures
+* 	$structureOptions		array 		array of strings containing optional structure data
 *	$columnContent			array 		Array of strings containing the column html's
+*	$system 				array 		Array of string containing system values
+*	$styles 				array 		Array of strings containing stylesheet files
+* 	$scripts 				array 		Array of strings containing scripts
+*	$externalScripts		array 		Array of strings containing script URI's
 *
 ************************************************************************************/
 ?>

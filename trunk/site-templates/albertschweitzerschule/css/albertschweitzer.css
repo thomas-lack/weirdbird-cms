@@ -58,6 +58,8 @@
 	body {
 		font-family: 'StRydeRegular';
 		-webkit-font-smoothing: antialiased !important;
+		padding-top: 40px;
+		padding-bottom: 40px;
 	}
 	
 	.brandname {
@@ -72,7 +74,7 @@
 	}
 	
 	.logo {
-		background:url('../img/albert3.png') no-repeat left top;
+		background:url('../img/albert-logo.png') no-repeat left top;
 		height:40px;
 		width:40px;
 		position:absolute;
