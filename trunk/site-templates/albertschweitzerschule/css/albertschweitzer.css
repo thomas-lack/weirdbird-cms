@@ -2,6 +2,31 @@
    Author's custom styles
    ========================================================================== */
    
+   /**************************************************
+	*
+	* colors:
+	* ========
+	* main: 342B22 (sepia brown)
+	* monochromatic1: 4D341B (natural brown)
+	* monochromatic2: 806A54 (grey brownish)
+	* monochromatic3: 80572E (glowing brown)
+	* monochromatic4: CCA986 (bright)
+	* complemantary3: 3A7080 (light blue)
+	* complementary4: 222F33 (dark blue)
+	* compound1: 997A27 (orange)
+	* compound3: 1A403F (dark green)
+	* compund4: 396658 (light green)
+	*
+	* highlight colors:
+	* ===================
+	* main: 2B8BFF (light blue)
+	* complementary1: 4499FF (lighter blue)
+	* complementary2: 0051B2 (darker blue)
+	* complementary3: B27810 (dark orange)
+	* complementary4: FFB42B (light orange)
+	*
+	**************************************************/
+
    @font-face {
 		font-family: 'Capita-Light';
 		src: url('25A809_0_0.eot');
@@ -57,11 +82,25 @@
 	
 	body {
 		font-family: 'StRydeRegular';
+		color: #342B22;
 		-webkit-font-smoothing: antialiased !important;
 		padding-top: 40px;
 		padding-bottom: 40px;
 	}
 	
+	h1 { font-size:26px; color:#80572E; }
+	h2 { font-size:22px; color:#806A54;}
+	h3 { font-size:20px; color:#806A54;}
+	h4 { font-size:18px; color:#4D341B;}
+	h5 { font-size:17px; }
+	h6 { font-size:16px; }
+
+	p { line-height: 24px; }
+
+	ul, ol { line-height: 24px; }
+
+	li { line-height: 24px; color:#4D341B;}
+
 	.brandname {
 		font-family: 'AlexBrushRegular';/*'MuseoSans-500';*/
 		font-weight:100;
@@ -81,7 +120,7 @@
 		top:0px;
 	}
 	
-	header {
+	.header {
 		font-family: serif;
 		background-color: #000;
 		width:100%;
@@ -107,7 +146,7 @@
 	div.headline {
 		position:absolute;
 		bottom:20px;
-		width:100%;
+		width:90%;
 	}
 	
 	div.headline h1 {
