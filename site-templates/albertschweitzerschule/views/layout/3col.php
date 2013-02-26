@@ -79,8 +79,8 @@
 	if ($structureOptions->file_id != null)
 	{
 		$out = ''
-			. '<header style="background:url(\'' . $structureOptions->get_imageFilePath() . '\') '
-			. 'no-repeat center center; background-size:cover;">'
+			. '<div class="header" style="background:url(\'' . $structureOptions->get_imageFilePath() . '\') '
+			. 'no-repeat center center; background-size:cover;" data-stellar-background-ratio="0.5">'
 			. "\n"
 			. '<div class="container"><div class="headlinewrapper"><div class="headline">'
 			. (($structureOptions->headline1 != null) ? '<h1>'.nl2br($structureOptions->headline1).'</h1><br/>' : '')
@@ -89,7 +89,7 @@
 			. "\n"
 			. '</div></div></div>'
 			. "\n"
-			. '</header>';
+			. '</div>';
 
 		echo $out;
 	}

@@ -17,16 +17,17 @@
 ************************************************************************************/
 if ($articles != null)
 {
-	$first = true;
-	foreach ($articles as $a)
+	for ($i=0; $i<count($articles); $i++)
 	{
-		echo '<div id="article_' . $a->id . '" class="article">';
-		
-		echo $a->content;
+		$out = '<div id="article_' . $articles[$i]->id . '" class="article">'
+			. $articles[$i]->content
+			. '</div>'
+			. "\n";
 
-		echo '</div>';
+		echo $out;
 
-		$first = false;
+		if ($i < count($articles) - 1)
+			echo '<hr/>' . "\n";
 	}	
 }
 ?>

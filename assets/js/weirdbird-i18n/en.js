@@ -89,6 +89,8 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			background: 'Hintergrundbild',
 			backgroundBtn: 'Choose image',
 			saveBtn: 'Save optional settings',
+			saveSuccess1: 'Success',
+			saveSuccess2: 'The optional settings were successfully saved.',
 			saveError: 'The optional settings could not be saved.'
 		},
 		message: {

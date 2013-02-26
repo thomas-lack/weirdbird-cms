@@ -622,7 +622,9 @@ Ext.define('WeirdbirdCMS', {
 							    	var s = Ext.getStore('layoutsStore');
 		                       		var i = s.find('id', newValue);
 		                       		var rec = s.getAt(i);
-							    	cms.paintModuleSelectionBoxes(rec.data.columns);
+							    	
+							    	// paint new comboboxes
+							    	cms.paintModuleSelectionBoxes(rec.data.columns, true);
 								}
 							}
 						}
@@ -672,7 +674,7 @@ Ext.define('WeirdbirdCMS', {
 						margin: '10 0 0 95',
 						handler: function() {
 							var record = Ext.getCmp('categoriesGrid').getSelectionModel().getSelection()[0];
-							console.log(record);
+							
 							Ext.Ajax.request({
 								url: 'cms/structures/optional/' + record.data.id,
 								method: 'POST',
@@ -681,6 +683,9 @@ Ext.define('WeirdbirdCMS', {
 									headline1: Ext.getCmp('layoutsOptionalHeadline1').getValue(),
 									headline2: Ext.getCmp('layoutsOptionalHeadline2').getValue(),
 									headline3: Ext.getCmp('layoutsOptionalHeadline3').getValue()
+								},
+								success: function(response) {
+									Ext.MessageBox.alert(cms.lang.structures.form2.saveSuccess1, cms.lang.structures.form2.saveSuccess2);
 								},
 								failure: function(response) {
 									Ext.MessageBox.alert('Error', cms.lang.structures.form2.saveError + ' (Error code ' + response.status + ').');
@@ -697,18 +702,21 @@ Ext.define('WeirdbirdCMS', {
 
 	/*
 	* Helper method to add comboboxes to the layout & modules formpanel
+	*
+	* params: 
+	* columns 		int 		number of comboboxes to draw
+	* noEntries		boolean 	(optional) automatically fill up comboboxes with values from the store
+	* 
 	*/
-	paintModuleSelectionBoxes: function(columns) {
+	paintModuleSelectionBoxes: function(columns, noEntries) {
 		var cmp = Ext.getCmp('layoutModuleFormPanel');
+		if (!Ext.isBoolean(noEntries))
+			var noEntries = false;
 
 		// remove all older module comboboxes
-		for (var i = 0; i < cmp.items.items.length; i++) {
-			var id = cmp.items.items[i].id;
-			if (id != 'layoutsComboBox') {
-				cmp.remove(id, true);
-				cmp.doLayout();
-				i--; // size of array changes with removal -> hence the addressing
-			}
+		for (var i = cmp.items.items.length; i > 1; i--) {
+			var id = cmp.items.items[i-1].id;
+			cmp.remove(id, true);
 		}
 		
 		// add new module comboboxes
@@ -720,6 +728,7 @@ Ext.define('WeirdbirdCMS', {
 				emptyText: cms.lang.structures.form.emptyText2,
 				displayField: 'description',
 				valueField: 'id',
+				value: null,
 				queryMode: 'local',
 				listeners: {
 					change: function(cmp, newValue, oldValue) {
@@ -745,15 +754,17 @@ Ext.define('WeirdbirdCMS', {
 			});
 
 			// if a module was selected before, set the value
-			var structure_id = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0].data.id;
-			var q = Ext.getStore('columnMappingStore').query('structure_id', structure_id);
-			for (var j=0; j < q.items.length; j++) {
-				var data = q.items[j].data;
-				if (data.column == i) {
-					var index = Ext.getStore('modulesStore').find('id', data.module_id);
-					var d = Ext.getStore('modulesStore').getAt(index).data.description;
-					Ext.getCmp('moduleComboBoxColumn' + i).setValue(d);
-				}
+			if (!noEntries) {
+				var structure_id = Ext.getCmp('categoriesGrid').getView().getSelectionModel().getSelection()[0].data.id;
+				var q = Ext.getStore('columnMappingStore').query('structure_id', structure_id);
+				for (var j=0; j < q.items.length; j++) {
+					var data = q.items[j].data;
+					if (data.column == i) {
+						var index = Ext.getStore('modulesStore').find('id', data.module_id);
+						var d = Ext.getStore('modulesStore').getAt(index).data.description;
+						Ext.getCmp('moduleComboBoxColumn' + i).setValue(d);
+					}
+				}	
 			}
 		}
 	},

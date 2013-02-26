@@ -79,6 +79,9 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 			$structure->user_id = $user->id;
 			$structure->save();
 			
+			// mark all articles as 'orphans' that were bound to the changed layout
+			$this->orphanateArticles($d->id);
+
 			$this->template->result = array( 'success' => true );
 		}
 	}
@@ -89,24 +92,7 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 		
 		// delete the structure and all corresponding mappings
 		ORM::factory('structure', $d->id)->delete();
-		$mappings = ORM::factory('StructureColumnMapping')
-			->where('structure_id','=',$d->id)
-			->find_all();
-		
-		foreach ($mappings as $m) {
-			// also delete the reference of articles to the deleted mappings
-			$articles = ORM::factory('Article')
-				->where('structure_column_mapping_id','=',$m->id)
-				->find_all();
-
-			foreach ($articles as $article) {
-				$article->structure_column_mapping_id = null;
-				$article->active = 0;
-				$article->save();
-			}
-
-			$m->delete();
-		}
+		$this->orphanateArticles($d->id);
 		
 		$this->template->result = array( 'success' => true );
 	}
@@ -165,5 +151,35 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 
 		else
 			$this->template->result = array( 'success' => false );
+	}
+
+	/**
+	 * Identifies articles that were bound to a structure that was changed or deleted.
+	 * All of those articles are marked as 'orphans', since their state is unknown for now.
+	 * (All of the mappings necessary to bind an article to a structure are also deleted.)
+	 *
+	 * params:
+	 * $structureId 		int 		Id of the structure that was changed / deleted
+	 */
+	private function orphanateArticles($structureId, $deleteMappings = FALSE)
+	{
+		$mappings = ORM::factory('StructureColumnMapping')
+			->where('structure_id','=',$structureId)
+			->find_all();
+		
+		foreach ($mappings as $m) {
+			// also delete the reference of articles to the deleted mappings
+			$articles = ORM::factory('Article')
+				->where('structure_column_mapping_id','=',$m->id)
+				->find_all();
+
+			foreach ($articles as $article) {
+				$article->structure_column_mapping_id = null;
+				$article->active = 0;
+				$article->save();
+			}
+
+			$m->delete();
+		}
 	}
 }
