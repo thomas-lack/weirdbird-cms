@@ -116,7 +116,7 @@ class Controller_Frontend_Main extends Controller_Template {
 			$articles = ORM::factory('Article')
 				->where('active','=',1)
 				->where('structure_column_mapping_id','=',$mapping->id)
-				->order_by('id', 'asc')
+				->order_by('position', 'asc')
 				->find_all();	
 		}
 
