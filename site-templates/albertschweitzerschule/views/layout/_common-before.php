@@ -79,8 +79,8 @@
 	if ($structureOptions->file_id != null)
 	{
 		$out = ''
-			. '<header style="background:url(\'' . $structureOptions->get_imageFilePath() . '\') '
-			. 'no-repeat center center; background-size:cover;">'
+			. '<div id="structure-header" class="header" style="background:url(\'' . $structureOptions->get_imageFilePath() . '\') '
+			. 'no-repeat center center; background-size:cover;" data-stellar-background-ratio="0.5">'
 			. "\n"
 			. '<div class="container"><div class="headlinewrapper"><div class="headline">'
 			. (($structureOptions->headline1 != null) ? '<h1>'.nl2br($structureOptions->headline1).'</h1><br/>' : '')
@@ -89,42 +89,38 @@
 			. "\n"
 			. '</div></div></div>'
 			. "\n"
-			. '</header>';
+			. '</div>';	
 
+		// add invisible tag that can be shown if the viewport is too small and has to be hidden
+		$out2 = ''
+			. '<div id="structure-header-noimage" style="display:none;">'
+			. (($structureOptions->headline1 != null) ? '<h1>'.nl2br($structureOptions->headline1).'</h1>' : '')
+			. (($structureOptions->headline2 != null) ? '<h2>'.nl2br($structureOptions->headline2).'</h2>' : '')
+			. (($structureOptions->headline3 != null) ? '<h3>'.nl2br($structureOptions->headline3).'</h3>' : '')
+			. '</div>';
+		
 		echo $out;
+		echo $out2;
 	}
 	?>
 
 	<!-- ### content + footer ### -->
 	<div class="container">
 
-		<?
-		for ($i=0; $i<count($columnContent); $i++) 
-		{
-			// start a new row if 3 entries were written
-			if ($i==0)
-				echo '<div class="row">';
-			else if ($i % 3 == 0)
-			{
-				echo '</div>';
-				echo '<div class="row">';
-			}
+		<!-- Where am i navigation / picture description -->
+		<div class="row infonavbar">
+			<?
+			// create a list of links for navigation convenience
+			$out = '<a href="/' . $structures[0]->title . '">' . $structures[0]->title . '</a>';
 
-			// print articles
-			echo '<div class="span4">'. $columnContent[$i] .'</div>';
-				
-		}
-		if (count($columnContent) > 0)
-			echo '</div>';
-		?>
+			if ($currentStructure != $structures[0]->title)
+				$out .= ' &nbsp; &raquo; &nbsp; ' . '<a href="/' . $currentStructure . '">' . $currentStructure . '</a>';
 
-		<hr/>
+			// TODO: falls teaser gefolgt -> artikel headline ausgeben ?
 
-		<footer>
-			<p>
-				<?= $system['companyname'] ?>, <?= $system['info'] ?>
-				<span class="pull-right"><a href="/Impressum">Impressum</a></span>
-			</p>
-		</footer>
-	</div>
-</body>
+			echo $out;
+			?>
+			<div class="pull-right imagedescription">
+				Schulhof mit Blick auf das Hauptgebäude
+			</div>
+		</div>
