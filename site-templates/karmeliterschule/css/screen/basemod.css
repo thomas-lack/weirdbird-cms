@@ -126,8 +126,8 @@
   {
   	background-image: url(../../images/karmipost_bubble.gif);
   	background-repeat:no-repeat;
-  	background-position: 170px 70px;
-    height:750px;
+  	background-position: 190px 70px;
+    min-height:750px;
     position:relative;
   	/*width: 180px;
   	height: 628px;*/ 
@@ -137,7 +137,7 @@
   {
     position:absolute;
     top:83px;
-    left:182px;
+    left:200px;
     height:267px;
     width:137px;
     overflow:hidden;
