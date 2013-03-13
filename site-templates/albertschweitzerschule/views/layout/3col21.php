@@ -3,7 +3,7 @@
 *
 *	weirdbird CMS
 *	Template: 	Albert Schweitzer Schule
-*	Purpose:	3 column article layout
+*	Purpose:	3 column article with the rightes column visually separated 
 *
 *	Variables the cms backend has to deliver:
 *	$currentStructure 		string 		Name of the structure currently in use
@@ -28,7 +28,7 @@ require_once('_common-before.php');
 	<div class="span4"><?= $columnContent[1] ?></div>
 
 	<!-- column 3 -->
-	<div class="span4"><?= $columnContent[2] ?></div>
+	<div class="span4 border-left-col"><?= $columnContent[2] ?></div>
 </div>
 
 <? require_once('_common-after.php'); ?>		

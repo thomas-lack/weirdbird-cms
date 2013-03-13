@@ -141,6 +141,7 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 
 			$optional->structure_id = $id;
 			$optional->file_id = (is_numeric($data['image_id'])) ? $data['image_id'] : null;
+			$optional->backgroundDescription = $data['backgroundDescription'];
 			$optional->headline1 = $data['headline1'];
 			$optional->headline2 = $data['headline2'];
 			$optional->headline3 = $data['headline3'];

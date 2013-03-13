@@ -50,8 +50,18 @@
 		<div class="container navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container">
-					<a class="brand" href="/">
-						<div class="logo"></div><span class="brandname"><?= $system['companyname'] ?></span>
+					<a class="brand" href="/" 
+						<? 
+						// if we have a logo the padding and margin of the brand box have to be adjusted
+						echo (($system['brandimagepath'] == '') ? '' : 'style="padding:0;margin-left:0"'); 
+						?>
+					>
+						<?
+						// insert brand image if one is set in the cms system settings
+						if (is_string($system['brandimagepath']) && $system['brandimagepath'] != '')
+							echo '<img src="' . $system['brandimagepath'] . '"/>';
+						?>
+						<span class="brandname"><?= $system['companyname'] ?></span>
 					</a>
 					<ul class="nav pull-right">
 						<?
@@ -93,7 +103,7 @@
 
 		// add invisible tag that can be shown if the viewport is too small and has to be hidden
 		$out2 = ''
-			. '<div id="structure-header-noimage" style="display:none;">'
+			. '<div id="structure-header-noimage">'
 			. (($structureOptions->headline1 != null) ? '<h1>'.nl2br($structureOptions->headline1).'</h1>' : '')
 			. (($structureOptions->headline2 != null) ? '<h2>'.nl2br($structureOptions->headline2).'</h2>' : '')
 			. (($structureOptions->headline3 != null) ? '<h3>'.nl2br($structureOptions->headline3).'</h3>' : '')
@@ -114,13 +124,16 @@
 			$out = '<a href="/' . $structures[0]->title . '">' . $structures[0]->title . '</a>';
 
 			if ($currentStructure != $structures[0]->title)
-				$out .= ' &nbsp; &raquo; &nbsp; ' . '<a href="/' . $currentStructure . '">' . $currentStructure . '</a>';
+				$out .= ' &nbsp; &raquo; &nbsp; <a href="/' . $currentStructure . '">' . $currentStructure . '</a>';
 
-			// TODO: falls teaser gefolgt -> artikel headline ausgeben ?
-
+			// if an article was loaded directly, add another link
+			if ($currentArticle != null)
+				$out .= ' &nbsp; &raquo; &nbsp; <a href="/' . $currentStructure . '/' . $currentArticle 
+					. '">' . $currentArticle . '</a>';
+			
 			echo $out;
 			?>
 			<div class="pull-right imagedescription">
-				Schulhof mit Blick auf das Hauptgebäude
+				<?= $structureOptions->backgroundDescription; ?>
 			</div>
 		</div>

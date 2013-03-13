@@ -51,22 +51,26 @@ class Controller_Cms_FileManager extends Controller_Cms_Data
 			{
 				$currentResult = true;
 
+				// make sure the filename is valid by replacing not allowed characters with an underscore _
+				//$newFilename = strtolower(preg_replace(array('/[^\w\(\).-]/i','/(_)\1+/'),'_', $f['name']));
+				$newFilename = preg_replace('/[\/:*?"<>|ßäöüÄÖÜ\']/', '', $f['name']);
+				$newFilename = strtolower(preg_replace(array('/[^\w\(\).-]/i','/(_)\1+/'),'_', $newFilename));
+
 				// get upload directory
-				$dest = $this->mapType($f['type'], true);
-				$dest .= DIRECTORY_SEPARATOR.$f['name'];
+				$dest = $this->mapType($f['type'], true) . DIRECTORY_SEPARATOR . $newFilename;
 				if ( ! move_uploaded_file($f['tmp_name'], $dest) )
 					$currentResult = false;
 
 				// create thumbnail if src file is an image file
 				if ($this->isImage($f['type']))
-					$this->createThumbnail($dest, 60, 60, $f['name']);
+					$this->createThumbnail($dest, 60, 60, $newFilename);
 				
 				if ($currentResult) 
 				{
 					$fe = ORM::factory('File');
 					$fe->active = 1;
 					$fe->user_id = $user->id;
-					$fe->filename = $f['name'];
+					$fe->filename = $newFilename;
 					$fe->type = $f['type'];
 					$fe->description = $this->request->post('form-description');
 					$fe->creationdate = date('Y-m-d H:i:s', time());
@@ -77,10 +81,7 @@ class Controller_Cms_FileManager extends Controller_Cms_Data
 			}
 		}
 
-		$this->template->result = array(
-			'success' => $result
-
-		);
+		$this->template->result = array( 'success' => $result );
 	}
 
 	public function action_destroy()
@@ -100,7 +101,25 @@ class Controller_Cms_FileManager extends Controller_Cms_Data
 		if ($this->isImage($type))
 			unlink($typeDir.DIRECTORY_SEPARATOR.IMAGETHUMBSDIR.DIRECTORY_SEPARATOR.$filename);
 		
-		$this->template->result = array( 'success' => true );		
+		$this->template->result = array( 'success' => true );
+
+		// delete system-setting logo references if necessary
+		$settingsImageId = ORM::factory('System_Setting')->get_brandImage();
+		if ($settingsImageId == $request->id)
+		{
+			ORM::factory('System_Setting')->set_value_by_fieldname('brandimage', '');
+		}
+
+		// delete structure background image references if necessary
+		$structureOptions = ORM::factory('Structure_Option')->find_all();
+		foreach($structureOptions as $so)
+		{
+			if ($so->file_id == $request->id)
+			{
+				$so->file_id = null;
+				$so->save();
+			}
+		}
 	}
 
 	public function action_update()
@@ -185,11 +204,24 @@ class Controller_Cms_FileManager extends Controller_Cms_Data
 		
 		// resample temp image and save it as thumbnail
 		$sampleImage = imagecreatetruecolor($maxWidth, $maxHeight);
-		imagecopyresampled($sampleImage, $tmpImage, 0, 0, 0, 0, $maxWidth, $maxHeight, $srcWidth, $srcHeight);
-		imagejpeg(
-			$sampleImage, 
-			UPLOADPATH.UPLOADIMAGEDIR.DIRECTORY_SEPARATOR.IMAGETHUMBSDIR.DIRECTORY_SEPARATOR.$imgName
-		);
+		$targetFileName = UPLOADPATH.UPLOADIMAGEDIR.DIRECTORY_SEPARATOR.IMAGETHUMBSDIR.DIRECTORY_SEPARATOR.$imgName;
+		
+		// do we have an png image ? then we have to make sure, that the alpha channel is supported for
+		// image transparency
+		if ($type == 3)
+		{
+			imagealphablending($sampleImage, false);
+			imagesavealpha($sampleImage, true);
+			$transparent = imagecolorallocatealpha($sampleImage, 255, 255, 255, 127);
+     		imagefilledrectangle($sampleImage, 0,  0, $nw, $nh,  $transparent);
+			imagecopyresampled($sampleImage, $tmpImage, 0, 0, 0, 0, $maxWidth, $maxHeight, $srcWidth, $srcHeight);
+			imagepng($sampleImage, $targetFileName);
+		}
+		else
+		{
+			imagecopyresampled($sampleImage, $tmpImage, 0, 0, 0, 0, $maxWidth, $maxHeight, $srcWidth, $srcHeight);
+			imagejpeg($sampleImage, $targetFileName);
+		}
 
 		// delete temp calculation files
 		imagedestroy($tmpImage);
