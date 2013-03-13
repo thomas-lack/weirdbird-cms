@@ -24,10 +24,28 @@ class Model_System_Setting extends ORM {
 		return $setting->content;
 	}
 
+	public function get_address()
+	{
+		$setting = $this->where('fieldname','=','address')->find();
+		return $setting->content;
+	}
+
 	public function get_info()
 	{
 		$setting = $this->where('fieldname','=','info')->find();
 		return $setting->content;
+	}
+
+	public function get_brandImage()
+	{
+		$setting = $this->where('fieldname','=','brandimage')->find();
+		return $setting->content;
+	}
+
+	public function get_brandImagePath()
+	{
+		$imageId = ORM::factory('System_Setting')->get_brandImage();
+		return ORM::factory('File')->get_imageFilePath($imageId, true);
 	}
 
 	public function get_value_by_fieldname($name)
@@ -45,6 +63,7 @@ class Model_System_Setting extends ORM {
 					->where('fieldname','=',$name)
 					->find();
 
+		$setting->fieldname = $name;
 		$setting->content = $value;
 		$setting->save();
 

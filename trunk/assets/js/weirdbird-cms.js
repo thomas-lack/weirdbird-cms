@@ -568,6 +568,7 @@ Ext.define('WeirdbirdCMS', {
 					    		method: 'GET',
 					    		success: function(response) {
 					    			var r = Ext.JSON.decode(response.responseText);
+					    			Ext.getCmp('layoutsOptionalBackgroundDescription').setValue(r.backgroundDescription);
 					    			Ext.getCmp('layoutsOptionalHeadline1').setValue(r.headline1);
 					    			Ext.getCmp('layoutsOptionalHeadline2').setValue(r.headline2);
 					    			Ext.getCmp('layoutsOptionalHeadline3').setValue(r.headline3);
@@ -658,6 +659,11 @@ Ext.define('WeirdbirdCMS', {
 							cms.createSelectImageWindow('layoutsOptionalBackground');
 						}
 					},{
+						fieldLabel: cms.lang.structures.form2.backgroundDescription,
+						id: 'layoutsOptionalBackgroundDescription',
+						xtype: 'textfield',
+						height: 20
+					},{
 						fieldLabel: cms.lang.structures.form2.headline1,
 						id: 'layoutsOptionalHeadline1'
 					},{
@@ -680,6 +686,7 @@ Ext.define('WeirdbirdCMS', {
 								method: 'POST',
 								params: { 
 									image_id: Ext.getCmp('layoutsOptionalBackground').imageId,
+									backgroundDescription: Ext.getCmp('layoutsOptionalBackgroundDescription').getValue(),
 									headline1: Ext.getCmp('layoutsOptionalHeadline1').getValue(),
 									headline2: Ext.getCmp('layoutsOptionalHeadline2').getValue(),
 									headline3: Ext.getCmp('layoutsOptionalHeadline3').getValue()
@@ -1001,6 +1008,9 @@ Ext.define('WeirdbirdCMS', {
 							fieldLabel: cms.lang.articles.tab1.titleLable,
 							id: 'articleFieldTitle',
 							xtype: 'textfield',
+							allowBlank: false,
+							regex: new RegExp('[a-zA-Z0-9]+'),
+							regexText: cms.lang.articles.message8.error,
 							listeners: {
 								change: function(self, newValue, oldValue) { 
 									var editPanel = Ext.getCmp('articlePanel');
@@ -1052,6 +1062,7 @@ Ext.define('WeirdbirdCMS', {
 							border:false,
 							theme_advanced_row_height: 27,
 	                        delta_height: 0,
+	                        relative_urls: false,
 	                        schema: 'html5',
 	                        plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
 	                        theme_advanced_toolbar_align : "left",
@@ -1105,6 +1116,7 @@ Ext.define('WeirdbirdCMS', {
 							border:false,
 							theme_advanced_row_height: 27,
 	                        delta_height: 0,
+	                        relative_urls: false,
 	                        schema: 'html5',
 	                        plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
 	                        theme_advanced_toolbar_align : "left",
@@ -1177,6 +1189,8 @@ Ext.define('WeirdbirdCMS', {
 				autoLoad: true
 			});
 		}
+		else
+			Ext.getStore('imageStore').load();
 
 		Ext.create('Ext.window.Window', {
 		    id: 'selectImageWindow',
@@ -1227,11 +1241,11 @@ Ext.define('WeirdbirdCMS', {
 		    			// output to tinymce editor panel ?
 		    			if (callByEditor) {
 		    				caller.focus();
-		    				caller.selection.setContent('<img src="' + record.get('link') + '" alt="' + record.get('description') + '"/>');
+		    				caller.selection.setContent('<img src="/' + record.get('link') + '" alt="' + record.get('description') + '"/>');
 		    			}
 		    			// otherwise update calling objects 
 		    			else {
-		    				Ext.getCmp(caller).setValue('<img src="' + record.get('thumb') + '">');
+		    				Ext.getCmp(caller).setValue('<img src="/' + record.get('thumb') + '">');
 		    				Ext.getCmp(caller).imageId = record.get('id');
 		    			}
 
@@ -1285,11 +1299,14 @@ Ext.define('WeirdbirdCMS', {
 					if (callByEditor) {
 						var record = Ext.getCmp('selectDocumentGrid').getSelectionModel().getSelection()[0];
 						caller.focus();
-						caller.selection.setContent('<a href="' + record.get('link') + '" target="_blank">' + cms.lang.articles.window2.linkname + '</a>');	
+						var linkname = (record.get('description') != '' && record.get('description') != '') 
+							? record.get('description') 
+							: cms.lang.articles.window2.link;
+						caller.selection.setContent('<a href="/' + record.get('link') + '" target="_blank">' + linkname + '</a>');	
 					}
 					// otherwise to caller
 					else {
-						Ext.getCmp(caller).setValue(record.get('link'));
+						Ext.getCmp(caller).setValue('/' + record.get('link'));
 					}
 					
 					Ext.getCmp('selectDocumentWindow').close();
@@ -1358,6 +1375,12 @@ Ext.define('WeirdbirdCMS', {
 								// form field needs to be updated
 		var request = {};
 		
+		// check if the title field contains a valid value
+		if (!Ext.getCmp('articleFieldTitle').isValid()) {
+			Ext.MessageBox.alert('Error', cms.lang.articles.message8.error);
+			return;
+		}
+
 		// if the combobox was not yet changed, the id field is not set - 
 		// we have to do this manually
 		var languageId = Ext.getCmp('articleFieldLanguage').getValue();
@@ -1994,7 +2017,9 @@ Ext.define('WeirdbirdCMS', {
 								email: field.getValue(),
 								language: languageId,
 								companyname: Ext.getCmp('systemFormCompanyName').getValue(),
-								info: Ext.getCmp('systemFormInfo').getValue()
+								address: Ext.getCmp('systemFormAddress').getValue(),
+								info: Ext.getCmp('systemFormInfo').getValue(),
+								brandimage: Ext.getCmp('systemBrandImage').imageId
 							},
 							success: function(response) {
 								Ext.MessageBox.alert('Status', '<p>' + cms.lang.system.message.success1 + '</p>'
@@ -2026,11 +2051,32 @@ Ext.define('WeirdbirdCMS', {
 					allowBlank: true,
 					id: 'systemFormInfo'
 				},{
+					fieldLabel: cms.lang.system.form.address,
+					name: 'address',
+					allowBlank: true,
+					id: 'systemFormAddress'
+				},{
 					fieldLabel : cms.lang.system.form.contactemail,
 					name: 'email',
 					allowBlank: false,
 					vtype: 'email',
 					id: 'systemFormEmail'
+				},{
+					xtype: 'displayfield',
+					id: 'systemBrandImage',
+					fieldLabel: cms.lang.system.form.brand,
+					height: 60,
+					imageId: '',
+					allowBlank: true
+				},{
+					xtype: 'button',
+					height: 20,
+					width: 120,
+					margin: '-10 0 15 155',
+					text: cms.lang.system.form.brandBtn,
+					handler: function() {
+						cms.createSelectImageWindow('systemBrandImage');
+					}
 				},{
 					name: 'language',
 					xtype: 'combobox',
@@ -2059,10 +2105,24 @@ Ext.define('WeirdbirdCMS', {
 				// update the form fields
 				if (r.companyname != null)
 					Ext.getCmp('systemFormCompanyName').setValue(r.companyname);
+				
 				if (r.info != null)
 					Ext.getCmp('systemFormInfo').setValue(r.info);
+				
+				if (r.address != null)
+					Ext.getCmp('systemFormAddress').setValue(r.address);
+				
 				if (r.email != null)
 					Ext.getCmp('systemFormEmail').setValue(r.email);
+				
+				if (r.brandimagepath != null && Ext.typeOf(r.brandimagepath) == 'string'
+					&& r.brandimage != null && r.brandimage != '') {
+					Ext.getCmp('systemBrandImage').setValue('<img src="' + r.brandimagepath + '">');
+					Ext.getCmp('systemBrandImage').imageId = r.brandimage;
+				}
+				else
+					Ext.getCmp('systemBrandImage').setValue('<img src="/assets/images/no-image-available.png">');
+
 				if (r.language != null)
 					Ext.getCmp('languageComboBox').setValue(r.language);
 

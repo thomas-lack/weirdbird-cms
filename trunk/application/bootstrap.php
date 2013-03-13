@@ -147,13 +147,27 @@ Route::set('mail', 'mail(/<action>(/<id>))')
 	));
 
 // route to load template structures
-Route::set('tplstruct', '<structure>(/<id>)',
+Route::set('tplstruct', '<structure>',
 	array(
-		'action' 		=> '[a-zA-Z0-9_]+',
+		'structure'		=> '[a-zA-Z0-9_äöüÄÖÜß]+',
 	))
 	->defaults(array(
 		'directory'		=> 'frontend',
 		'controller' 	=> 'structure',
+		'action'		=> 'index',
+	));
+
+// route to load template structures with subpages
+// (e.g. to print the transition from teaser to article pages)
+Route::set('tpldirectarticle', '<structure>(/<article>(/<id>))',
+	array(
+		'structure'		=> '[a-zA-Z0-9_]+',
+		'article'		=> '[a-zA-Z0-9_]+',
+		'id'			=> '[0-9]+'
+	))
+	->defaults(array(
+		'directory'		=> 'frontend',
+		'controller' 	=> 'directarticle',
 		'action'		=> 'index',
 	));
 

@@ -81,11 +81,9 @@
 	}
 	
 	body {
-		font-family: 'StRydeRegular';
+		font-family: 'StRydeRegular', serif;
 		color: #342B22;
 		-webkit-font-smoothing: antialiased !important;
-		padding-top: 40px;
-		padding-bottom: 40px;
 	}
 	
 	h1 { font-size:26px; color:#80572E; }
@@ -101,23 +99,19 @@
 
 	li { line-height: 24px; color:#4D341B;}
 
+	table {	line-height:1.9em; border: 0px solid #cca986; }
+	/* add alternativ colors to table rows */
+	tr:nth-child(odd) { background-color: #CCA986; }
+	tr:nth-child(even) { background-color:#FFF;}
+
 	.brandname {
-		font-family: 'AlexBrushRegular';/*'MuseoSans-500';*/
+		font-family: 'AlexBrushRegular';
 		font-weight:100;
 		font-size:1.4em;
-		margin-left:50px;
 	}
 	
 	.navbar {
 		margin-bottom:0px;
-	}
-	
-	.logo {
-		background:url('../img/albert-logo.png') no-repeat left top;
-		height:40px;
-		width:40px;
-		position:absolute;
-		top:0px;
 	}
 	
 	.header {
@@ -154,7 +148,7 @@
 	
 	div.headline {
 		position:absolute;
-		bottom:20px;
+		bottom:40px;
 		width:90%;
 	}
 	
@@ -207,33 +201,74 @@
 	div.imagedescription {
 		font-style: italic;
 		font-size: 0.9em;
+		display: none;
 	}
+
+	/**
+	 * bootstrap css fix against a jumping structure-header image
+	 */
+	.navbar-fixed-top { margin-bottom: 0px; }
 	
-	div.border-left-col {
-		border-left: 6px double #ededed;
-		width:28%;
-		padding-left:10px;
+	/* The big image with parallax support shall not be rendered in the standard case */
+	div#structure-header { display:none; }
+	div#structure-header-noimage { display:block; }
+	
+	/**
+	 * Depending on the screen resolution some elements can be shown / have to be hidden
+	 */
+	@media only screen and (min-width: 768px) {
+		
+		div#structure-header { display:block; }
+		div#structure-header-noimage { display:none; }
+
+		div.imagedescription { display: block; }
+
+		/* The hyphen on left/right column shall only be shown on higher resolutions */ 
+		div.border-left-col {
+			border-left: 6px double #ededed;
+			width:28%;
+			padding-left:10px;
+		}
+
+		div.border-right-col {
+			border-right: 6px double #ededed;
+			width: 28%;
+			padding-right:10px;
+		}	
 	}
-	
-	div.border-right-col {
-		border-right: 6px double #ededed;
-		width: 28%;
-		padding-right:10px;
+		
+	/**
+	* Contact form
+	*/
+	#contact_form input, textarea {
+		margin-top: 3px;
+		font-family: 'StRydeRegular', serif;
+		width:75%;
 	}
-	
-	.btn-blue {
-		color: #fff;
-		background-color: #2B8BFF;
-		background-image: -moz-linear-gradient(top,#4499FF,#2B8BFF);
-		background-image: -webkit-gradient(linear,0 0,0 100%,from(#4499FF),to(#2B8BFF));
-		background-image: -webkit-linear-gradient(top,#4499FF,#2B8BFF);
-		background-image: -o-linear-gradient(top,#4499FF,#2B8BFF);
-		background-image: linear-gradient(to bottom,#4499FF,#2B8BFF);
-		border: 1px solid #2B8BFF;
-		text-shadow: 0 1px 1px rgba(0, 81, 171, 0.75);
+
+	#contact_form .submit {
+		-webkit-border-radius: 4px;
+     	-moz-border-radius: 4px;
+        border-radius: 4px;
 	}
-	
-	.btn-blue:hover {
-		color: #fff;
-		background-color: #2B8BFF;
+
+	#contact_form_email_error { color:red; }
+	#contact_form_message_error { color:red; }
+
+	/**
+	 * Google Maps InfoWindow Bugfix
+	 */
+	#mapview img { max-width: none; }
+
+	/**
+	 * Styling the Bootstrap Accordeon similar to the navbar
+	 */
+	.accordion-heading {
+		background-color: #fafafa;
+		background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+		background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+		background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+		background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+		background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+		background-repeat: repeat-x;
 	}

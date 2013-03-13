@@ -214,6 +214,7 @@ CREATE TABLE IF NOT EXISTS `wb_structure_options` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `structure_id` int(11) NOT NULL,
   `file_id` int(11) DEFAULT NULL,
+  `backgroundDescription` varchar(128) DEFAULT NULL,
   `headline1` varchar(128) DEFAULT NULL,
   `headline2` varchar(256) DEFAULT NULL,
   `headline3` varchar(512) DEFAULT NULL,
@@ -263,7 +264,8 @@ INSERT INTO `wb_system_settings` (`id`, `fieldname`, `content`) VALUES
 (1, 'contactemail', ''),
 (2, 'language_id', '1'),
 (3, 'companyname', ''),
-(4, 'info', '');
+(4, 'address', ''),
+(5, 'info', '');
 
 -- --------------------------------------------------------
 

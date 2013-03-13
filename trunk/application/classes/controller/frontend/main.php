@@ -5,6 +5,7 @@ class Controller_Frontend_Main extends Controller_Template {
 	public $template;
 	public $config;
 	public $structureRef;
+	public $articleRef = null;
 
 	public function before() {
 		// get first active template we find
@@ -59,10 +60,36 @@ class Controller_Frontend_Main extends Controller_Template {
 													->bind('error', $error);
 				}
 			}
+			// special case: an article was directly addressed via URL -> post it
+			// as only article to the first possible column
+			else if ($this->articleRef != null)
+			{
+				// is the current article reference an id ?
+				if (is_numeric($this->articleRef))
+				{
+					$article = ORM::factory('Article', $this->articleRef);
+				}
+				// or a title string
+				else
+				{
+					$article = ORM::factory('Article')
+								->where('active','=', 1)
+								->where('title','=', $this->articleRef)
+								->find_all();
+				}
+
+				for ($i=0; $i < $layout->columns; $i++)
+				{
+					if ($i == 0)
+						$columnContent[] = $this->generateColumnContent(0, $structureId, $structures, $article);
+					else
+						$columnContent[] = $this->generateColumnContent($i, $structureId, $structures);
+				}
+			}
 			else {
 				for ($i=0; $i < $layout->columns; $i++)
 				{
-					$columnContent[] = $this->generateColumnContent($i, $structureId);
+					$columnContent[] = $this->generateColumnContent($i, $structureId, $structures);
 				}	
 			}
 			
@@ -75,6 +102,7 @@ class Controller_Frontend_Main extends Controller_Template {
 				$this->template->scripts = array();
 				$this->template->externalScripts = array();
 				$this->template->currentStructure = $this->structureRef;
+				$this->template->currentArticle = $this->articleRef;
 				$this->template->structures = $structures;
 				$this->template->structureOptions = ORM::factory('Structure_Option')
 														->where('structure_id','=',$structureId)
@@ -91,14 +119,16 @@ class Controller_Frontend_Main extends Controller_Template {
 			'standardlanguage' => ORM::factory('System_Setting')->get_language(),
 			'contactemail' => ORM::factory('System_Setting')->get_email(),
 			'companyname' => ORM::factory('System_Setting')->get_companyName(),
-			'info' => ORM::factory('System_Setting')->get_info()
+			'address' => ORM::factory('System_Setting')->get_address(),
+			'info' => ORM::factory('System_Setting')->get_info(),
+			'brandimagepath' => ORM::factory('System_Setting')->get_brandImagePath()
 		);
 	}
 
 	/**
 	 * Generate a html parse string of the given column
 	 */
-	private function generateColumnContent($column, $structureId)
+	private function generateColumnContent($column, $structureId, $structures, $articleRequest = null)
 	{
 		// get the mapping for column <-> module / articles
 		$mapping = ORM::factory('StructureColumnMapping')
@@ -111,7 +141,7 @@ class Controller_Frontend_Main extends Controller_Template {
 
 		// get the articles for this column
 		$articles = null;
-		if ($module->allowarticles == 1)
+		if ($module->allowarticles == 1 && $articleRequest == null)
 		{
 			$articles = ORM::factory('Article')
 				->where('active','=',1)
@@ -119,6 +149,13 @@ class Controller_Frontend_Main extends Controller_Template {
 				->order_by('position', 'asc')
 				->find_all();	
 		}
+		else if ($articleRequest != null)
+		{
+			$articles = $articleRequest;
+		}
+
+		// was articleRequest set ?
+		$articleRequest = ($articleRequest != null);
 
 		// now get the html string of the parsed view
 		$viewFile = '../../'
@@ -132,10 +169,12 @@ class Controller_Frontend_Main extends Controller_Template {
 		// view - so the programmer of the view has all info at hand
 		$view = View::factory($viewFile)
 			->bind('articles', $articles)
+			->bind('articleRequest', $articleRequest)
 			->bind('module', $module)
 			->bind('mapping', $mapping)
 			->bind('column', $column)
-			->bind('structureId', $structureId);
+			->bind('structureId', $structureId)
+			->bind('structures', $structures);
 
 		return (string) $view;
 	}

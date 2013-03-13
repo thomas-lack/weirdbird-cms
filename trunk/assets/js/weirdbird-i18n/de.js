@@ -88,6 +88,7 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			headline3: '&Uuml;berschrift 3 (klein)',
 			background: 'Hintergrundbild',
 			backgroundBtn: 'Bild ausw&auml;hlen',
+			backgroundDescription: 'Bildunterschrift',
 			saveBtn: 'Optionale Einstellungen speichern',
 			saveSuccess1: 'Erfolg',
 			saveSuccess2: 'Die optionalen Einstellungen wurden erfolgreich gespeichert.',
@@ -155,6 +156,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		},
 		message7: {
 			error: 'Die Sortierreihenfolge f&uuml;r die Artikel konnte nicht gespeichert werden.'
+		},
+		message8: {
+			error: 'Das "Titel" Feld wurde nicht korrekt ausgef&uuml;llt. Es darf keine Leerzeichen enthalten und nicht leer sein.'
 		},
 		window: {
 			title: 'Bild ausw&auml;hlen',
@@ -276,7 +280,10 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			companyname: 'Betreibername',
 			additionalinfo: 'Zusatzinformationen',
 			contactemail: 'Kontakt-Emailadresse',
-			language: 'Sprache',
+			address: 'Adresse',
+			brand: 'Markenzeichen',
+			brandBtn: 'Bild ausw&auml;hlen',
+			language: 'Standard-Sprache',
 			emptyText: 'Auswahl der Sprache...'
 		},
 		form2: {

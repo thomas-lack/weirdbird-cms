@@ -88,6 +88,7 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			headline3: 'Headline 3 (small)',
 			background: 'Hintergrundbild',
 			backgroundBtn: 'Choose image',
+			backgroundDescription: 'Image description',
 			saveBtn: 'Save optional settings',
 			saveSuccess1: 'Success',
 			saveSuccess2: 'The optional settings were successfully saved.',
@@ -155,6 +156,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		},
 		message7: {
 			error: 'The sort order of the articles could not be changed.'
+		},
+		message8: {
+			error: 'The "title" Field is not allowed to contain empty spaces, neither can it be left empty.'
 		},
 		window: {
 			title: 'Select image',
@@ -276,7 +280,10 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			companyname: 'Company / User name',
 			additionalinfo: 'Additional info',
 			contactemail: 'Contact email address',
-			language: 'Language',
+			address: 'Address',
+			brand: 'Brand',
+			brandBtn: 'Select image',
+			language: 'Standard language',
 			emptyText: 'Choose language...'
 		},
 		form2: {

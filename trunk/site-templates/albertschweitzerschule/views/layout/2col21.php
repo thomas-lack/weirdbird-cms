@@ -25,7 +25,7 @@ require_once('_common-before.php');
 	<div class="span8"><?= $columnContent[0] ?></div>
 
 	<!-- column 2 -->
-	<div class="span4"><?= $columnContent[1] ?></div>
+	<div class="span4 border-left-col"><?= $columnContent[1] ?></div>
 </div>
 
 <? require_once('_common-after.php'); ?>

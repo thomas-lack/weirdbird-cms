@@ -48,6 +48,9 @@ class Model_File extends ORM {
             $filename = $f->filename;
         }
         
-        return '/'.UPLOADDIR.'/'.UPLOADIMAGEDIR.'/'. (($thumb) ? IMAGETHUMBSDIR.'/' : '') . $filename;
+        if ($filename == '')
+            return null;
+        else
+            return '/'.UPLOADDIR.'/'.UPLOADIMAGEDIR.'/'. (($thumb) ? IMAGETHUMBSDIR.'/' : '') . $filename;
     }
 }

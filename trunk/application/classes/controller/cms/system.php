@@ -9,7 +9,10 @@ class Controller_Cms_System extends Controller_Cms_Data
 			'email' => ORM::factory('System_Setting')->get_email(),
 			'language' => ORM::factory('System_Setting')->get_language()->name,
 			'companyname' => ORM::factory('System_Setting')->get_companyName(),
-			'info' => ORM::factory('System_Setting')->get_info()
+			'address' => ORM::factory('System_Setting')->get_address(),
+			'info' => ORM::factory('System_Setting')->get_info(),
+			'brandimage' => ORM::factory('System_Setting')->get_brandImage(),
+			'brandimagepath' => ORM::factory('System_Setting')->get_brandImagePath()
 		);
 		
 		// get current list of cms project changes (if allowed by the server)
@@ -68,7 +71,10 @@ class Controller_Cms_System extends Controller_Cms_Data
 		$email = $data['email'];
 		$languageId = $data['language'];
 		$companyName = $data['companyname'];
+		$address = $data['address'];
 		$info = $data['info'];
+		$brandimage = $data['brandimage'];
+
 		$setting = ORM::factory('System_Setting');
 
 		// check if language id is an int value
@@ -78,7 +84,9 @@ class Controller_Cms_System extends Controller_Cms_Data
 			$setting->set_value_by_fieldname('contactemail', $email);
 			$setting->set_value_by_fieldname('language_id', $languageId);
 			$setting->set_value_by_fieldname('companyname', $companyName);
+			$setting->set_value_by_fieldname('address', $address);
 			$setting->set_value_by_fieldname('info', $info);
+			$setting->set_value_by_fieldname('brandimage', $brandimage);
 
 			$this->template->result = array( 'success' => true );
 		}

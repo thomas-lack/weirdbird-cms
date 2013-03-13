@@ -34,6 +34,12 @@
 			<view>3col</view>
 			<columns>3</columns>
 		</layout>
+		<layout>
+			<name>3col21</name>
+			<description>3-column page (2-1 hyphen)</description>
+			<view>3col21</view>
+			<columns>3</columns>
+		</layout>
 	</layouts>
 	
 	<modules>
@@ -60,6 +66,12 @@
 			<description>contact column</description>
 			<view>contact</view>
 			<allowarticles>false</allowarticles>
+		</module>
+		<module>
+			<name>map</name>
+			<description>Google Map column</description>
+			<view>map</view>
+			<allowarticles>true</allowarticles>
 		</module>
 	</modules>
 	
