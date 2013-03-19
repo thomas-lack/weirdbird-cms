@@ -172,6 +172,10 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			name: 'Filename',
 			description: 'Description',
 			linkname: 'pdf file'
+		},
+		window3: {
+			title: 'Save changes?',
+			content: 'The current articles data has been changed. Save changes before proceeding?'
 		}
 	},
 

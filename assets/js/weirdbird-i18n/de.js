@@ -172,6 +172,10 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			name: 'Dateiname',
 			description: 'Beschreibung',
 			link: 'pdf Datei'
+		},
+		window3: {
+			title: '&Auml;nderungen speichern?',
+			content: 'Der aktuelle Artikel wurde ge&auml;ndert. Soll der Artikel vor dem Verlassen gespeichert werden?'
 		}
 	},
 
