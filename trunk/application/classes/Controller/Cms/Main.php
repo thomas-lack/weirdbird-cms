@@ -42,14 +42,14 @@ class Controller_Cms_Main extends Controller_Template
             $lang = ORM::factory('System_Setting')->get_language()->shortform;
 
             $scripts = array(
-					'assets/js/ext-all.js',					// extjs framework (productive version)
-					//'assets/js/ext-all-debug.js',				// extjs framework (debug version)
-					'assets/js/CheckColumn.js',					// ext plugin for checkboxes in grid columns
-					'assets/js/tiny_mce.js',					// tinymce wysiwyg editor
-					'assets/js/ext-tinymce-ux.js',				// setup for tinymce as ext plugin
-					'assets/js/weirdbird-i18n/' . $lang . '.js',// language file for weirdbird cms
-					//'assets/js/weirdbird-cms-min.js'			// weirdbird cms (productive version)
-					'assets/js/weirdbird-cms.js'				// weirdbird cms (development version)
+					'assets/js/extjs/ext-all.js',					// extjs framework (productive version)
+					//'assets/js/ext-all-debug.js',					// extjs framework (debug version)
+					'assets/js/extjs/CheckColumn.js',				// ext plugin for checkboxes in grid columns
+					'assets/js/tinymce/tiny_mce.js',				// tinymce wysiwyg editor
+					'assets/js/extjs/ext-tinymce-ux.js',			// setup for tinymce as ext plugin
+					'assets/js/weirdbird-i18n/' . $lang . '.js',	// language file for weirdbird cms
+					//'assets/js/weirdbird-cms-min.js'				// weirdbird cms (productive version)
+					'assets/js/weirdbird-cms.js'					// weirdbird cms (development version)
 				);
             $this->template->styles = array_merge( $this->template->styles, $styles );
             $this->template->scripts = array_merge( $this->template->scripts, $scripts );

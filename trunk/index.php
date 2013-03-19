@@ -42,7 +42,7 @@ $userUploadsMisc = 'misc';
  * Revision - the current number of checkins the google code page shows 
  * (e.g. "r30")
  */
-$revision = "r47";
+$revision = "r57";
 
 /**
  * The default extension of resource files. If you change this, all resources

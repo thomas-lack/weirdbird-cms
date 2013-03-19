@@ -1,0 +1,373 @@
+Ext.define('WeirdbirdCMS.controller.Article', {
+	extend: 'Ext.app.Controller',
+
+	requires: [
+		'Ext.Msg',
+		'Ext.Ajax',
+		'WeirdbirdCMS.util.SelectImageWindow',
+		'WeirdbirdCMS.util.SelectDocumentWindow'
+	],
+
+	stores: [ 
+		'Images',
+		'Documents'
+	],
+	models: [ 
+		'Image',
+		'Document',
+		'ArticleNode'
+	],
+	
+	// internal data structures
+	treeStore: null,
+	cssData: null,
+
+	/*
+	* Fill the articles grid with data
+	*
+	* cssdata: array containing objects with paths to used css files e.g. [{path:'../styles.css'}]
+	*/
+	prepareArticlesPanel: function(cssdata) {
+		if (_cms.debug) console.log('populating articles treeview');
+
+		// bugfix: manually destroy the tinyMCE editor object if it exists, else
+		// the article editing page cannot be created a second time because of dom errors
+		if ( Ext.isDefined(Ext.getCmp('articleFieldContent')) )
+			Ext.getCmp('articleFieldContent').destroy();
+
+		// load treeview config data from the backend and populate the view afterwards
+		Ext.Ajax.request({
+			url: 'cms/articles/treeview',
+
+			success: function(response) {
+				var storeConfig = Ext.JSON.decode(response.responseText);
+				storeConfig.model = 'WeirdbirdCMS.model.ArticleNode'; // add custom model reference
+				
+				// save needed data / data structures for later use
+				_cms.getController('Article').treeStore = Ext.create('Ext.data.TreeStore', storeConfig);
+				_cms.getController('Article').cssData = cssdata;
+
+				// add view to viewport
+				_cms.getController('Article').paintArticlesPanel();
+			}
+		});
+	},
+
+	/*
+	* After loading the prepared tree store data for the articles panel,
+	* it can be added to the DOM
+	*/
+	paintArticlesPanel: function(treeStore, cssdata) {
+		if ( ! Ext.isDefined(Ext.getCmp('articlesParentPanel')) )
+			Ext.create('WeirdbirdCMS.view.Article');
+
+		// add view to viewport
+		_cms.fillContentPanel(Ext.getCmp('articlesParentPanel'));
+	},
+
+	/**
+	 * Event handler: bugfixing after parent article panel was rendered
+	 */
+	onParentAfterRender: function() {
+		// bugfix for height rendering error of tinymce extjs wrapper
+		Ext.getCmp('articlesTreePanel').expandAll();
+		Ext.getCmp('articlesTreePanel').collapseAll();
+	},
+
+	/**
+	 * Helper method to update the article panel with new content data from the backend
+	 */
+	updateArticlesPanel: function() {
+		// load leaf data
+		Ext.Ajax.request({
+			url: 'cms/articles/read/' + Ext.getCmp('articlePanel').record.data.id,
+
+			success: function(response) {
+				var editPanel = Ext.getCmp('articlePanel');
+				var data = Ext.JSON.decode(response.responseText);
+
+				editPanel.initialDataChange = true;
+				editPanel.initialTitle = data.title; // remember initial title for later treeview resetting
+				var ls = Ext.getStore('Languages');
+				
+				// set language field according to the store mapping
+				if (Ext.isNumeric(data.language_id)) {
+					Ext.getCmp('articleFieldLanguage')
+						.setValue(Ext.getStore('Languages')
+						.getById(parseInt(data.language_id))
+						.get('name'));
+				}
+				else
+					Ext.getCmp('articleFieldLanguage').setValue(null);
+
+				// set other field values
+				Ext.getCmp('articleFieldActive').setValue(data.active);
+				Ext.getCmp('articleFieldTitle').setValue(data.title);
+				Ext.getCmp('articleFieldDescription').setValue(data.description);
+				Ext.getCmp('articleFieldTeaserContent').setValue(data.teaser);
+				Ext.getCmp('articleFieldContent').setValue(data.content);
+
+				editPanel.initialDataChange = false;
+				editPanel.enable();
+			},
+			failure: function(response, opts) {
+				Ext.MessageBox.alert('Error',  _cms.lang.articles.message2.error 
+					+ ' (Error code ' + response.status + ').');
+			}
+		});
+	},
+
+	/**
+	 * Adds a new article skeleton to the list of articles
+	 */
+	addArticle: function() {
+		var node = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
+		
+		Ext.Ajax.request({
+			url: 'cms/articles/create',
+			params: { mapping_id : node.data.mapping_id },
+
+			success: function(response) {
+				var r = Ext.JSON.decode(response.responseText);
+				var id = r.id;
+				
+				var newNode = node.createNode({id: r.id, text: 'new title', leaf: true});
+				node.appendChild(newNode);
+			},
+			failure: function(response) {
+				Ext.MessageBox.alert('Error', _cms.lang.articles.message5.error 
+					+ ' (Error code ' + response.status + ').');
+			}
+		});
+	},
+
+	/**
+	 * Postpones the current article to the backend, so it can be saved to the db from there
+	 */
+	saveArticle: function() {
+		tinymce.triggerSave(); 	// has to be done, because tinymce is an addon and the underlying 
+								// form field needs to be updated
+		var request = {};
+		
+		// check if the title field contains a valid value
+		if (!Ext.getCmp('articleFieldTitle').isValid()) {
+			Ext.MessageBox.alert('Error', _cms.lang.articles.message8.error);
+			return;
+		}
+
+		// if the combobox was not yet changed, the id field is not set - 
+		// we have to do this manually
+		var languageId = Ext.getCmp('articleFieldLanguage').getValue();
+		if (!Ext.isNumeric(languageId) && languageId != null)
+			languageId = Ext.getStore('Languages').findRecord('name', languageId).get('id');
+		
+		request.language_id = languageId;
+		request.active = Ext.getCmp('articleFieldActive').getValue();
+		request.title = Ext.getCmp('articleFieldTitle').getValue();
+		request.description = Ext.getCmp('articleFieldDescription').getValue();
+		request.teaser = Ext.getCmp('articleFieldTeaserContent').getValue();
+		request.content = Ext.getCmp('articleFieldContent').getValue();
+		
+		Ext.Ajax.request({
+			url: 'cms/articles/update/'+ Ext.getCmp('articlePanel').record.data.id,
+			params: request, 
+
+			success: function(response) {
+				Ext.MessageBox.alert('Status', _cms.lang.articles.message3.success);
+				Ext.getCmp('articlePanel').record.save(); //remove the dirty flag
+			},
+			failure: function(response, opts) {
+				Ext.MessageBox.alert('Error', _cms.lang.articles.message3.error 
+					+ ' (Error code ' + response.status + ').');
+			}
+		});
+	},
+
+	/**
+	 * Informs the backend, that the currently selected article has to be deleted
+	 */
+	deleteArticle: function() {
+		Ext.Msg.show({
+			title: _cms.lang.articles.message4.title,
+			msg: _cms.lang.articles.message4.content,
+			buttons: Ext.Msg.YESNO,
+			icon: Ext.Msg.QUESTION,
+			fn: function(btn) {
+				if (btn == 'yes') {
+					Ext.Ajax.request({
+						url: 'cms/articles/destroy/' + Ext.getCmp('articlePanel').record.data.id,
+						success: function(response) {
+							var node = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
+							node.remove();
+						},
+						failure: function(response, opts) {
+							Ext.MessageBox.alert('Error', _cms.lang.articles.message4.error 
+								+ ' (Error code ' + response.status + ').');
+						}
+					});
+				}
+			}
+		});
+	},
+
+	/**
+	*	Helper method to process a context change of the treepanel
+	*	(clicking another article or whatever)
+	*/
+	leaveArticle: function(newRecord, oldRecord) {
+		// check if the current record should be saved first ?
+		if (oldRecord != null && oldRecord.dirty) {	
+			Ext.Msg.show({
+				title: _cms.lang.articles.window3.title,
+				msg: _cms.lang.articles.window3.content,
+				buttons: Ext.Msg.YESNO,
+				icon: Ext.Msg.QUESTION,
+				fn: function(btn) {
+					// save if yes is pressed
+					if (btn == 'yes')
+						_cms.getController('Article').saveArticle();
+					// restore the old title in the treeview if 'no' is pressed
+					else {
+						var title = Ext.getCmp('articlePanel').initialTitle;
+						oldRecord.data.text = title;
+						oldRecord.set('title', title);
+					}
+
+					// anyways we save the treepanel record for now to indicate the non-dirty state
+					oldRecord.save();
+					// disable the edit panel for now if we are changing focus
+					Ext.getCmp('articlePanel').disable();
+					// load new data into the articles panel if appropriate
+					if (newRecord.data.leaf) {
+						// remember the currently clicked record id in the edit panel as hidden value
+						Ext.getCmp('articlePanel').record = newRecord;
+						_cms.getController('Article').updateArticlesPanel();
+					}
+				}
+			});
+		}
+		else {
+			Ext.getCmp('articlePanel').disable();
+			
+			if (newRecord != null && newRecord.data.leaf) {
+				Ext.getCmp('articlePanel').record = newRecord;
+				this.updateArticlesPanel();
+			}
+		}		
+	},
+
+	/**
+	 * Event handler: a new item of the treepanel was selected
+	 */
+	onTreePanelSelect: function(self, record, index) {
+		// first check, if the user is leaving a currently edited article
+		this.leaveArticle(record, Ext.getCmp('articlePanel').record);
+
+		// disable all buttons after click
+		var buttonIDs = ['addArticleBtn', 'saveArticleBtn', 'deleteArticleBtn'];
+		Ext.each(buttonIDs, function(id){
+			Ext.getCmp(id).disable(true);
+		});
+		
+		// on a column field we want to enable adding articles
+		// remember: columns are on 2nd level and not leafs
+		if (record.parentNode.parentNode != null && !record.data.leaf) {
+			Ext.getCmp('addArticleBtn').enable(true);
+		}
+		
+		// leafes can be deleted for now
+		if (record.data.leaf) {
+			Ext.getCmp('deleteArticleBtn').enable(true);
+			Ext.getCmp('saveArticleBtn').enable(true);
+		}
+	},
+
+	/**
+	 * Event handler: an item of the tree store was moved via drag & drop
+	 */
+	onTreePanelItemMove: function(node, oldParent, newParent, index, eopts) {
+		// change mapping if the parent tree node has changed
+		if (newParent != oldParent) {
+			Ext.Ajax.request({
+				url: 'cms/articles/changemapping/' + node.data.id,
+				params: { mapping_id: newParent.data.mapping_id },
+				failure: function(response) {
+					Ext.MessageBox.alert('Error', _cms.lang.articles.message.error 
+						+ ' (Error code ' + response.status + ').');
+				}
+			});
+		}
+
+		// notify the backend, that the positioning of the current parent nodes leafs has changed
+		var leafOrder = [];
+		Ext.each(newParent.childNodes, function(node){
+			leafOrder.push(node.data.id);
+		});
+		Ext.Ajax.request({
+			url: 'cms/articles/changepositions',
+			params: { 'sortOrder[]': leafOrder },
+			failure: function(response) {
+				Ext.MessageBox.alert('Error', _cms.lang.articles.message7.error 
+					+ ' (Error code ' + response.status + ').');
+			}
+		});
+	},
+
+	/**
+	 * Event handler: any field besides the title field of the current article has changed
+	 */
+	onArticleChange: function(self, newValue, oldValue) {
+		var editPanel = Ext.getCmp('articlePanel');
+		if (!editPanel.initialDataChange) {
+			Ext.getCmp('saveArticleBtn').enable(true); 
+			// mark record as dirty
+			editPanel.record.setDirty();
+		}
+	},
+
+	/**
+	 * Event handler: the title field of the current article has changed
+	 */
+	onArticleTitleChange: function(self, newValue, oldValue) {
+		var editPanel = Ext.getCmp('articlePanel');
+		if (!editPanel.initialDataChange) {
+			Ext.getCmp('saveArticleBtn').enable(true); 
+			// mark record as dirty
+			editPanel.record.setDirty();
+			// update treepanel title
+			if (editPanel.record != null) {
+				editPanel.record.data.text = newValue;
+				editPanel.record.set('title', newValue); // used to update the treepanel -.-
+			}
+		}
+	},
+
+	/**
+	 * Opens a window with image selection capabilities
+	 *
+	 * @param 	editorObj 	calling editor object
+	 */
+	createSelectImageWindow: function(editorObj) {
+		Ext.create('WeirdbirdCMS.util.SelectImageWindow').show(editorObj);
+	},
+
+	/**
+	 * Opens a window with document selection capabilities
+	 *
+	 * @param 	editorObj 	calling editor object
+	 */
+	createSelectDocumentWindow: function(editorObj) {
+		Ext.create('WeirdbirdCMS.util.SelectDocumentWindow').show(editorObj);
+	},
+
+	/**
+	 * Helper method to calculate the optimum height of the editor textarea
+	 */
+	calculateEditArticleHeight: function(bottomWidth) {
+		if (Ext.typeOf(bottomWidth) != 'number')
+			var bottomWidth = 0;
+
+		var bestHeight = Ext.getCmp('navmenu').getHeight() - bottomWidth;
+		return ((bestHeight < 350) ? 350 : bestHeight);
+	}
+});
