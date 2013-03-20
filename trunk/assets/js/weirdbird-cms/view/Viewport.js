@@ -34,6 +34,7 @@ Ext.define('WeirdbirdCMS.view.Viewport', {
 		bodyCls: 'navmenu',
 		id: 'navmenu',
 		width: 200,
+		layout: 'fit', // bugfix - otherwise the size is not always calculated correctly by the browser
 		border: false
 	}, {
 		region: 'center',

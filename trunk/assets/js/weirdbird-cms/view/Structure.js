@@ -137,7 +137,7 @@ Ext.define('WeirdbirdCMS.view.Structure', {
 				text: _cms.lang.structures.form2.saveBtn,
 				margin: '10 0 0 95',
 				handler: function() {
-					_cms.getController('Structure').onSaveBtn();
+					_cms.getController('Structure').onSaveOptionalBtn();
 				}
 			}]
 		}]
