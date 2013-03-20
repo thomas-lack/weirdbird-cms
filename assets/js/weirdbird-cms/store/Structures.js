@@ -33,12 +33,7 @@ Ext.define('WeirdbirdCMS.store.Structures', {
         write: function(store, op) {
             // if last operation was "create" and now we have an update,
             // we want to reload the store afterwards to get the objects new id
-            var s = Ext.getStore('Structures');
-            if (s.lastOperation == 'create' && op.action == 'update') {
-                s.load();
-            }
-            
-            s.lastOperation = op.action;
+            _cms.getController('Structure').onLayoutStoreWrite(store, op);
         }
     }
 });

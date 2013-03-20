@@ -108,6 +108,30 @@ Ext.define('WeirdbirdCMS.controller.Structure', {
 	},
 
 	/**
+	 * Event handler: the layout grid's store wrote a new entry
+	 */
+	onLayoutStoreWrite: function(store, op) {
+		// if last operation was "create" and now we have an update,
+        // we want to reload the store afterwards to get the objects new id
+		var s = Ext.getStore('Structures');
+
+        if (s.lastOperation == 'create' && op.action == 'update') {
+            var newItem = Ext.getCmp('categoriesGrid').getSelectionModel().lastSelected;
+
+            // register a new load event handler (and overwrite the previous one)
+            // so that the newly created item is selected automatically after the store is loaded
+            s.on('load', function(){
+            	var newIndex = s.find('title', newItem.data.title);
+            	Ext.getCmp('categoriesGrid').getSelectionModel().select(newIndex);
+            });
+
+            s.load();
+        }
+        
+        s.lastOperation = op.action;
+	},
+
+	/**
 	 * Event handler: module selection is changed
 	 */
 	onModuleChange: function(cmp, newValue, oldValue) {
@@ -225,9 +249,9 @@ Ext.define('WeirdbirdCMS.controller.Structure', {
 	},
 
 	/**
-	 * Event handler: Save button pressed
+	 * Event handler: Save optional settings button pressed
 	 */
-	onSaveBtn: function() {
+	onSaveOptionalBtn: function() {
 		var record = Ext.getCmp('categoriesGrid').getSelectionModel().getSelection()[0];
 					
 		Ext.Ajax.request({
