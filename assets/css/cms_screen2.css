@@ -131,6 +131,8 @@ li { display:block; }
 .tbl-fullwidth tr td { vertical-align:top;padding-right:20px;}
 .imageselect { width:120px; height:100px; margin:10px; border:1px solid #99BBE8; text-align:center; border:1px solid #E0E0E0; float:left; padding:5px;}
 .imageselect-hover { background-color:#eff5fb; border:1px solid #99bbe8; padding:5px;}
+.icon-active { top:3px; position:relative; background-color:rgb(135,187,83); width:8px; height:8px; background-image:none !important; border-radius: 4px; box-shadow: inset 0px 2px 0px 0px rgba(250,250,250,0.5), 0px 0px 2px 0px rgba(135,187,83,0.5);}
+.icon-inactive { top:3px; position:relative; background-color:rgb(226,0,0); width:8px; height:8px; background-image:none !important; border-radius: 4px; box-shadow: inset 0px 2px 0px 0px rgba(250,250,250,0.5), 0px 0px 2px 0px rgba(226,0,0,0.5);}
 
 /* --------------------------------------------------------------------------------------------------- */
 /* Standard IDs */
@@ -169,46 +171,3 @@ li { display:block; }
 .x-tab-top-active { background-image:none; background-color:#d7d2d2 !important;}
 .x-tab-default-top { background-image:none; background-color:#f0f0ed; border-radius:0; box-shadow:none;}
 
-/* --------------------------------------------------------------------------------------------------- */
-/* 3column layout */
-/* --------------------------------------------------------------------------------------------------- */
-/* column container */
-.colmask {
-	position:relative;	/* This fixes the IE7 overflow hidden bug */
-	clear:both;
-	float:left;
-	width:100%;			/* width of whole page */
-	overflow:hidden;		/* This chops off any overhanging divs */
-}
-/* common column settings */
-.colright,
-.colmid,
-.colleft {
-	float:left;
-	width:100%;
-	position:relative;
-}
-.col1,
-.col2,
-.col3 {
-	float:left;
-	position:relative;
-	padding:0 0 1em 0;
-	overflow:hidden;
-}
-/* 2 Column (left menu) settings */
-.leftmenu {
-	background:#fff;		/* right column background colour */
-}
-.leftmenu .colleft {
-	right:80%;			/* right column width */
-	background:#2e505d;	/* left column background colour */
-}
-.leftmenu .col1 {
-	width:76%;			/* right column content width */
-	left:102%;			/* 100% plus left column left padding */
-}
-.leftmenu .col2 {
-	width:16%;			/* left column content width (column width minus left and right padding) */
-	left:6%;			/* (right column left and right padding) plus (left column left padding) */
-}

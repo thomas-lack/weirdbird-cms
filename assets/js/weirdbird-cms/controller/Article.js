@@ -21,6 +21,11 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	// internal data structures
 	treeStore: null,
 	cssData: null,
+	currentNode: null,
+	initialDataChange: true,	// helper attribute to identify if data was loaded or really changed by user
+	initialTitle: '',			// helper attribute to remember the article title before it was edited
+	initialActive: null,		// helper attribute to remember the initial active state of an article
+	record: null,				// helper attribute to remember the currently clicked record id
 
 	/*
 	* Fill the articles grid with data
@@ -80,14 +85,14 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	updateArticlesPanel: function() {
 		// load leaf data
 		Ext.Ajax.request({
-			url: 'cms/articles/read/' + Ext.getCmp('articlePanel').record.data.id,
+			url: 'cms/articles/read/' + _cms.getController('Article').record.data.id,
 
 			success: function(response) {
 				var editPanel = Ext.getCmp('articlePanel');
 				var data = Ext.JSON.decode(response.responseText);
 
-				editPanel.initialDataChange = true;
-				editPanel.initialTitle = data.title; // remember initial title for later treeview resetting
+				_cms.getController('Article').initialDataChange = true;
+				_cms.getController('Article').initialTitle = data.title; // remember initial title for later treeview resetting
 				var ls = Ext.getStore('Languages');
 				
 				// set language field according to the store mapping
@@ -107,7 +112,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 				Ext.getCmp('articleFieldTeaserContent').setValue(data.teaser);
 				Ext.getCmp('articleFieldContent').setValue(data.content);
 
-				editPanel.initialDataChange = false;
+				_cms.getController('Article').initialDataChange = false;
 				editPanel.enable();
 			},
 			failure: function(response, opts) {
@@ -169,12 +174,12 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		request.content = Ext.getCmp('articleFieldContent').getValue();
 		
 		Ext.Ajax.request({
-			url: 'cms/articles/update/'+ Ext.getCmp('articlePanel').record.data.id,
+			url: 'cms/articles/update/'+ _cms.getController('Article').record.data.id,
 			params: request, 
 
 			success: function(response) {
 				Ext.MessageBox.alert('Status', _cms.lang.articles.message3.success);
-				Ext.getCmp('articlePanel').record.save(); //remove the dirty flag
+				_cms.getController('Article').record.save(); //remove the dirty flag
 			},
 			failure: function(response, opts) {
 				Ext.MessageBox.alert('Error', _cms.lang.articles.message3.error 
@@ -195,7 +200,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 			fn: function(btn) {
 				if (btn == 'yes') {
 					Ext.Ajax.request({
-						url: 'cms/articles/destroy/' + Ext.getCmp('articlePanel').record.data.id,
+						url: 'cms/articles/destroy/' + _cms.getController('Article').record.data.id,
 						success: function(response) {
 							var node = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
 							node.remove();
@@ -226,21 +231,31 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 					// save if yes is pressed
 					if (btn == 'yes')
 						_cms.getController('Article').saveArticle();
-					// restore the old title in the treeview if 'no' is pressed
 					else {
-						var title = Ext.getCmp('articlePanel').initialTitle;
+						// restore the old title in the treeview if 'no' is pressed
+						var title = _cms.getController('Article').initialTitle;
 						oldRecord.data.text = title;
 						oldRecord.set('title', title);
+
+						// reset the previously edited node's active indicator icon if needed
+						_cms.getController('Article').currentNode.data.iconCls = _cms.getController('Article').initialActive;
+						_cms.getController('Article').currentNode.triggerUIUpdate();
 					}
 
 					// anyways we save the treepanel record for now to indicate the non-dirty state
 					oldRecord.save();
 					// disable the edit panel for now if we are changing focus
 					Ext.getCmp('articlePanel').disable();
+					
 					// load new data into the articles panel if appropriate
 					if (newRecord.data.leaf) {
-						// remember the currently clicked record id in the edit panel as hidden value
-						Ext.getCmp('articlePanel').record = newRecord;
+						// remember the currently clicked record id as hidden value
+						_cms.getController('Article').record = newRecord;
+						// remember the new records active state and node
+						_cms.getController('Article').initialActive = newRecord.data.iconCls;
+						_cms.getController('Article').currentNode = 
+							Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
+						// update the article edit panel
 						_cms.getController('Article').updateArticlesPanel();
 					}
 				}
@@ -250,7 +265,9 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 			Ext.getCmp('articlePanel').disable();
 			
 			if (newRecord != null && newRecord.data.leaf) {
-				Ext.getCmp('articlePanel').record = newRecord;
+				this.record = newRecord;
+				this.initialActive = newRecord.data.iconCls;
+				this.currentNode = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
 				this.updateArticlesPanel();
 			}
 		}		
@@ -261,7 +278,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	 */
 	onTreePanelSelect: function(self, record, index) {
 		// first check, if the user is leaving a currently edited article
-		this.leaveArticle(record, Ext.getCmp('articlePanel').record);
+		this.leaveArticle(record, this.record);
 
 		// disable all buttons after click
 		var buttonIDs = ['addArticleBtn', 'saveArticleBtn', 'deleteArticleBtn'];
@@ -317,27 +334,36 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	 * Event handler: any field besides the title field of the current article has changed
 	 */
 	onArticleChange: function(self, newValue, oldValue) {
-		var editPanel = Ext.getCmp('articlePanel');
-		if (!editPanel.initialDataChange) {
+		//var editPanel = Ext.getCmp('articlePanel');
+		if (!this.initialDataChange) {
 			Ext.getCmp('saveArticleBtn').enable(true); 
 			// mark record as dirty
-			editPanel.record.setDirty();
+			this.record.setDirty();
 		}
+	},
+
+	/**
+	 *
+	 */
+	onArticleActiveChange: function(self, newValue, oldValue) {
+		// set active icon indicator (currentNode was set beforehand in method 'onArticleChange')
+		this.currentNode.data.iconCls = (newValue) ? 'icon-active' : 'icon-inactive';
+		this.currentNode.triggerUIUpdate();
 	},
 
 	/**
 	 * Event handler: the title field of the current article has changed
 	 */
 	onArticleTitleChange: function(self, newValue, oldValue) {
-		var editPanel = Ext.getCmp('articlePanel');
-		if (!editPanel.initialDataChange) {
+		//var editPanel = Ext.getCmp('articlePanel');
+		if (!this.initialDataChange) {
 			Ext.getCmp('saveArticleBtn').enable(true); 
 			// mark record as dirty
-			editPanel.record.setDirty();
+			this.record.setDirty();
 			// update treepanel title
-			if (editPanel.record != null) {
-				editPanel.record.data.text = newValue;
-				editPanel.record.set('title', newValue); // used to update the treepanel -.-
+			if (this.record != null) {
+				this.record.data.text = newValue;
+				this.record.set('title', newValue); // used to update the treepanel -.-
 			}
 		}
 	},

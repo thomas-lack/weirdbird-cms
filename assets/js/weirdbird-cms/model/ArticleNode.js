@@ -4,7 +4,8 @@ Ext.define('WeirdbirdCMS.model.ArticleNode', {
 
 	fields: [
 		'mapping_id', 
-		'id', 
+		'id',
+		'iconCls',
 		'text'
 	],
 	

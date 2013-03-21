@@ -90,9 +90,6 @@ Ext.define('WeirdbirdCMS.view.Article', {
 		resizeTabls: true,
 		enableTabScroll: true,
 		border: false,
-		record: null,
-		initialDataChange: true,	// helper attribute to identify if data was loaded or really changed by user
-		initialTitle: '',			// helper attribute to remember the article title before it was edited
 		defaults: {
 			autoScroll: true,
 			bodyPadding: 10
@@ -134,6 +131,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 					listeners: {
 						change: function(self, newValue, oldValue) { 
 							_cms.getController('Article').onArticleChange(self, newValue, oldValue);
+							_cms.getController('Article').onArticleActiveChange(self, newValue, oldValue);
 						}
 					}
 	            },{
