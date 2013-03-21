@@ -186,6 +186,7 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 							$articlesArr[] = array(
 								'text' => $a->title,
 								'id' => $a->id,
+								'iconCls' => ($a->active == 1) ? 'icon-active' : 'icon-inactive',
 								'leaf' => true
 							);
 						}
@@ -222,6 +223,7 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 				$articlesArr[] = array(
 					'text' => $a->title,
 					'id' => $a->id,
+					'iconCls' => ($a->active == 1) ? 'icon-active' : 'icon-inactive',
 					'leaf' => true
 				);
 			}
