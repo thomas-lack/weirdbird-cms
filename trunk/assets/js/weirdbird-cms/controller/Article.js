@@ -136,7 +136,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 				var r = Ext.JSON.decode(response.responseText);
 				var id = r.id;
 				
-				var newNode = node.createNode({id: r.id, text: 'new title', leaf: true});
+				var newNode = node.createNode({id: r.id, text: 'new title', iconCls: 'icon-inactive', leaf: true});
 				node.appendChild(newNode);
 			},
 			failure: function(response) {
