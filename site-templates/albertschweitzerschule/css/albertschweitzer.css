@@ -117,7 +117,7 @@
 	.header {
 		font-family: serif;
 		background-color: #000;
-		width:100%;
+		/*width:100%;*/
 		height:560px;
 		color: #fff;
 		min-height:100%; 
@@ -204,14 +204,19 @@
 		display: none;
 	}
 
+	/* a fallback image background for the header, usable for IE8 and below */
+	.ie-fallback-headerimage {
+		background:url('../img/ie-fallback.jpg') no-repeat fixed center top;
+	}
+
 	/**
 	 * bootstrap css fix against a jumping structure-header image
 	 */
 	.navbar-fixed-top { margin-bottom: 0px; }
 	
 	/* The big image with parallax support shall not be rendered in the standard case */
-	div#structure-header { display:none; }
-	div#structure-header-noimage { display:block; }
+	div#structure-header { display:block; }
+	div#structure-header-noimage { display:none; }
 	
 	/**
 	 * Depending on the screen resolution some elements can be shown / have to be hidden
@@ -235,6 +240,10 @@
 			width: 28%;
 			padding-right:10px;
 		}	
+	}
+	@media only screen and (max-width: 767px) {
+		div#structure-header { display:none; }
+		div#structure-header-noimage { display:block; }
 	}
 		
 	/**

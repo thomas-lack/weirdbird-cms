@@ -53,7 +53,7 @@
 					<a class="brand" href="/" 
 						<? 
 						// if we have a logo the padding and margin of the brand box have to be adjusted
-						echo (($system['brandimagepath'] == '') ? '' : 'style="padding:0;margin-left:0"'); 
+						echo (($system['brandimagepath'] == '') ? '' : 'style="padding:0;margin-left:0;min-width:310px;"'); 
 						?>
 					>
 						<?
@@ -89,8 +89,14 @@
 	if ($structureOptions->file_id != null)
 	{
 		$out = ''
+			// a fallback image shall be shown if ie8 or less is used - since those browsers
+			// are not capable of css3 command 'background-size'
+			. '<!--[if lte IE 8]><div id="structure-header" class="header ie-fallback-headerimage"><![endif]-->'
+			// otherwise show the image defined by the cms
+			. '<!--[if gt IE 8]><!-->'
 			. '<div id="structure-header" class="header" style="background:url(\'' . $structureOptions->get_imageFilePath() . '\') '
 			. 'no-repeat center center; background-size:cover;" data-stellar-background-ratio="0.5">'
+			. '<!--<![endif]-->'
 			. "\n"
 			. '<div class="container"><div class="headlinewrapper"><div class="headline">'
 			. (($structureOptions->headline1 != null) ? '<h1>'.nl2br($structureOptions->headline1).'</h1><br/>' : '')
