@@ -40,43 +40,24 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		if ( Ext.isDefined(Ext.getCmp('articleFieldContent')) )
 			Ext.getCmp('articleFieldContent').destroy();
 
-		// load treeview config data from the backend and populate the view afterwards
-		Ext.Ajax.request({
-			url: 'cms/articles/treeview',
-
-			success: function(response) {
-				var storeConfig = Ext.JSON.decode(response.responseText);
-				storeConfig.model = 'WeirdbirdCMS.model.ArticleNode'; // add custom model reference
-				
-				// save needed data / data structures for later use
-				_cms.getController('Article').treeStore = Ext.create('Ext.data.TreeStore', storeConfig);
-				_cms.getController('Article').cssData = cssdata;
-
-				// add view to viewport
-				_cms.getController('Article').paintArticlesPanel();
-			}
-		});
+		_cms.getController('Article').cssData = cssdata;
+		
+		_cms.getController('Article').paintArticlesPanel();
 	},
 
 	/*
 	* After loading the prepared tree store data for the articles panel,
 	* it can be added to the DOM
 	*/
-	paintArticlesPanel: function(treeStore, cssdata) {
+	paintArticlesPanel: function() {
 		if ( ! Ext.isDefined(Ext.getCmp('articlesParentPanel')) )
 			Ext.create('WeirdbirdCMS.view.Article');
+		
+		// reload store on every repaint - just in case the structures changed
+		Ext.getStore('ArticlesTree').load();
 
 		// add view to viewport
 		_cms.fillContentPanel(Ext.getCmp('articlesParentPanel'));
-	},
-
-	/**
-	 * Event handler: bugfixing after parent article panel was rendered
-	 */
-	onParentAfterRender: function() {
-		// bugfix for height rendering error of tinymce extjs wrapper
-		Ext.getCmp('articlesTreePanel').expandAll();
-		Ext.getCmp('articlesTreePanel').collapseAll();
 	},
 
 	/**
@@ -130,7 +111,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		
 		Ext.Ajax.request({
 			url: 'cms/articles/create',
-			params: { mapping_id : node.data.mapping_id },
+			params: { mapping_id : node.data.hrefTarget },
 
 			success: function(response) {
 				var r = Ext.JSON.decode(response.responseText);
@@ -179,7 +160,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 
 			success: function(response) {
 				Ext.MessageBox.alert('Status', _cms.lang.articles.message3.success);
-				_cms.getController('Article').record.save(); //remove the dirty flag
+				_cms.getController('Article').record.commit(); //remove the dirty flag
 			},
 			failure: function(response, opts) {
 				Ext.MessageBox.alert('Error', _cms.lang.articles.message3.error 
@@ -243,7 +224,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 					}
 
 					// anyways we save the treepanel record for now to indicate the non-dirty state
-					oldRecord.save();
+					oldRecord.commit();
 					// disable the edit panel for now if we are changing focus
 					Ext.getCmp('articlePanel').disable();
 					
@@ -288,7 +269,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		
 		// on a column field we want to enable adding articles
 		// remember: columns are on 2nd level and not leafs
-		if (record.parentNode.parentNode != null && !record.data.leaf) {
+		if (record.parentNode.parentNode != null && !record.data.leaf && record.parentNode.data.parentId != 'root') {
 			Ext.getCmp('addArticleBtn').enable(true);
 		}
 		
@@ -307,7 +288,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		if (newParent != oldParent) {
 			Ext.Ajax.request({
 				url: 'cms/articles/changemapping/' + node.data.id,
-				params: { mapping_id: newParent.data.mapping_id },
+				params: { mapping_id: newParent.data.hrefTarget },
 				failure: function(response) {
 					Ext.MessageBox.alert('Error', _cms.lang.articles.message.error 
 						+ ' (Error code ' + response.status + ').');

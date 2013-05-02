@@ -18,12 +18,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 	bodyCls: 'content',
 	border: false,
 	layout: 'column',
-	listeners: {
-		afterrender: function(self) {
-			_cms.getController('Article').onParentAfterRender();
-		}
-	},
-
+	
 	items: [{
 		////////////////////
 		// ITEM 1: TreePanel
@@ -33,7 +28,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 		xtype: 'treepanel',
 		id: 'articlesTreePanel',
 		title: _cms.lang.articles.grid.title,
-		store: _cms.getController('Article').treeStore,
+		store: 'ArticlesTree',//_cms.getController('Article').treeStore,
 		rootVisible: false,
 		border: false,
 		viewConfig: {

@@ -18,6 +18,7 @@ Ext.define('WeirdbirdCMS.view.Viewport', {
 			+ '<span class="icon big dark-gray icon-space-top">L</span> ' + _cms.username
 			+ '</span>',
 		bodyCls: 'title',
+		height: 50,
 		border: false
 	}, {
 		region: 'west',
