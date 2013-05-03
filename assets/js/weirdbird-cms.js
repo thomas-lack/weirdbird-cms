@@ -31,7 +31,8 @@ Ext.application({
 	models: [
 		'Language',
 		'Layout',
-		'Module'
+		'Module',
+		'ArticleTreeNode'
 	],
 
 	// the languages store is safe to load at this point (via autoload), 
@@ -43,7 +44,8 @@ Ext.application({
 	stores: [
 		'Languages',
 		'Layouts',
-		'Modules'
+		'Modules',
+		'ArticlesTree'
 	],
 
 	/**

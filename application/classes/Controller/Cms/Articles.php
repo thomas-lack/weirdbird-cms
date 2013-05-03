@@ -152,7 +152,7 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 		$mappings = ORM::factory('StructureColumnMapping')->find_all();
 
 		$outArr = array(
-			'root' => array()
+			'children' => array()
 		);
 		
 		$language = ORM::factory('System_Setting')->get_language()->shortform;
@@ -187,7 +187,11 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 								'text' => $a->title,
 								'id' => $a->id,
 								'iconCls' => ($a->active == 1) ? 'icon-active' : 'icon-inactive',
-								'leaf' => true
+								'leaf' => true,
+								//'allowDrop' => false,
+								//'mapping_id' => null,
+								//'children' => null,
+								//'expanded' => false
 							);
 						}
 
@@ -195,21 +199,30 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 							'text' => (($language == 'en') ? 'Area ' : 'Abschnitt ') . ($m->column + 1),
 							'expanded' => false,
 							'allowDrop' => true,
-							'mapping_id' => $m->id,
-							'children' => $articlesArr
+							'hrefTarget' => $m->id, // need to "hide" the mapping_id into hrefTarget, since custom fields are not interpreted by ExtJS
+							'children' => $articlesArr,
+							'leaf' => false,
+							//'id' => null,
+							//'iconCls' => null
+							//'children' => null
 						);
 					}
 				}
 			}
 
 			// now that we have all data, the output array can be wrapped up
-			$outArr['root']['expanded'] = true;
-			$outArr['root']['allowDrop'] = false;
-			$outArr['root']['children'][] = array(
+			$outArr['children']['expanded'] = true;
+			$outArr['children']['allowDrop'] = false;
+			$outArr['children']['text'] = (($language == 'en') ? 'Structures' : 'Rubriken');
+			$outArr['children']['children'][] = array(
 				'text' => $s->title,
 				'expanded' => false,
 				'allowDrop' => false,
-				'children' => $columnsArr
+				'children' => $columnsArr,
+				'leaf' => false,
+				//'mapping_id' => null,
+				//'id' => null,
+				//'iconCls' => null
 			);
 		}
 
@@ -227,14 +240,15 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 					'leaf' => true
 				);
 			}
-			$outArr['root']['children'][] = array(
+			$outArr['children']['children'][] = array(
 				'text' => (($language == 'en') ? 'ORPHANED ARTICLES' : 'VERWAISTE ARTIKEL'),
 				'expanded' => false,
 				'allowDrop' => true,
-				'mapping_id' => null,
+				'hrefTarget' => null, // again mapping_id has to be hidden
+				'leaf' => false,
 				'children' => $articlesArr
 			);
-		}			
+		}
 
 		$this->template->result = $outArr;
 	}
