@@ -91,7 +91,7 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 		$d = json_decode($this->request->body());
 		
 		// delete the structure and all corresponding mappings
-		ORM::factory('structure', $d->id)->delete();
+		ORM::factory('Structure', $d->id)->delete();
 		$this->orphanateArticles($d->id);
 		
 		$this->template->result = array( 'success' => true );
