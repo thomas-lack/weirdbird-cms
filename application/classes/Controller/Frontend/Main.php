@@ -6,8 +6,13 @@ class Controller_Frontend_Main extends Controller_Template {
 	public $config;
 	public $structureRef;
 	public $articleRef = null;
+	public $langRef = null;
 
 	public function before() {
+		// remember chosen language
+		if ($this->request->param('language') != '')
+			$this->langRef = ORM::factory('Language')->get_id_by_shortform($this->request->param('language'));
+		
 		// get first active template we find
 		$this->config = ORM::factory('Template')->where('active','=','1')->find();
 		
@@ -148,11 +153,20 @@ class Controller_Frontend_Main extends Controller_Template {
 		$articles = null;
 		if ($module->allowarticles == 1 && $articleRequest == null)
 		{
-			$articles = ORM::factory('Article')
-				->where('active','=',1)
-				->where('structure_column_mapping_id','=',$mapping->id)
-				->order_by('position', 'asc')
-				->find_all();	
+			// if a language was selected only get those articles
+			if ($this->langRef != null)
+				$articles = ORM::factory('Article')
+					->where('active','=',1)
+					->where('structure_column_mapping_id','=',$mapping->id)
+					->where('language_id','=',$this->langRef)
+					->order_by('position', 'asc')
+					->find_all();
+			else
+				$articles = ORM::factory('Article')
+					->where('active','=',1)
+					->where('structure_column_mapping_id','=',$mapping->id)
+					->order_by('position', 'asc')
+					->find_all();
 		}
 		else if ($articleRequest != null)
 		{
