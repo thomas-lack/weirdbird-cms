@@ -115,8 +115,8 @@ else
 	?>
 </div>
 
-<p style="text-align:justify;">
-	* S&auml;mtliche Dokumente liegen im pdf-Format vor. Sollten Sie die Dokumente nicht automatisch &ouml;ffnen
+<p style="text-align:justify;" class="well">
+	<small>* S&auml;mtliche Dokumente liegen im pdf-Format vor. Sollten Sie die Dokumente nicht automatisch &ouml;ffnen
 	k&ouml;nnen, finden Sie an <a href="http://www.adobe.de/products/acrobat/readstep.html">an dieser Stelle</a> die
-	kostenlose Version des Adobe Reader, der zur Betrachtung von pdf Dateien genutzt werden kann.
+	kostenlose Version des Adobe Reader, der zur Betrachtung von pdf Dateien genutzt werden kann.</small>
 </p>

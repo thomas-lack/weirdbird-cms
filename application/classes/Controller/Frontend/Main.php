@@ -34,8 +34,13 @@ class Controller_Frontend_Main extends Controller_Template {
 			$structureId = null;
 			foreach ($structures as $s)
 			{
-				if ($s->title == $this->structureRef)
+				// enable also only lowercase structure names
+				if (strtolower($s->title) == strtolower($this->structureRef))
 				{
+					// if the given url parameter was lowercase -> remap into our own structure title
+					if ($s->title != $this->structureRef)
+						$this->structureRef = $s->title;
+					
 					$layout = ORM::factory('Layout', $s->layout_id);
 					$structureId = $s->id;
 					break;
