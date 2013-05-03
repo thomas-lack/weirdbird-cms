@@ -10,12 +10,13 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 
 	stores: [ 
 		'Images',
-		'Documents'
+		'Documents',
+		'ArticlesTree'
 	],
 	models: [ 
 		'Image',
 		'Document',
-		'ArticleNode'
+		'ArticleTreeNode'
 	],
 	
 	// internal data structures
