@@ -9,7 +9,7 @@ Ext.define('WeirdbirdCMS.view.Viewport', {
 
 	items: [{
 		region: 'north',
-		html: '<img class="left" src="/assets/images/logo.png"/>'
+		html: '<img class="left" src="/assets/images/wb-cms-logo.png"/>'
 			+ '<span class="serif headline dark-gray">weirdbird cms</span>'
 			+ '<span class="right"><a href="cms/user/logout">' + _cms.lang.top.logout + ' '
 			+ '<span class="icon big dark-gray icon-space-top">v</span></a>'
@@ -18,7 +18,7 @@ Ext.define('WeirdbirdCMS.view.Viewport', {
 			+ '<span class="icon big dark-gray icon-space-top">L</span> ' + _cms.username
 			+ '</span>',
 		bodyCls: 'title',
-		height: 50,
+		height: 70,
 		border: false
 	}, {
 		region: 'west',
