@@ -80,10 +80,13 @@
 		font-style: normal;
 	}
 	
+	html { height: 100%; }
+
 	body {
 		font-family: 'StRydeRegular', serif;
 		color: #342B22;
 		-webkit-font-smoothing: antialiased !important;
+		height:80%;
 	}
 	
 	h1 { font-size:26px; color:#80572E; }
@@ -118,7 +121,6 @@
 		font-family: serif;
 		background-color: #000;
 		/*width:100%;*/
-		height:560px;
 		color: #fff;
 		min-height:100%; 
 		-webkit-transform: translateZ(0);
@@ -143,7 +145,7 @@
 		position: relative;
 		margin-left:auto;
 		margin-right:auto;
-		min-height:560px;
+		min-height:660px;
 	}
 	
 	div.headline {
