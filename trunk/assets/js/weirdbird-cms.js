@@ -1,12 +1,12 @@
 /**
  * weirdbird-cms ExtJS 4 Application
  *
- * @author: Thomas Lack 
+ * @author: Thomas Lack
  */
 Ext.application({
 	name: 'WeirdbirdCMS',
 	appFolder: 'assets/js/weirdbird-cms',
-	
+
 	// Switch between debug and productive console outputs
 	debug: false,
 	// the current username buffer
@@ -19,20 +19,20 @@ Ext.application({
 	currentModule: null,
 
 	controllers: [
-		'Dashboard',
-		'Template',
-		'Structure',
-		'Article',
-		'FileManager',
-		'User',
-		'System'
+			'Dashboard',
+			'Template',
+			'Structure',
+			'Article',
+			'FileManager',
+			'User',
+			'System'
 	],
 
 	models: [
-		'Language',
-		'Layout',
-		'Module',
-		'ArticleTreeNode'
+			'Language',
+			'Layout',
+			'Module',
+			'ArticleTreeNode'
 	],
 
 	// the languages store is safe to load at this point (via autoload), 
@@ -42,46 +42,45 @@ Ext.application({
 	// startup. if needed, the Template controller has to make sure the data is reloaded on
 	// a template change.
 	stores: [
-		'Languages',
-		'Layouts',
-		'Modules',
-		'ArticlesTree'
+			'Languages',
+			'Layouts',
+			'Modules',
+			'ArticlesTree'
 	],
 
 	/**
-	* set which content shall be loaded via ajax by clicking on a menu button
-	*/
-	registerNavHandlers: function(){
+	 * set which content shall be loaded via ajax by clicking on a menu button
+	 */
+	registerNavHandlers: function() {
 		if (this.debug) console.log('registering nav menu handlers');
-		Ext.each(Ext.query('#navmenu-body > ul > li > a'), function(domEl, i, list){
-			var el = Ext.get(domEl);
-			var urlSuffix = el.dom.attributes['ajax'].value;
-			
-			var clickFn = function() {
-				_cms.updateNavigationMenu(urlSuffix);
-				_cms.callerMapping(urlSuffix);
-			};
-			
+		Ext.each(Ext.query('#navmenu-body > ul > li > a'), function(domEl, i, list) {
+			var el = Ext.get(domEl),
+				urlSuffix = el.dom.attributes['ajax'].value,
+				clickFn = function() {
+					_cms.updateNavigationMenu(urlSuffix);
+					_cms.callerMapping(urlSuffix);
+				};
+
 			el.on('click', clickFn);
 		});
 	},
 
 	/*
-	* Change color of the navigation menu on the fly
-	*/
+	 * Change color of the navigation menu on the fly
+	 */
 	updateNavigationMenu: function(categoryLink) {
 		if (this.debug) console.log('resetting navigation menu to: ' + categoryLink);
-		
+
 		// remove big letters
-		Ext.each(Ext.query('#navmenu-body > ul > li > a'), function(domEl){
+		Ext.each(Ext.query('#navmenu-body > ul > li > a'), function(domEl) {
 			Ext.get(domEl).removeCls('big bold');
 		});
-		
+
 		// remove category indicator
-		Ext.each(Ext.query('#navmenu-body > ul > li > a > span'), function(domEl){
+		Ext.each(Ext.query('#navmenu-body > ul > li > a > span'), function(domEl) {
 			Ext.get(domEl).destroy();
 		});
-		
+
 		// add new big lettering and category indicator
 		var el = Ext.get(Ext.query('#navmenu-body > ul > li > a[ajax=' + categoryLink + ']'));
 		el.addCls('big bold');
@@ -91,10 +90,10 @@ Ext.application({
 	},
 
 	/**
-	* Helper method to provide functionality of module loading depending on the 
-	* url suffix of the corresponding ajax call
-	* (see registerNavHandlers() or Dashboard.registerDashboardHandlers())
-	*/
+	 * Helper method to provide functionality of module loading depending on the
+	 * url suffix of the corresponding ajax call
+	 * (see registerNavHandlers() or Dashboard.registerDashboardHandlers())
+	 */
 	callerMapping: function(module) {
 		// check if the currently shown module is not the one which was clicked
 		// (deleting it and rendering it again would lead to an error because of
@@ -105,16 +104,16 @@ Ext.application({
 			this.currentModule = module;
 
 		switch (module) {
-			case 'dashboard' : 
+			case 'dashboard':
 				_cms.getController('Dashboard').createDashboard();
 				break;
-			case 'templates' :
+			case 'templates':
 				_cms.getController('Template').populateTemplatesGrid();
 				break;
-			case 'structures' :
+			case 'structures':
 				_cms.getController('Structure').populateStructuresGrid();
 				break;
-			case 'articles' :
+			case 'articles':
 				// first we need to load the css files of the current template
 				// (for the tinyMCE article editor)
 				// afterwards the panel can be painted
@@ -124,12 +123,11 @@ Ext.application({
 						_cms.getController('Article').prepareArticlesPanel(Ext.JSON.decode(response.responseText));
 					},
 					failure: function(response) {
-						Ext.MessageBox.alert('Error', _cms.lang.articles.message.error 
-							+ ' (Error code ' + response.status + ').');
+						Ext.MessageBox.alert('Error', _cms.lang.articles.message.error + ' (Error code ' + response.status + ').');
 					}
 				});
 				break;
-			case 'filemanager' :
+			case 'filemanager':
 				_cms.getController('FileManager').populateFilesGrid();
 				break;
 			case 'user':
@@ -144,10 +142,10 @@ Ext.application({
 	},
 
 	/**
-	* Helper method to add new panels to the content panel (replacing the old ones).
-	* 
-	* Please note: parameter cmp has to be a component or component config object
-	*/
+	 * Helper method to add new panels to the content panel (replacing the old ones).
+	 *
+	 * Please note: parameter cmp has to be a component or component config object
+	 */
 	fillContentPanel: function(cmp) {
 		var p = Ext.getCmp('contentPanel');
 		p.removeAll();
@@ -161,7 +159,7 @@ Ext.application({
 	launch: function() {
 		// a little convenience - make the application object available through a shortform
 		_cms = this;
-	
+
 		// override all treepanels with drag&drop, so that only leafs are draggable
 		Ext.override(Ext.tree.ViewDragZone, {
 			isPreventDrag: function(e, record) {

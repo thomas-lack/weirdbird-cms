@@ -6,12 +6,12 @@ Ext.define('WeirdbirdCMS.controller.Dashboard', {
 
 	stores: [],
 	models: [],
-	
+
 	/**
-	* Handles the creation of an initial content view: the dashboard
-	*/
+	 * Handles the creation of an initial content view: the dashboard
+	 */
 	createDashboard: function() {
-		if (this.dashboardBuffer != null) {
+		if (this.dashboardBuffer !== null) {
 			_cms.fillContentPanel({
 				xtype: 'panel',
 				title: _cms.lang.dashboard.title,
@@ -21,8 +21,7 @@ Ext.define('WeirdbirdCMS.controller.Dashboard', {
 			});
 
 			this.registerDashboardHandlers();
-		}
-		else {
+		} else {
 			Ext.Ajax.request({
 				url: 'cms/dashboard',
 				success: function(response) {
@@ -30,26 +29,27 @@ Ext.define('WeirdbirdCMS.controller.Dashboard', {
 					_cms.getController('Dashboard').createDashboard();
 				},
 				failure: function(response) {
-					Ext.MessageBox.alert('Error', cms.lang.dashboard.message.error 
-						+ ' (Error code ' + response.status + ').');
+					Ext.MessageBox.alert('Error', _cms.lang.dashboard.message.error + ' (Error code ' + response.status + ').');
 				}
-			});	
+			});
 		}
 	},
 
 	/**
-	* register clickable buttons for the dashboard
-	*/
+	 * register clickable buttons for the dashboard
+	 */
 	registerDashboardHandlers: function() {
-		if (_cms.debug) console.log('registering dashboard handlers');
-		Ext.each(Ext.query('.dashboard-list > li'), function(domEl, i, list){
-			var el = Ext.get(domEl);
-			var urlSuffix = el.dom.attributes['href'].value;
-			
-			var clickFn = function() {
-				_cms.updateNavigationMenu(urlSuffix);
-				_cms.callerMapping(urlSuffix);
-			};
+		if (_cms.debug) {
+			console.log('registering dashboard handlers');
+		}
+
+		Ext.each(Ext.query('.dashboard-list > li'), function(domEl) {
+			var el = Ext.get(domEl),
+				urlSuffix = el.dom.attributes.href.value,
+				clickFn = function() {
+					_cms.updateNavigationMenu(urlSuffix);
+					_cms.callerMapping(urlSuffix);
+				};
 
 			el.addClsOnOver('hover-dashboard');
 			el.on('click', clickFn);
