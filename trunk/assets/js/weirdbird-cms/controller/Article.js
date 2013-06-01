@@ -34,15 +34,17 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	* cssdata: array containing objects with paths to used css files e.g. [{path:'../styles.css'}]
 	*/
 	prepareArticlesPanel: function(cssdata) {
-		if (_cms.debug) console.log('populating articles treeview');
+		if (_cms.debug) {
+			console.log('populating articles treeview');
+		}
 
 		// bugfix: manually destroy the tinyMCE editor object if it exists, else
 		// the article editing page cannot be created a second time because of dom errors
-		if ( Ext.isDefined(Ext.getCmp('articleFieldContent')) )
+		if ( Ext.isDefined(Ext.getCmp('articleFieldContent')) ) {
 			Ext.getCmp('articleFieldContent').destroy();
+		}
 
 		_cms.getController('Article').cssData = cssdata;
-		
 		_cms.getController('Article').paintArticlesPanel();
 	},
 
@@ -51,8 +53,9 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	* it can be added to the DOM
 	*/
 	paintArticlesPanel: function() {
-		if ( ! Ext.isDefined(Ext.getCmp('articlesParentPanel')) )
+		if ( ! Ext.isDefined(Ext.getCmp('articlesParentPanel')) ) {
 			Ext.create('WeirdbirdCMS.view.Article');
+		}
 		
 		// reload store on every repaint - just in case the structures changed
 		Ext.getStore('ArticlesTree').load();
@@ -70,22 +73,22 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 			url: 'cms/articles/read/' + _cms.getController('Article').record.data.id,
 
 			success: function(response) {
-				var editPanel = Ext.getCmp('articlePanel');
-				var data = Ext.JSON.decode(response.responseText);
+				var editPanel = Ext.getCmp('articlePanel'), 
+					data = Ext.JSON.decode(response.responseText);
 
 				_cms.getController('Article').initialDataChange = true;
 				_cms.getController('Article').initialTitle = data.title; // remember initial title for later treeview resetting
-				var ls = Ext.getStore('Languages');
-				
+								
 				// set language field according to the store mapping
 				if (Ext.isNumeric(data.language_id)) {
 					Ext.getCmp('articleFieldLanguage')
 						.setValue(Ext.getStore('Languages')
-						.getById(parseInt(data.language_id))
+						.getById(parseInt(data.language_id, 10))
 						.get('name'));
 				}
-				else
+				else {
 					Ext.getCmp('articleFieldLanguage').setValue(null);
+				}
 
 				// set other field values
 				Ext.getCmp('articleFieldActive').setValue(data.active);
@@ -97,7 +100,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 				_cms.getController('Article').initialDataChange = false;
 				editPanel.enable();
 			},
-			failure: function(response, opts) {
+			failure: function(response) {
 				Ext.MessageBox.alert('Error',  _cms.lang.articles.message2.error 
 					+ ' (Error code ' + response.status + ').');
 			}
@@ -115,10 +118,9 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 			params: { mapping_id : node.data.hrefTarget },
 
 			success: function(response) {
-				var r = Ext.JSON.decode(response.responseText);
-				var id = r.id;
-				
-				var newNode = node.createNode({id: r.id, text: 'new title', iconCls: 'icon-inactive', leaf: true});
+				var r = Ext.JSON.decode(response.responseText),
+					newNode = node.createNode({id: r.id, text: 'new title', iconCls: 'icon-inactive', leaf: true});
+
 				node.appendChild(newNode);
 			},
 			failure: function(response) {
@@ -134,7 +136,8 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	saveArticle: function() {
 		tinymce.triggerSave(); 	// has to be done, because tinymce is an addon and the underlying 
 								// form field needs to be updated
-		var request = {};
+		var request = {},
+			languageId = Ext.getCmp('articleFieldLanguage').getValue();
 		
 		// check if the title field contains a valid value
 		if (!Ext.getCmp('articleFieldTitle').isValid()) {
@@ -144,9 +147,9 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 
 		// if the combobox was not yet changed, the id field is not set - 
 		// we have to do this manually
-		var languageId = Ext.getCmp('articleFieldLanguage').getValue();
-		if (!Ext.isNumeric(languageId) && languageId != null)
+		if (!Ext.isNumeric(languageId) && languageId !== null) {
 			languageId = Ext.getStore('Languages').findRecord('name', languageId).get('id');
+		}
 		
 		request.language_id = languageId;
 		request.active = Ext.getCmp('articleFieldActive').getValue();
@@ -159,11 +162,11 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 			url: 'cms/articles/update/'+ _cms.getController('Article').record.data.id,
 			params: request, 
 
-			success: function(response) {
+			success: function() {
 				Ext.MessageBox.alert('Status', _cms.lang.articles.message3.success);
 				_cms.getController('Article').record.commit(); //remove the dirty flag
 			},
-			failure: function(response, opts) {
+			failure: function(response) {
 				Ext.MessageBox.alert('Error', _cms.lang.articles.message3.error 
 					+ ' (Error code ' + response.status + ').');
 			}
@@ -180,14 +183,14 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 			buttons: Ext.Msg.YESNO,
 			icon: Ext.Msg.QUESTION,
 			fn: function(btn) {
-				if (btn == 'yes') {
+				if (btn === 'yes') {
 					Ext.Ajax.request({
 						url: 'cms/articles/destroy/' + _cms.getController('Article').record.data.id,
-						success: function(response) {
+						success: function() {
 							var node = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
 							node.remove();
 						},
-						failure: function(response, opts) {
+						failure: function(response) {
 							Ext.MessageBox.alert('Error', _cms.lang.articles.message4.error 
 								+ ' (Error code ' + response.status + ').');
 						}
@@ -203,7 +206,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	*/
 	leaveArticle: function(newRecord, oldRecord) {
 		// check if the current record should be saved first ?
-		if (oldRecord != null && oldRecord.dirty) {	
+		if (oldRecord !== null && oldRecord.dirty) {	
 			Ext.Msg.show({
 				title: _cms.lang.articles.window3.title,
 				msg: _cms.lang.articles.window3.content,
@@ -211,8 +214,9 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 				icon: Ext.Msg.QUESTION,
 				fn: function(btn) {
 					// save if yes is pressed
-					if (btn == 'yes')
+					if (btn === 'yes') {
 						_cms.getController('Article').saveArticle();
+					}
 					else {
 						// restore the old title in the treeview if 'no' is pressed
 						var title = _cms.getController('Article').initialTitle;
@@ -246,7 +250,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		else {
 			Ext.getCmp('articlePanel').disable();
 			
-			if (newRecord != null && newRecord.data.leaf) {
+			if (newRecord !== null && newRecord.data.leaf) {
 				this.record = newRecord;
 				this.initialActive = newRecord.data.iconCls;
 				this.currentNode = Ext.getCmp('articlesTreePanel').getSelectionModel().getSelection()[0];
@@ -258,7 +262,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	/**
 	 * Event handler: a new item of the treepanel was selected
 	 */
-	onTreePanelSelect: function(self, record, index) {
+	onTreePanelSelect: function(self, record) {
 		// first check, if the user is leaving a currently edited article
 		this.leaveArticle(record, this.record);
 
@@ -270,7 +274,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		
 		// on a column field we want to enable adding articles
 		// remember: columns are on 2nd level and not leafs
-		if (record.parentNode.parentNode != null && !record.data.leaf && record.parentNode.data.parentId != 'root') {
+		if (record.parentNode.parentNode !== null && !record.data.leaf && record.parentNode.data.parentId !== 'root') {
 			Ext.getCmp('addArticleBtn').enable(true);
 		}
 		
@@ -284,9 +288,9 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	/**
 	 * Event handler: an item of the tree store was moved via drag & drop
 	 */
-	onTreePanelItemMove: function(node, oldParent, newParent, index, eopts) {
+	onTreePanelItemMove: function(node, oldParent, newParent) {
 		// change mapping if the parent tree node has changed
-		if (newParent != oldParent) {
+		if (newParent !== oldParent) {
 			Ext.Ajax.request({
 				url: 'cms/articles/changemapping/' + node.data.id,
 				params: { mapping_id: newParent.data.hrefTarget },
@@ -315,7 +319,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	/**
 	 * Event handler: any field besides the title field of the current article has changed
 	 */
-	onArticleChange: function(self, newValue, oldValue) {
+	onArticleChange: function() {
 		//var editPanel = Ext.getCmp('articlePanel');
 		if (!this.initialDataChange) {
 			Ext.getCmp('saveArticleBtn').enable(true); 
@@ -327,23 +331,23 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	/**
 	 *
 	 */
-	onArticleActiveChange: function(self, newValue, oldValue) {
+	onArticleActiveChange: function(self, newValue) {
 		// set active icon indicator (currentNode was set beforehand in method 'onArticleChange')
-		this.currentNode.data.iconCls = (newValue) ? 'icon-active' : 'icon-inactive';
+		this.currentNode.data.iconCls = newValue ? 'icon-active' : 'icon-inactive';
 		this.currentNode.triggerUIUpdate();
 	},
 
 	/**
 	 * Event handler: the title field of the current article has changed
 	 */
-	onArticleTitleChange: function(self, newValue, oldValue) {
+	onArticleTitleChange: function(self, newValue) {
 		//var editPanel = Ext.getCmp('articlePanel');
 		if (!this.initialDataChange) {
 			Ext.getCmp('saveArticleBtn').enable(true); 
 			// mark record as dirty
 			this.record.setDirty();
 			// update treepanel title
-			if (this.record != null) {
+			if (this.record !== null) {
 				this.record.data.text = newValue;
 				this.record.set('title', newValue); // used to update the treepanel -.-
 			}
@@ -372,8 +376,9 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	 * Helper method to calculate the optimum height of the editor textarea
 	 */
 	calculateEditArticleHeight: function(bottomWidth) {
-		if (Ext.typeOf(bottomWidth) != 'number')
-			var bottomWidth = 0;
+		if (Ext.typeOf(bottomWidth) !== 'number') {
+			bottomWidth = 0;
+		}
 
 		var bestHeight = Ext.getCmp('navmenu').getHeight() - bottomWidth;
 		return ((bestHeight < 350) ? 350 : bestHeight);
