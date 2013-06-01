@@ -102,7 +102,7 @@
 
 	li { line-height: 24px; color:#4D341B;}
 
-	table {	line-height:1.9em; border: 0px solid #cca986; }
+	table {	line-height:1.9em; border: 0 solid #cca986; }
 	/* add alternativ colors to table rows */
 	tr:nth-child(odd) { background-color: #CCA986; }
 	tr:nth-child(even) { background-color:#FFF;}
@@ -114,7 +114,7 @@
 	}
 	
 	.navbar {
-		margin-bottom:0px;
+		margin-bottom:0;
 	}
 	
 	.header {
