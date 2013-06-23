@@ -50,7 +50,7 @@ if ($articles != null)
 
 			$out = '<div id="teaser_' . $articles[$i]->id . '" class="article-teaser">'
 				. $articles[$i]->teaser
-				. '<a class="btn btn-small" href="' . $link . '">Weiterlesen &raquo;</a>'
+				. '<a class="button button-rounded button-flat-action button-small" href="' . $link . '">Weiterlesen &raquo;</a>'
 				. '</div>'
 				. "\n";
 		}

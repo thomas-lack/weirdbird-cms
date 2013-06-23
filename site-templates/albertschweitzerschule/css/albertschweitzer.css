@@ -89,11 +89,11 @@
 		height:80%;
 	}
 	
-	h1 { font-size:26px; color:#80572E; }
+	h1 { font-size:26px; color:#2E2B2B; font-family: 'SanchezCondensed', sans-serif;}
 	h2 { font-size:22px; color:#806A54;}
-	h3 { font-size:20px; color:#806A54;}
+	h3 { font-size:20px; color:#000; font-family: 'Corda-Light', sans-serif;}
 	h4 { font-size:18px; color:#4D341B;}
-	h5 { font-size:17px; }
+	h5 { font-size:17px; color:#80572E; font-family: 'Corda-Light', sans-serif;}
 	h6 { font-size:16px; }
 
 	p { line-height: 24px; }
@@ -102,9 +102,9 @@
 
 	li { line-height: 24px; color:#4D341B;}
 
-	table {	line-height:1.9em; border: 0 solid #cca986; }
+	table {	line-height:1.9em; border: 0 solid #F1F1F1; }
 	/* add alternativ colors to table rows */
-	tr:nth-child(odd) { background-color: #CCA986; }
+	tr:nth-child(odd) { background-color: #F1F1F1; }
 	tr:nth-child(even) { background-color:#FFF;}
 
 	.brandname {

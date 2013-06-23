@@ -38,7 +38,7 @@
 	</div>
 	
 	<br>
-	<input type="submit" value="Nachricht schicken" class="btn submit"> <!-- btn-primary ? -->
+	<input type="submit" value="Nachricht schicken" class="button button-rounded button-flat-action"> <!-- btn-primary ? -->
 </div>
 
 <div id="contact_form_success" class="alert alert-block">
