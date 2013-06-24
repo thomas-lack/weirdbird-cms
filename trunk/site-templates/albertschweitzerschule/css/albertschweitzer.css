@@ -231,6 +231,24 @@
 	.navbar-fixed-top { margin-bottom: 0px; }
 	
 	/**
+	 * Depending on the screen resolution some elements can be shown / have to be hidden
+	 */
+	@media only screen and (min-width: 768px) {
+		
+		div.border-left-col {
+			border-left: 6px double #ededed;
+			width:28%;
+			padding-left:10px;
+		}
+
+		div.border-right-col {
+			border-right: 6px double #ededed;
+			width: 28%;
+			padding-right:10px;
+		}	
+	}
+		
+	/**
 	* Contact form
 	*/
 	#contact_form input, textarea {
