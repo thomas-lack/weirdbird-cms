@@ -88,7 +88,7 @@ else
 			if ($isFirst)
 				$isFirst = false;
 			else
-				$out .= '<hr/>' . "\n";
+				$out .= '<hr style="margin:10px 0;"/>' . "\n";
 
 			$link = '/'.UPLOADDIR.'/'.UPLOADPDFDIR.'/'.$f->filename;
 
