@@ -1,5 +1,5 @@
 /*!
- * Bootstrap Responsive v2.2.2
+ * Bootstrap Responsive v2.3.2
  *
  * Copyright 2012 Twitter, Inc
  * Licensed under the Apache License v2.0
@@ -7,10 +7,6 @@
  *
  * Designed and built with all the love in the world @twitter by @mdo and @fat.
  */
-
-@-ms-viewport {
-  width: device-width;
-}
 
 .clearfix {
   *zoom: 1;
@@ -44,53 +40,52 @@
           box-sizing: border-box;
 }
 
+@-ms-viewport {
+  width: device-width;
+}
+
 .hidden {
   display: none;
   visibility: hidden;
 }
 
 .visible-phone {
-  display: none !important;
+  display: none;
 }
 
 .visible-tablet {
-  display: none !important;
+  display: none;
 }
 
 .hidden-desktop {
-  display: none !important;
+  display: none;
 }
 
-.visible-desktop {
-  display: inherit !important;
-}
+.visible-desktop { }
 
 @media (min-width: 768px) and (max-width: 979px) {
-  .hidden-desktop {
-    display: inherit !important;
-  }
-  .visible-desktop {
-    display: none !important ;
-  }
-  .visible-tablet {
-    display: inherit !important;
-  }
-  .hidden-tablet {
-    display: none !important;
-  }
+  .visible-tablet { }
+  .hidden-tablet { display: none !important; }
+  .hidden-desktop { }
+  .visible-desktop { display: none !important; }
 }
 
 @media (max-width: 767px) {
-  .hidden-desktop {
+  .visible-phone     {  }
+  .hidden-phone      { display: none !important; }
+  .hidden-desktop    {  }
+  .visible-desktop   { display: none !important; }
+}
+
+.visible-print {
+  display: none !important;
+}
+
+@media print {
+  .visible-print {
     display: inherit !important;
   }
-  .visible-desktop {
-    display: none !important;
-  }
-  .visible-phone {
-    display: inherit !important;
-  }
-  .hidden-phone {
+  .hidden-print {
     display: none !important;
   }
 }
@@ -1003,7 +998,9 @@
     margin-bottom: 2px;
   }
   .nav-collapse .nav > li > a:hover,
-  .nav-collapse .dropdown-menu a:hover {
+  .nav-collapse .nav > li > a:focus,
+  .nav-collapse .dropdown-menu a:hover,
+  .nav-collapse .dropdown-menu a:focus {
     background-color: #f2f2f2;
   }
   .navbar-inverse .nav-collapse .nav > li > a,
@@ -1011,7 +1008,9 @@
     color: #999999;
   }
   .navbar-inverse .nav-collapse .nav > li > a:hover,
-  .navbar-inverse .nav-collapse .dropdown-menu a:hover {
+  .navbar-inverse .nav-collapse .nav > li > a:focus,
+  .navbar-inverse .nav-collapse .dropdown-menu a:hover,
+  .navbar-inverse .nav-collapse .dropdown-menu a:focus {
     background-color: #111111;
   }
   .nav-collapse.in .btn-group {
