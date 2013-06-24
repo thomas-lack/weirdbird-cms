@@ -72,12 +72,23 @@
 	@font-face {
 		font-family: 'AlexBrushRegular';
 		src: url('AlexBrush-Regular-OTF-webfont.eot');
-		src: url('AlexBrush-Regular-OTF-webfont.eot?#iefix') format('embedded-opentype'),
+		src: url('AlexBrush-Regular-OTF-webfont.svg#AlexBrushRegular') format('svg'),
+			 url('AlexBrush-Regular-OTF-webfont.eot?#iefix') format('embedded-opentype'),
 			 url('AlexBrush-Regular-OTF-webfont.woff') format('woff'),
-			 url('AlexBrush-Regular-OTF-webfont.ttf') format('truetype'),
-			 url('AlexBrush-Regular-OTF-webfont.svg#AlexBrushRegular') format('svg');
+			 url('AlexBrush-Regular-OTF-webfont.ttf') format('truetype');
 		font-weight: normal;
 		font-style: normal;
+	}
+
+	@font-face {
+	    font-family: 'PacificoRegular';
+	    src: url('Pacifico-webfont.eot');
+	    src: url('Pacifico-webfont.svg#PacificoRegular') format('svg'),
+	    	 url('Pacifico-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('Pacifico-webfont.woff') format('woff'),
+	         url('Pacifico-webfont.ttf') format('truetype');
+	    font-weight: normal;
+	    font-style: normal;
 	}
 	
 	html { height: 100%; }
@@ -159,11 +170,11 @@
 	}
 	
 	div.headline h1 {
-		font-family: 'SanchezCondensed';
+		text-shadow: 0 1px 13px #2E2B2B;
+		font-family: 'PacificoRegular', serif;
 		font-size: 6em;
 		display: inline-block;
 		color: #fff;
-		text-transform: uppercase;
 		font-weight:600;
 		line-height: 1em;
 		margin: 0px;
@@ -174,11 +185,11 @@
 	}
 	
 	div.headline h2 {
-		font-family: 'SanchezCondensed';
+		text-shadow: 0 1px 8px #2E2B2B;
+		font-family: 'PacificoRegular', serif;
 		font-size: 2em;
 		display: inline-block;
 		color: #fff;
-		text-transform: uppercase;
 		line-height: 1em;
 		margin-bottom: 0px;
 		-webkit-transition: font-size .3s ease-in-out;
@@ -188,12 +199,11 @@
 	}
 	
 	div.headline h3 {
-		font-family: 'SanchezCondensed';
+		font-family: 'SanchezCondensed', sans-serif;
 		font-size: 1.5em;
 		display: inline-block;
 		background-color:rgba(0, 0, 0, 0.6);
 		color: #CCA986;
-		text-transform: uppercase;
 		line-height: 1.4em;
 		padding: 10px;
 		max-width: 60%;
@@ -220,38 +230,6 @@
 	 */
 	.navbar-fixed-top { margin-bottom: 0px; }
 	
-	/* The big image with parallax support shall not be rendered in the standard case */
-	div#structure-header { display:block; }
-	div#structure-header-noimage { display:none; }
-	
-	/**
-	 * Depending on the screen resolution some elements can be shown / have to be hidden
-	 */
-	@media only screen and (min-width: 768px) {
-		
-		div#structure-header { display:block; }
-		div#structure-header-noimage { display:none; }
-
-		div.imagedescription { display: block; }
-
-		/* The hyphen on left/right column shall only be shown on higher resolutions */ 
-		div.border-left-col {
-			border-left: 6px double #ededed;
-			width:28%;
-			padding-left:10px;
-		}
-
-		div.border-right-col {
-			border-right: 6px double #ededed;
-			width: 28%;
-			padding-right:10px;
-		}	
-	}
-	@media only screen and (max-width: 767px) {
-		div#structure-header { display:none; }
-		div#structure-header-noimage { display:block; }
-	}
-		
 	/**
 	* Contact form
 	*/
