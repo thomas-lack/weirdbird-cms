@@ -27,6 +27,7 @@
 	*
 	**************************************************/
 
+   /*
    @font-face {
 		font-family: 'Capita-Light';
 		src: url('25A809_0_0.eot');
@@ -34,7 +35,9 @@
 			url('25A809_0_0.woff') format('woff'),
 			url('25A809_0_0.ttf') format('truetype');
 	}
+	*/
 	
+	/*
 	@font-face {
 		font-family: 'MuseoSans-500';
 		src: url('25C6E0_0_0.eot');
@@ -42,6 +45,7 @@
 			url('25C6E0_0_0.woff') format('woff'),
 			url('25C6E0_0_0.ttf') format('truetype');
 	}
+	*/
 	
 	@font-face {
 		font-family: 'StRydeRegular';
@@ -120,6 +124,8 @@
 	tr:nth-child(even) { background-color:#FFF;}
 
 	hr { margin:50px 0 30px 0; border-top:1px solid #ededed; border-bottom:none; }
+
+	.top-60 { margin-top:60px; }
 
 	.brandname {
 		font-family: 'AlexBrushRegular';
