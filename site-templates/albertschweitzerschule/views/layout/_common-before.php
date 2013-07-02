@@ -98,31 +98,57 @@
 	<?
 	if ($structureOptions->file_id != null)
 	{
-		$out = ''
-			// a fallback image shall be shown if ie8 or less is used - since those browsers
-			// are not capable of css3 command 'background-size'
-			. '<!--[if lte IE 8]><div id="structure-header" class="header ie-fallback-headerimage hidden-phone"><![endif]-->'
-			// otherwise show the image defined by the cms
-			. '<!--[if gt IE 8]><!-->'
-			. '<div id="structure-header" class="header hidden-phone" style="background:url(\'' . $structureOptions->get_imageFilePath() . '\') '
-			. 'no-repeat center center; background-size:cover;" data-stellar-background-ratio="0.5">'
-			. '<!--<![endif]-->'
-			. "\n"
-			. '<div class="container"><div class="headlinewrapper"><div class="headline">'
+		$headlines = ''
 			. (($structureOptions->headline1 != null) ? '<h1>'.nl2br($structureOptions->headline1).'</h1><br/>' : '')
 			. (($structureOptions->headline2 != null) ? '<h2>'.nl2br($structureOptions->headline2).'</h2><br/>' : '')
-			. (($structureOptions->headline3 != null) ? '<h3>'.nl2br($structureOptions->headline3).'</h3><br/>' : '')
+			. (($structureOptions->headline3 != null) ? '<h3>'.nl2br($structureOptions->headline3).'</h3><br/>' : '');
+
+		$ie8warning = ''
+			. '<p><strong>Warnung!</strong> Sie scheinen den Internet Explorer 8 oder niedriger zu benutzen. '
+  			. 'Das bedeutet Ihr Browser ist mehr als 5 Jahre alt, was ihn fehleranf&auml;llig, unsicher und '
+  			. 'unf&auml;hig zur Darstellung moderner Webseiten macht.</p>'
+  			. '<p>Bitte aktualisieren Sie Ihren Browser oder bitten Sie Ihren Administrator dies zu tun.</p>';
+
+		// add standard visible block to the viewport
+		$out = ''
+			// a fallback image could be shown if ie8 or less is used by using css class .ie-fallback-headerimage
+			// - since those browsers are not capable of css3 command 'background-size'
+			// but instead we show a warning message and an empty hero unit
+			. '<!--[if lte IE 8]>' 
+				
+			// the warning message
+			. '<div class="container top-60">'
+			. '<div class="alert hidden-phone">'
+			. '<button type="button" class="close" data-dismiss="alert">&times;</button>'
+  			. $ie8warning
+			. '</div>'
+
+			// the hero unit
+			. '<div class="hero-unit hidden-phone">'
+			. '<div><div>' // keep the number of closing div's equal to the number of opening div's
+			. '<![endif]-->'
+			// end of <IE8 comparison
+			
+			// otherwise show the image defined by the cms
+			. '<!--[if gt IE 8]><!-->'
+			. '<div class="header hidden-phone" style="background:url(\'' . $structureOptions->get_imageFilePath() . '\') '
+			. 'no-repeat center center; background-size:cover;" data-stellar-background-ratio="0.5">'
+			. "\n"
+			. '<div class="container"><div class="headlinewrapper"><div class="headline">'
+			. '<!--<![endif]-->'
+			// end of >=IE8 comparison
+
+			// show headline content	
+			. $headlines
 			. "\n"
 			. '</div></div></div>'
 			. "\n"
 			. '</div>';	
 
-		// add invisible tag that can be shown if the viewport is too small and has to be hidden
+		// add invisible block that can be shown if the viewport is too small and has to be hidden
 		$out2 = ''
-			. '<div id="structure-header-noimage" class="visible-phone">'
-			. (($structureOptions->headline1 != null) ? '<h1>'.nl2br($structureOptions->headline1).'</h1>' : '')
-			. (($structureOptions->headline2 != null) ? '<h2>'.nl2br($structureOptions->headline2).'</h2>' : '')
-			. (($structureOptions->headline3 != null) ? '<h3>'.nl2br($structureOptions->headline3).'</h3>' : '')
+			. '<div class="hero-unit visible-phone">'
+			. $headlines
 			. '</div>';
 		
 		echo $out;
