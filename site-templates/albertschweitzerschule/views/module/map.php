@@ -35,22 +35,28 @@ if ($articles != null)
 			. "\n";
 
 		echo $out;
+
+		if ($i < count($articles) - 1)
+			echo '<hr/>' . "\n";
 	}	
 }
 
 $companyname = ORM::factory('System_Setting')->get_companyName();
 $address = ORM::factory('System_Setting')->get_address();
+
+// add a nice linebreak to the address
+$addressbr = str_replace(', ', ',<br/> ', $address);
+
 if (is_string($address) && $address != '')
 {
+	// address variant 1
+	/*
 	$adr = urlencode($address);
 	$name = urlencode($companyname);
 
 	$ie8warning = ''
-		. '<p><strong>Warnung!</strong> Sie scheinen den Internet Explorer 8 oder niedriger zu benutzen. '
-		. 'Das bedeutet Ihr Browser ist mehr als 5 Jahre alt, was ihn fehleranf&auml;llig, unsicher und '
-		. 'unf&auml;hig zur Darstellung moderner Webseiten macht.</p>'
-		. '<p>Die korrekte Funktionsweise von Google Maps deshalb kann nicht gew&auml;hrleistet werden.</p>'
-		. '<p>Bitte aktualisieren Sie Ihren Browser oder bitten Sie Ihren Administrator dies zu tun.</p>';
+		. '<p><strong>Warnung!</strong> Die korrekte Funktionsweise von Google Maps kann nicht in Verbindung '
+		. 'mit Ihrem Browser gew&auml;hrleistet werden.</p>';
 
   	$out = ''
 		// show warning if <=ie8 detected
@@ -73,23 +79,27 @@ if (is_string($address) && $address != '')
 		. 'Grö&szlig;ere Kartenansicht</a>'
 		. '</small>'
 		. "\n";
+	*/
+
+	// address variant 2
+	$out = ''
+		. '<!-- prettier bootstrap mapview - but usability is not optimal if used in a small width / 3 column environment -->'
+		. "\n"
+		. '<div id="mapview" companyname="' . $companyname . '" address="' . $address . '"></div>'
+		. "\n"
+		. '<p><a href="http://maps.google.de/maps?f=q&source=embed&hl=de&q=' . urlencode($address) . '&ie=UTF8&t=m&z=15">'
+		. 'Grö&szlig;ere Kartenansicht</a></p>'
+		. "\n"
+		. '<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>';
 
 	echo $out;
 }
-
-
-
 ?>
 
-<?
-// prettier bootstrap mapview - but usability is not optimal if used in a small width / 3 column environment
-/*
-<div id="mapview" companyname="<?= $companyname ?>" address="<?= $address ?>"></div>
-<p>
-	<a href="http://maps.google.de/maps?f=q&source=embed&hl=de&q=<?= urlencode($address) ?>&ie=UTF8&t=m&z=15">
-		Grö&szlig;ere Kartenansicht
-	</a>
-</p>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-*/
-?>
+
+
+
+
+
+
+

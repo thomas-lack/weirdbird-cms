@@ -35,12 +35,11 @@
     <meta name="viewport" content="width=device-width">
 
     <?
-    foreach ($styles as $file)
+    // stylesheet files are loaded at the beginning of the page
+    // js files are prepackaged and loaded at the end of the loading process -> see _common-after.php
+    foreach ($styles as $file) {
     	echo HTML::style($file), "\n";
-    foreach ($externalScripts as $file)
-		echo '<script type="text/javascript" src="' . $file . '"></script>' . "\n";
-	foreach ($scripts as $file) 
-		echo HTML::script($file), "\n";
+  	}
     ?>
 </head>
 
@@ -117,7 +116,7 @@
 			. '<!--[if lte IE 8]>' 
 				
 			// the warning message
-			. '<div class="container top-60">'
+			. '<div class="container top-80">'
 			. '<div class="alert hidden-phone">'
 			. '<button type="button" class="close" data-dismiss="alert">&times;</button>'
   			. $ie8warning
@@ -147,7 +146,7 @@
 
 		// add invisible block that can be shown if the viewport is too small and has to be hidden
 		$out2 = ''
-			. '<div class="hero-unit visible-phone">'
+			. '<div class="hero-unit no-padding-lr center visible-phone">'
 			. $headlines
 			. '</div>';
 		
