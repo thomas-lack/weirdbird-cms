@@ -2,6 +2,7 @@ var $ = $, navigator = navigator, google = google, document = document;
 
 var wbTemplate = {
 	init: function () {
+		console.log('test');
 		"use strict";
         // internet explorer is not able to render nicely, so we exclude 
 		// parallax feature for now (most likely forever)
@@ -27,7 +28,7 @@ var wbTemplate = {
 
 	addStandardHandler: function () {
 		"use strict";
-        $('#contact_form > input.submit').bind('click', function () {
+		$('#contact_form > input').bind('click', function () {
             wbTemplate.hideContactErrors();
 			var error = false,
                 email = $('input[name="frmEmail"]').val(),
