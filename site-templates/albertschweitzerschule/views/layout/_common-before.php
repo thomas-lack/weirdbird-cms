@@ -9,6 +9,7 @@
 *	$currentStructure 		string 		Name of the structure currently in use
 * 	$structures				array 		Array of structure objects
 * 	$structureOptions		array 		object containing structure
+* 	$currentArticle			string 		Name of the article currently in use
 *	$columnContent			array 		Array of strings containing the column html's
 *	$system 				array 		Array of string containing system values
 *	$styles 				array 		Array of strings containing stylesheet files
@@ -56,7 +57,7 @@
 			            <span class="icon-bar"></span>
 		          	</button>
 					<!-- branding -->
-					<a class="brand" href="/" 
+					<a class="brand" href="/<?= ($system['pagelanguage'] !== null) ? $system['pagelanguage'] . '/' : '' ?>" 
 						<? 
 						// if we have a logo the padding and margin of the brand box have to be adjusted
 						echo (($system['brandimagepath'] == '') ? '' : 'style="padding:0;margin-left:0;min-width:310px;"'); 
@@ -74,11 +75,11 @@
 						<ul class="nav pull-right">
 							<?
 							foreach ($structures as $s) {
-								if ($s->title != 'Impressum') {
+								if ($s->mainnavigation) {
 									$listItem = '<li ' 
 										. (($currentStructure == '' || $s->title == $currentStructure) ? 'class="active"' : '') 
 										. '>'
-										. '<a href="/' . $s->title . '">'
+										. '<a href="/' . (($system['pagelanguage'] !== null) ? $system['pagelanguage'] . '/' : '') . strtolower($s->title) . '">'
 										. $s->title
 										. '</a></li>';
 								
@@ -162,15 +163,27 @@
 		<div class="row infonavbar">
 			<?
 			// create a list of links for navigation convenience
-			$out = '<a href="/' . $structures[0]->title . '">' . $structures[0]->title . '</a>';
+			$out = '<a href="/' 
+				. (($system['pagelanguage'] != null) ? $system['pagelanguage'] . '/' : '')
+				. strtolower($structures[0]->title) . '">' 
+				. $structures[0]->title . '</a>';
 
 			if ($currentStructure != $structures[0]->title)
-				$out .= ' &nbsp; &raquo; &nbsp; <a href="/' . $currentStructure . '">' . $currentStructure . '</a>';
+			{
+				$out .= ' &nbsp; &raquo; &nbsp; <a href="/' 
+					. (($system['pagelanguage'] != null) ? $system['pagelanguage'] . '/' : '')
+					. strtolower($currentStructure) . '">' 
+					. $currentStructure . '</a>';
+			}
 
 			// if an article was loaded directly, add another link
 			if ($currentArticle != null)
-				$out .= ' &nbsp; &raquo; &nbsp; <a href="/' . $currentStructure . '/' . $currentArticle 
+			{
+				$out .= ' &nbsp; &raquo; &nbsp; <a href="/' 
+					. (($system['pagelanguage'] != null) ? $system['pagelanguage'] . '/' : '')
+					. strtolower($currentStructure) . '/' . strtolower($currentArticle)
 					. '">' . $currentArticle . '</a>';
+			}
 			
 			echo $out;
 			?>

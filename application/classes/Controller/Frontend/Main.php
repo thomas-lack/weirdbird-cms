@@ -7,12 +7,21 @@ class Controller_Frontend_Main extends Controller_Template {
 	public $structureRef;
 	public $articleRef = null;
 	public $langRef = null;
+	public $pageLanguage = null;
 
 	public function before() {
 		// remember chosen language
 		if ($this->request->param('language') != '')
-			$this->langRef = ORM::factory('Language')->get_id_by_shortform($this->request->param('language'));
-		
+		{
+			$this->pageLanguage = strtolower($this->request->param('language'));
+		}
+		// if no language was chosen -> select the standard language given by the cms
+		else
+		{
+			$this->pageLanguage = ORM::factory('System_Setting')->get_language()->shortform;
+		}
+		$this->langRef = ORM::factory('Language')->get_id_by_shortform($this->pageLanguage);
+					
 		// get first active template we find
 		$this->config = ORM::factory('Template')->where('active','=','1')->find();
 		
@@ -23,16 +32,19 @@ class Controller_Frontend_Main extends Controller_Template {
 			$this->template->error = 'No template set to active.';
 		}
 		// otherwise start loading the template
-		else {
-			
+		else 
+		{
 			$structures = ORM::factory('Structure')
 				->where('active','=','1')
+				->where('language_id', '=', $this->langRef)
 				->order_by('position', 'asc')
 				->find_all();
 			
 			// set the 1st structure as standard if none is given
 			if ($this->structureRef === null)
+			{
 				$this->structureRef = $structures[0]->title;
+			}
 
 			// set layout
 			$layout = null;
@@ -51,6 +63,7 @@ class Controller_Frontend_Main extends Controller_Template {
 					break;
 				}
 			}
+
 			// standard layout if none was set before
 			if ($layout == null || $layout->view == null)
 				$this->setLayout($this->config->standardlayout);
@@ -91,9 +104,13 @@ class Controller_Frontend_Main extends Controller_Template {
 				for ($i=0; $i < $layout->columns; $i++)
 				{
 					if ($i == 0)
+					{
 						$columnContent[] = $this->generateColumnContent(0, $structureId, $structures, $article);
+					}
 					else
+					{
 						$columnContent[] = $this->generateColumnContent($i, $structureId, $structures);
+					}
 				}
 			}
 			else {
@@ -127,6 +144,7 @@ class Controller_Frontend_Main extends Controller_Template {
 	{
 		return array(
 			'standardlanguage' => ORM::factory('System_Setting')->get_language(),
+			'pagelanguage' => $this->pageLanguage,
 			'contactemail' => ORM::factory('System_Setting')->get_email(),
 			'companyname' => ORM::factory('System_Setting')->get_companyName(),
 			'address' => ORM::factory('System_Setting')->get_address(),
@@ -155,18 +173,24 @@ class Controller_Frontend_Main extends Controller_Template {
 		{
 			// if a language was selected only get those articles
 			if ($this->langRef != null)
+			{
 				$articles = ORM::factory('Article')
 					->where('active','=',1)
 					->where('structure_column_mapping_id','=',$mapping->id)
-					->where('language_id','=',$this->langRef)
+					//->where('language_id','=',$this->langRef) // obsolete with implemented structure languages
 					->order_by('position', 'asc')
 					->find_all();
+			}
 			else
+			{
 				$articles = ORM::factory('Article')
 					->where('active','=',1)
 					->where('structure_column_mapping_id','=',$mapping->id)
 					->order_by('position', 'asc')
 					->find_all();
+			}
+
+			// enable lowercase addressing of articles (via teaser link)
 		}
 		else if ($articleRequest != null)
 		{
@@ -193,7 +217,8 @@ class Controller_Frontend_Main extends Controller_Template {
 			->bind('mapping', $mapping)
 			->bind('column', $column)
 			->bind('structureId', $structureId)
-			->bind('structures', $structures);
+			->bind('structures', $structures)
+			->bind('pagelanguage', $this->pageLanguage);
 
 		return (string) $view;
 	}

@@ -227,7 +227,6 @@
 	div.imagedescription {
 		font-style: italic;
 		font-size: 0.9em;
-		display: none;
 	}
 
 	/* a fallback image background for the header, usable for IE8 and below */

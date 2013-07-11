@@ -64,7 +64,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 // -- Configuration and initialization -----------------------------------------
 
 /**
- * Set the default language
+ * Set the default kohana framework language
  */
 I18n::lang('en-us');
 
@@ -146,6 +146,17 @@ Route::set('mail', 'mail(/<action>(/<id>))')
 		'action'		=> 'index'
 	));
 
+// standard "/" route (frontend)	
+Route::set('default',  '(<language>)(/)', 
+	array(
+		'language'		=> 'de|DE|De|en|EN|En',
+	))
+	->defaults(array(
+		'directory'		=> 'frontend',
+		'controller' 	=> 'main',
+		'action'     	=> 'index'
+	));
+
 // route to load template structures
 Route::set('tplstruct', '(<language>/)<structure>',
 	array(
@@ -170,13 +181,7 @@ Route::set('tpldirectarticle', '(<language>/)<structure>(/<article>(/<id>))',
 	->defaults(array(
 		'directory'		=> 'frontend',
 		'controller' 	=> 'directarticle',
-		'action'		=> 'index',
+		'action'		=> 'index'
 	));
 
-// standard "/" route (frontend)	
-Route::set('default',  ''/*(<controller>(/<action>(/<id>)))'*/)
-	->defaults(array(
-		'directory'		=> 'frontend',
-		'controller' 	=> 'main',
-		'action'     	=> 'index',
-	));
+

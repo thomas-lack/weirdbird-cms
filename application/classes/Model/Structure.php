@@ -36,6 +36,16 @@ class Model_Structure extends ORM {
 			'not_empty'  => NULL,
             'min_length' => array(1),
             'max_length' => array(128)
+		),
+		'language_id' => array(
+			'not_empty' => NULL,
+			'min_length' => array(1),
+			'max_length' => array(128)
+		),
+		'mainnavigation' => array(
+			'not_empty' => '0',
+			'min_length' => array(1),
+			'max_length' => array(1)
 		)
     );
 }

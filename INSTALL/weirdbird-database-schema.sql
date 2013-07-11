@@ -196,6 +196,8 @@ CREATE TABLE IF NOT EXISTS `wb_structures` (
   `description` varchar(256) DEFAULT NULL,
   `layout_id` int(11) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
+  `language_id` int(11) DEFAULT NULL,
+  `mainnavigation` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
