@@ -2,8 +2,20 @@
 
 		<footer>
 			<p>
-				<?= $system['companyname'] ?>, <?= $system['info'] ?>
-				<span class="pull-right"><a href="/Impressum">Impressum</a></span>
+				<? 
+				// display the name of the company
+				echo $system['companyname'] . ',' . $system['info'];
+				
+				// add disclaimer legal info link according to page language
+				if ($system['pagelanguage'] == 'de')
+				{
+					echo '<span class="pull-right"><a href="/de/impressum">Impressum</a></span>';
+				}
+				else if ($system['pagelanguage'] == 'en')
+				{
+					echo '<span class="pull-right"><a href="/en/disclaimer">Disclaimer</a></span>';
+				}
+				?>
 			</p>
 		</footer>
 	</div>

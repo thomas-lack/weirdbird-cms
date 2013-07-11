@@ -69,9 +69,12 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		grid: {
 			title: 'Categories',
 			active: 'Active?',
+			mainnavigation: 'Main navigation?',
 			titleCol: 'Title',
 			description: 'Description',
-			user: 'User'
+			user: 'User',
+			language: 'Language',
+			languageEmptyText: 'Choose language...'
 		},
 		form: {
 			title: 'Layout and module selection',

@@ -18,6 +18,7 @@
 * 	$structureId 			int 		ID of the current structure
 *	$structures 			array 		Array of ORM objects containing all structure
 *										informations
+*   $pagelanguage			string 		The current page language (e.g. "de" or "en")
 *
 ************************************************************************************/
 if ($articles != null)

@@ -19,6 +19,7 @@
 * 	$structureId 			int 		ID of the current structure
 *	$structures 			array 		Array of ORM objects containing all structure
 *										informations
+*	$pagelanguage			string 		The current page language (e.g. "de" or "en")
 *
 ************************************************************************************/
 if ($articles != null)
@@ -40,13 +41,17 @@ if ($articles != null)
 		// is a teaser given (and no request for direct printing indicated)? print it
 		if (!$articleRequest && $articles[$i]->teaser != null && $articles[$i]->teaser != '') 
 		{
-			$link = '/' . $currentStructure->title . '/';
+			$link = '/' . (($pagelanguage !== null) ? $pagelanguage . '/' : '') . strtolower($currentStructure->title) . '/';
 			// if no article title was given add the article id to the link
 			if ($articles[$i]->title == null)
+			{
 				$link .= $articles[$i]->id;
+			}
 			// otherwise add the article title to the link for better readability
 			else
-				$link .= $articles[$i]->title;
+			{
+				$link .= $articles[$i]->title; // do not lowercase for now (tradeoff between db queries to identify correct article and nice url's)
+			}
 
 			$out = '<div id="teaser_' . $articles[$i]->id . '" class="article-teaser">'
 				. $articles[$i]->teaser

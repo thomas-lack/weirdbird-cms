@@ -47,6 +47,8 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 		$structure->description = $d->description;
 		$structure->layout_id = null;
 		$structure->user_id = $user->id;
+		$structure->language_id = $d->language_id;
+		$structure->mainnavigation = ($d->mainnavigation) ? 1 : 0;
 		$structure->save();
 		
 		$this->template->result = array( 'success' => true );
@@ -76,12 +78,19 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 			$structure->title = $d->title;
 			$structure->description = $d->description;
 			$structure->layout_id = (isset($d->layout_id)) ? $d->layout_id : null;
+			$currentLayout = $structure->layout_id;
 			$structure->user_id = $user->id;
+			$structure->language_id = $d->language_id;
+			$structure->mainnavigation = ($d->mainnavigation) ? 1 : 0;
 			$structure->save();
 			
 			// mark all articles as 'orphans' that were bound to the changed layout
-			$this->orphanateArticles($d->id);
-
+			// (if the layout was changed)
+			if (isset($d->layout_id) && $currentLayout != $d->layout_id)
+			{
+				$this->orphanateArticles($d->id);	
+			}
+			
 			$this->template->result = array( 'success' => true );
 		}
 	}
@@ -125,7 +134,6 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 					.'/'.UPLOADDIR.'/'.UPLOADIMAGEDIR.'/'.IMAGETHUMBSDIR.'/'.$image->filename
 					. '">';
 			}
-			
 
 			$this->template->result = $result;
 		}

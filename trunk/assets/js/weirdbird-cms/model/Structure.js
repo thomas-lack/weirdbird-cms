@@ -5,7 +5,9 @@ Ext.define('WeirdbirdCMS.model.Structure', {
 		{name:'id', type:'int'}, 
 		{name:'active', type:'bool'}, 
 		'position', 'title', 'description', 'user_name',
-		{name:'layout_id', type:'int'}
+		{name:'layout_id', type:'int'},
+		{name:'language_id', type:'int'},
+		{name:'mainnavigation', type:'bool'}
 	],
 	
 	validation: [

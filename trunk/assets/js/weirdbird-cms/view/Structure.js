@@ -32,6 +32,21 @@ Ext.define('WeirdbirdCMS.view.Structure', {
 	        { text: _cms.lang.structures.grid.active, dataIndex: 'active', width: 50, xtype: 'checkcolumn',
 	        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
 	       	},
+	       	{ text: _cms.lang.structures.grid.mainnavigation, dataIndex: 'mainnavigation', width: 95, xtype: 'checkcolumn',
+	        	editor: {xtype: 'checkbox', cls: 'x-grid-checkheader-editor'}
+	       	},
+	       	{ text: _cms.lang.structures.grid.language, dataIndex: 'language_id', width: 60,
+	       		editor: { xtype: 'combobox', typeAhead: true, editable: false, triggerAction: 'all', selectOnTab: true,
+	       			store: Ext.getStore('Languages'), queryMode: 'local', displayField: 'name', valueField: 'id',
+	       			listClass: 'x-combo-list-small' },
+	       		renderer: function(val) {
+	                var index = Ext.getStore('Languages').findExact('id',val); 
+	                if (index != -1){
+	                    var rs = Ext.getStore('Languages').getAt(index).data; 
+	                    return rs.name; 
+	                }
+	            }
+	       	},
 	        { text: _cms.lang.structures.grid.titleCol, dataIndex: 'title', editor:{ allowBlank:false } },
 	        { text: _cms.lang.structures.grid.description, dataIndex: 'description', flex: 1, editor:{ allowBlank:true } },
 	        { text: _cms.lang.structures.grid.user, dataIndex: 'user_name', width: 60}
