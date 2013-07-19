@@ -68,7 +68,7 @@
 						if (is_string($system['brandimagepath']) && $system['brandimagepath'] != '')
 							echo '<img src="' . $system['brandimagepath'] . '"/>';
 						?>
-						<span class="brandname"><?= $system['companyname'] ?></span>
+						<span class="brandname hidden-phone"><?= $system['companyname'] ?></span>
 					</a>
 					<!-- nav menu entries -->
 					<div class="nav-collapse collapse">
