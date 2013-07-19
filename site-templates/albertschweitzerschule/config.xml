@@ -89,7 +89,7 @@
 	</stylesheet>
 	<javascript>
 		<folder>js</folder>
-		<load>jquery-1.9.0.min.js</load>
+		<load>jquery.min.js</load>
 		<!--<load type="external">//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js</load>-->
 		<load>jquery.stellar.min.js</load>
 		<load>modernizr-2.6.2-respond-1.1.0.min.js</load>
