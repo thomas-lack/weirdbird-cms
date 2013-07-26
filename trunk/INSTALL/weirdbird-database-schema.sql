@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `wb_articles` (
   `user_id` int(11) NOT NULL,
   `title` varchar(128) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `backgroundcolor` varchar(8) DEFAULT NULL,
   `teaser` text,
   `content` text,
   PRIMARY KEY (`id`)

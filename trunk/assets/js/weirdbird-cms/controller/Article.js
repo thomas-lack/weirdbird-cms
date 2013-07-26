@@ -94,6 +94,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 				Ext.getCmp('articleFieldActive').setValue(data.active);
 				Ext.getCmp('articleFieldTitle').setValue(data.title);
 				Ext.getCmp('articleFieldDescription').setValue(data.description);
+				Ext.getCmp('articleFieldBackgroundColor').setValue(data.backgroundcolor);
 				Ext.getCmp('articleFieldTeaserContent').setValue(data.teaser);
 				Ext.getCmp('articleFieldContent').setValue(data.content);
 
@@ -145,6 +146,12 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 			return;
 		}
 
+		// check if the background color field contains a valid value
+		if (!Ext.getCmp('articleFieldBackgroundColor').isValid()) {
+			Ext.MessageBox.alert('Error', _cms.lang.articles.message9.error);
+			return;
+		}
+
 		// if the combobox was not yet changed, the id field is not set - 
 		// we have to do this manually
 		if (!Ext.isNumeric(languageId) && languageId !== null) {
@@ -155,6 +162,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 		request.active = Ext.getCmp('articleFieldActive').getValue();
 		request.title = Ext.getCmp('articleFieldTitle').getValue();
 		request.description = Ext.getCmp('articleFieldDescription').getValue();
+		request.backgroundcolor = Ext.getCmp('articleFieldBackgroundColor').getValue();
 		request.teaser = Ext.getCmp('articleFieldTeaserContent').getValue();
 		request.content = Ext.getCmp('articleFieldContent').getValue();
 		
