@@ -152,6 +152,19 @@ Ext.define('WeirdbirdCMS.view.Article', {
 							_cms.getController('Article').onArticleChange(self, newValue, oldValue);
 						}
 					}
+				},{
+					fieldLabel: _cms.lang.articles.tab1.backgroundcolor,
+					xtype: 'textfield',
+					id: 'articleFieldBackgroundColor',
+					width: 200,
+					allowBlank: true,
+					regex: new RegExp('#[a-fA-F0-9]{6}'),
+					regexText: _cms.lang.articles.message9.error,
+					listeners: {
+						change: function(self, newValue, oldValue) { 
+							_cms.getController('Article').onArticleChange(self, newValue, oldValue);
+						}
+					}
 				}]
 			}]
 		},{

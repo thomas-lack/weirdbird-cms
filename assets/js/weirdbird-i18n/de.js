@@ -120,7 +120,8 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			active: 'Aktiv',
 			titleLable: 'Titel',
 			description: 'Beschreibung',
-			language: 'Sprache'
+			language: 'Sprache',
+			backgroundcolor: 'Hintergrundfarbe (z.B. #c1d4e5)'
 		},
 		tab2: {
 			title: 'Teasereingabe',
@@ -162,6 +163,9 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		},
 		message8: {
 			error: 'Das "Titel" Feld wurde nicht korrekt ausgef&uuml;llt. Es darf keine Leerzeichen enthalten und nicht leer sein.'
+		},
+		message9: {
+			error: 'Das Feld f&uuml;r die Hintergrundfarbe wurde nicht korrekt ausgefüllt.'
 		},
 		window: {
 			title: 'Bild ausw&auml;hlen',

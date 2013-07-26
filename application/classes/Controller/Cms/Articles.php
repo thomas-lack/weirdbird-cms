@@ -42,6 +42,7 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 		$a->active = ($this->request->post('active') == 'true') ? 1 : 0;
 		$a->title = $this->request->post('title');
 		$a->description = $this->request->post('description');
+		$a->backgroundcolor = $this->request->post('backgroundcolor');
 		$a->teaser = $this->request->post('teaser');
 		$a->content = $this->request->post('content');
 		$a->save();
@@ -58,6 +59,7 @@ class Controller_Cms_Articles extends Controller_Cms_Data
 		$a->user_id = Auth::instance()->get_user()->id;
 		$a->title = 'new title';
 		$a->description = '';
+		$a->backgroundcolor = null;
 		$a->content = '';
 		$a->save();
 

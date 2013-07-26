@@ -120,7 +120,8 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			active: 'Active',
 			titleLable: 'Title',
 			description: 'Description',
-			language: 'Language'
+			language: 'Language',
+			backgroundcolor: 'Background color (e.g. #c1d4e5)'
 		},
 		tab2: {
 			title: 'Edit teaser',
@@ -161,7 +162,10 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 			error: 'The sort order of the articles could not be changed.'
 		},
 		message8: {
-			error: 'The "title" Field is not allowed to contain empty spaces, neither can it be left empty.'
+			error: 'The "title" field is not allowed to contain empty spaces, neither can it be left empty.'
+		},
+		message9: {
+			error: 'The "background color" field does not contain a valid css color value.'
 		},
 		window: {
 			title: 'Select image',
