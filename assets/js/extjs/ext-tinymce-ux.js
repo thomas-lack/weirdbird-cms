@@ -518,7 +518,12 @@ Ext.define('Ext.ux.form.TinyMCETextArea', {
     if (!tinymce.dom.Event.domLoaded) {
       tinymce.dom.Event.domLoaded = true;
     }      
-                
+
+    // define a callback function to be called after the edit window was initialized and rendered
+    me.tinyMCEConfig.oninit = function() {
+      _cms.getController('Article').onEditWindowInit(me);
+    }
+
     tinymce.init(me.tinyMCEConfig);
   },
   //-----------------------------------------------------------------
@@ -710,6 +715,7 @@ Ext.define('Ext.ux.form.TinyMCETextArea', {
       // preformatting and then to save it back to the textarea.
       
       var ed = tinymce.get(me.getInputId());
+      
       if(ed) 
       {
         ed.load();
@@ -718,6 +724,20 @@ Ext.define('Ext.ux.form.TinyMCETextArea', {
     }
     
     return res;    
+  },
+  //-----------------------------------------------------------------
+  setBackgroundColor: function(color) {
+    var me = this;
+    var ed = tinymce.get(me.getInputId());
+    
+    // set white as default / fallback value
+    if (!color || color == '' || typeof color == 'undefined') {
+      color = '#ffffff';
+    }
+    
+    if (ed && me.wysiwygIntialized) {
+      ed.dom.setStyle(ed.dom.select('body'), 'background-color', color);
+    }
   },
   //-----------------------------------------------------------------
   enableEditorControls: function(state) {

@@ -162,6 +162,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 					regexText: _cms.lang.articles.message9.error,
 					listeners: {
 						change: function(self, newValue, oldValue) { 
+							_cms.getController('Article').onArticleBackgroundColorChange(self, newValue, oldValue);
 							_cms.getController('Article').onArticleChange(self, newValue, oldValue);
 						}
 					}
@@ -265,7 +266,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 							onclick: function() {
 								_cms.getController('Article').createSelectDocumentWindow(editor);
 							}
-						});						
+						});
                     }
 				},
 				listeners: {
