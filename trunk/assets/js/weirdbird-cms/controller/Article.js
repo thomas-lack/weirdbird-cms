@@ -96,7 +96,11 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 				Ext.getCmp('articleFieldDescription').setValue(data.description);
 				Ext.getCmp('articleFieldBackgroundColor').setValue(data.backgroundcolor);
 				Ext.getCmp('articleFieldTeaserContent').setValue(data.teaser);
-				Ext.getCmp('articleFieldContent').setValue(data.content);
+				Ext.getCmp('articleFieldContent').setValue(data.content, data.backgroundcolor);
+
+				// in case the editor window exists: set background color
+				Ext.getCmp('articleFieldTeaserContent').setBackgroundColor(data.backgroundcolor);
+				Ext.getCmp('articleFieldContent').setBackgroundColor(data.backgroundcolor);
 
 				_cms.getController('Article').initialDataChange = false;
 				editPanel.enable();
@@ -327,7 +331,7 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 	/**
 	 * Event handler: any field besides the title field of the current article has changed
 	 */
-	onArticleChange: function() {
+	onArticleChange: function(self, newValue) {
 		//var editPanel = Ext.getCmp('articlePanel');
 		if (!this.initialDataChange) {
 			Ext.getCmp('saveArticleBtn').enable(true); 
@@ -360,6 +364,22 @@ Ext.define('WeirdbirdCMS.controller.Article', {
 				this.record.set('title', newValue); // used to update the treepanel -.-
 			}
 		}
+	},
+
+	/**
+	 * Event handler for a change of the (teaser-)article edit window background color value
+	 * @param  {object} self     Editor field object
+	 * @param  {string} newValue hex value of the new background color
+	 */
+	onArticleBackgroundColorChange: function(self, newValue) {
+		if (self.isValid()) {
+			Ext.getCmp('articleFieldTeaserContent').setBackgroundColor(newValue);
+			Ext.getCmp('articleFieldContent').setBackgroundColor(newValue);
+		}
+	},
+
+	onEditWindowInit: function(self) {
+		self.setBackgroundColor(Ext.getCmp('articleFieldBackgroundColor').getValue());
 	},
 
 	/**
