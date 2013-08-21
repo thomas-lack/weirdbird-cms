@@ -190,6 +190,8 @@ Ext.define('WeirdbirdCMS.view.Article', {
                     delta_height: 0,
                     relative_urls: false,
                     schema: 'html5',
+                    removeEmpty: false,
+                    extended_valid_elements: 'i[class]',
                     plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
                     theme_advanced_toolbar_align : "left",
                     theme_advanced_buttons1 : 'bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect', //styleselect,fontselect,fontsizeselect
@@ -242,6 +244,8 @@ Ext.define('WeirdbirdCMS.view.Article', {
                     delta_height: 0,
                     relative_urls: false,
                     schema: 'html5',
+                    removeEmpty: false,
+                    extended_valid_elements: 'i[class]', 
                     plugins : "autolink,lists,pagebreak,style,table,advhr,advlink,iespell,inlinepopups,preview,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,advlist",
                     theme_advanced_toolbar_align : "left",
                     theme_advanced_buttons1 : 'bold,italic,underline,strikethrough,|,sub,sup,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect', //styleselect,fontselect,fontsizeselect
