@@ -146,6 +146,18 @@ Route::set('mail', 'mail(/<action>(/<id>))')
 		'action'		=> 'index'
 	));
 
+// sitemap routing (enables dynamically generated sitemap)
+Route::set('sitemap',  '(<language>/)<sitemap>', 
+	array(
+		'language'		=> 'de|DE|De|en|EN|En',
+		'sitemap'		=> 'sitemap.xml|sitemap|SITEMAP'
+	))
+	->defaults(array(
+		'directory'		=> 'frontend',
+		'controller' 	=> 'sitemap',
+		'action'     	=> 'index'
+	));
+
 // standard "/" route (frontend)	
 Route::set('default',  '(<language>)(/)', 
 	array(
@@ -183,5 +195,3 @@ Route::set('tpldirectarticle', '(<language>/)<structure>(/<article>(/<id>))',
 		'controller' 	=> 'directarticle',
 		'action'		=> 'index'
 	));
-
-
