@@ -12,7 +12,6 @@ Ext.define('WeirdbirdCMS.view.Structure', {
 	],
 
 	id: 'structuresForm',
-	title: _cms.lang.structures.title,
 	layout: 'column',
 	bodyCls: 'content',
 	border: false,
@@ -23,7 +22,6 @@ Ext.define('WeirdbirdCMS.view.Structure', {
 		height: Ext.getCmp('navmenu').getHeight(),
 		xtype: 'gridpanel',
 		id: 'categoriesGrid',
-		title: _cms.lang.structures.grid.title,
 		plugins: [ _cms.getController('Structure').rowEditing ],
 		store: Ext.getStore('Structures'),
 		border: false,
@@ -52,12 +50,12 @@ Ext.define('WeirdbirdCMS.view.Structure', {
 	        { text: _cms.lang.structures.grid.user, dataIndex: 'user_name', width: 60}
 	    ],
 	    tbar: [{
-	    	text: '<span class="icon very-big">@</span> ' + _cms.lang.structures.button.add,
+	    	text: '<i class="icon-plus big"></i> ' + _cms.lang.structures.button.add,
 	    	handler: function() {
 	    		_cms.getController('Structure').onAddBtn();
 	    	}
 	    },'-',{
-	    	text: '<span class="icon very-big">A</span> ' + _cms.lang.structures.button.remove,
+	    	text: '<i class="icon-remove big"></i> ' + _cms.lang.structures.button.remove,
 	    	itemId: 'deleteCategory',
 	    	handler: function() {
 	    		_cms.getController('Structure').onRemoveBtn();

@@ -62,12 +62,12 @@ Ext.define('WeirdbirdCMS.controller.System', {
 				// update the revision panel (if reading from google was possible)
 				if (r.revision.error == null)
 				{
-					var out = '<div id="systeminfo"><span class="icon very-big green">"</span> '
+					var out = '<div id="systeminfo"><i class="icon-ok-sign green very-big"></i>&nbsp;'
 								+ _cms.lang.system.message2.success+'</div>';
 					
-					if (r.revision.system != r.revision.current)
+					if (r.revision.system != r.revision.current) {
 						out = '<div id="systeminfo">'
-							+ '<p><span class="icon very-big red">8</span> '
+							+ '<p><i class="icon-warning-sign red very-big"></i>&nbsp;'
 							+ _cms.lang.system.message2.error2
 							+ ' '
 							+ _cms.lang.system.message2.error3
@@ -86,11 +86,12 @@ Ext.define('WeirdbirdCMS.controller.System', {
 							+ ' '
 							+ r.revision.current + ' from ' + r.revision.creationdate
 							+ '</p></div>';
+					}
 				}
 				else // otherwise the backend results in an error message (not able to read from google)
 				{
 					var out = '<div id="systeminfo">'
-						+ '<p><span class="icon very-big red">8</span> '
+						+ '<p><i class="icon-warning-sign red very-big"></i>&nbsp;'
 						+ '<p>' + r.revision.error + '</p><br/>'
 						+ '<p> '
 						+ _cms.lang.system.message2.error6

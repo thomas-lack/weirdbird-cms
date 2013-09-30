@@ -11,7 +11,6 @@ Ext.define('WeirdbirdCMS.view.System', {
 
 	id: 'systemForm',
 	url: 'cms/system',
-	title: _cms.lang.system.title,
 	bodyCls: 'content',
 	bodyPadding: 15,
 	border: false,
@@ -22,7 +21,7 @@ Ext.define('WeirdbirdCMS.view.System', {
 	},
 
 	tbar: [{
-		text:'<span class="icon very-big">&Ntilde;</span> ' + _cms.lang.system.button.save,
+		text:'<i class="icon-save big"></i>&nbsp;' + _cms.lang.system.button.save,
 		handler: function() {
 			_cms.getController('System').onSaveBtn();
 		}

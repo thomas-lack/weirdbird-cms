@@ -4,7 +4,6 @@ Ext.define('WeirdbirdCMS.view.User', {
 	requires: [],
 
 	id: 'usersGrid',
-    title: _cms.lang.user.title,
     bodyCls: 'content',
     border: false,
     store: Ext.getStore('Users'),
@@ -20,26 +19,26 @@ Ext.define('WeirdbirdCMS.view.User', {
 	],
 
 	tbar: [{
-    	text: '<span class="icon very-big">K</span> ' + _cms.lang.user.button.add,
+    	text: '<i class="icon-user big"></i>&nbsp;' + _cms.lang.user.button.add,
     	handler: function() {
     		_cms.getController('User').onAddBtn();
     	}
     },'-',{
-    	text: '<span class="icon very-big">L</span> ' + _cms.lang.user.button.delete,
+    	text: '<span class="icon-stack"><i class="icon-user"></i><i class="icon-ban-circle icon-stack-base red"></i></span>&nbsp;' + _cms.lang.user.button.delete,
     	disabled: true,
     	itemId: 'deleteUser',
     	handler: function() {
     		_cms.getController('User').onDeleteBtn();
     	}
     },'-',{
-    	text: '<span class="icon very-big">w</span> ' + _cms.lang.user.button.reset,
+    	text: '<i class="icon-eraser big"></i>&nbsp;' + _cms.lang.user.button.reset,
     	disabled: true,
     	itemId: 'resetPassword',
     	handler: function() {
     		_cms.getController('User').onResetPasswordBtn();
     	}
      },'-',{
-     	text: '<span class="icon very-big">t</span> ' + _cms.lang.user.button.change,
+     	text: '<i class="icon-exchange big"></i>&nbsp;' + _cms.lang.user.button.change,
     	disabled: true,
     	itemId: 'changePassword',
     	handler: function() {

@@ -133,8 +133,8 @@ Ext.define('WeirdbirdCMS.language.Definition', {
 		tab3: {
 			title: 'Artikeleingabe',
 			article: 'Artikel',
-			image: 'Bild einf&uuml;gen',
-			document: 'Link zu einem PDF einf&uuml;gen'
+			image: 'Bild einfügen',
+			document: 'Link zu einem PDF einfügen'
 		},
 		message: {
 			error: 'Der Artikel konnte nicht verschoben werden'
