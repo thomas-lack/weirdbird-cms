@@ -14,7 +14,6 @@ Ext.define('WeirdbirdCMS.controller.Dashboard', {
 		if (this.dashboardBuffer !== null) {
 			_cms.fillContentPanel({
 				xtype: 'panel',
-				title: _cms.lang.dashboard.title,
 				bodyCls: 'content',
 				border: false,
 				html: this.dashboardBuffer

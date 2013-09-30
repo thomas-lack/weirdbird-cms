@@ -6,14 +6,13 @@ Ext.define('WeirdbirdCMS.view.Template', {
 	],
 
 	id: 'templatesGrid',
-    title: _cms.lang.templates.title,
     border: false,
     bodyCls: 'content',
     store: Ext.getStore('Templates'),
     columns: [
     	{ text: _cms.lang.templates.grid.active, xtype: 'templatecolumn', width:50,
-    		tpl: '<tpl if="active"><span class="icon green very-big">&Atilde;</span>'
-    			+ '<tpl else><span class="icon red very-big">&Acirc;</span></tpl>'},
+    		tpl: '<tpl if="active"><i class="icon-ok-sign green very-big"></i>'
+    			+ '<tpl else><i class="icon-remove-sign red very-big"></i></tpl>'},
     	{ text: _cms.lang.templates.grid.preview , width: 270, xtype: 'templatecolumn',
     		tpl: '<p><img src="{folder}/{folder_preview}/{previewimage_filename}" /></p>'
     			+ '<p class="sans-serif very-small uppercase dark-gray normal-lh">{previewimage_description}</p>'},
@@ -23,24 +22,24 @@ Ext.define('WeirdbirdCMS.view.Template', {
 				+'<h2>Layouts</h2>'
 				+'<ul class="normal normal-lh">'
 				+'<tpl for="layouts">'
-				+'<li><span class="icon green">&Atilde;</span> {description}</li>'
+				+'<li><i class="icon-ok-sign green"></i> {description}</li>'
 				+'</tpl>'
 				+'</ul>'
 				+'<h2>Modules</h2>'
 				+'<ul class="normal normal-lh">'
 				+'<tpl for="modules">'
-				+'<li><span class="icon green">&Atilde;</span> {description}</li>'
+				+'<li><i class="icon-ok-sign green"></i> {description}</li>'
 				+'</tpl>'
 				+'</ul>'
 		}
     ],
     tbar: [{
-    	text: '<span class="icon very-big">&Ntilde;</span> ' + _cms.lang.templates.button.import,
+    	text: '<i class="icon-signin big"></i> ' + _cms.lang.templates.button.import,
     	handler: function() {
     		_cms.getController('Template').onImportBtn();
     	}
     },'-',{
-    	text: '<span class="icon very-big">G</span> ' + _cms.lang.templates.button.active,
+    	text: '<i class="icon-bolt big"></i> ' + _cms.lang.templates.button.active,
     	disabled: true,
     	itemId: 'activateTemplate',
     	handler: function() {

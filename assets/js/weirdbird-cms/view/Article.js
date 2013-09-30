@@ -14,7 +14,6 @@ Ext.define('WeirdbirdCMS.view.Article', {
 	],
 	
 	id: 'articlesParentPanel',
-	title: _cms.lang.articles.title,
 	bodyCls: 'content',
 	border: false,
 	layout: 'column',
@@ -27,7 +26,6 @@ Ext.define('WeirdbirdCMS.view.Article', {
 		height: Ext.getCmp('navmenu').getHeight() - 25,
 		xtype: 'treepanel',
 		id: 'articlesTreePanel',
-		title: _cms.lang.articles.grid.title,
 		store: 'ArticlesTree',//_cms.getController('Article').treeStore,
 		rootVisible: false,
 		border: false,
@@ -38,7 +36,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 		tbar: [ { 
 			xtype: 'button', 
 			id: 'addArticleBtn',
-			text: '<span class="icon very-big">@</span>&nbsp;' + _cms.lang.articles.button.add, 
+			text: '<i class="icon-plus big"></i>&nbsp;' + _cms.lang.articles.button.add, 
 			disabled: true,
 			handler: function(self, e) {
 				if (_cms.debug) console.log('add article button pressed');
@@ -47,7 +45,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 		},'-',{ 
 			xtype: 'button', 
 			id: 'saveArticleBtn',
-			text: '<span class="icon very-big">&Atilde;</span>&nbsp;' + _cms.lang.articles.button.save, 
+			text: '<i class="icon-save big"></i>&nbsp;' + _cms.lang.articles.button.save, 
 			disabled: true,
 			handler: function(self, e) {
 				if (_cms.debug) console.log('save article button pressed');
@@ -56,7 +54,7 @@ Ext.define('WeirdbirdCMS.view.Article', {
 		},'-',{ 
 			xtype: 'button', 
 			id: 'deleteArticleBtn',
-			text: '<span class="icon very-big">&Acirc;</span>&nbsp;' + _cms.lang.articles.button.delete, 
+			text: '<i class="icon-remove big"></i>&nbsp;' + _cms.lang.articles.button.delete, 
 			disabled: true,
 			handler: function(self, e) {
 				if (_cms.debug) console.log('delete article button pressed');

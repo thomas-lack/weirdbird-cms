@@ -8,7 +8,6 @@ Ext.define('WeirdbirdCMS.view.FileManager', {
 	],
 
 	id: 'filesGrid',
-    title: _cms.lang.filemanager.title,
     bodyCls: 'content',
     border: false,
     store: Ext.getStore('Files'),
@@ -34,7 +33,7 @@ Ext.define('WeirdbirdCMS.view.FileManager', {
 			    '<img src="{link}" />',
 			    '<tpl else>',
 			    '<a href="{link}" target="_blank" style="text-decoration:none; border-bottom:1px dotted; color:#0c3546;">',
-			    '<span class="icon very-big">E</span> ' + _cms.lang.filemanager.tpl.openfile + '</a>',
+			    '<i class="icon-file-text-alt big"></i> ' + _cms.lang.filemanager.tpl.openfile + '</a>',
 			    '</tpl>',
 			    {
 			    	isImage: function(type) {
@@ -46,12 +45,12 @@ Ext.define('WeirdbirdCMS.view.FileManager', {
 	],
     
     tbar: [{
-    	text: '<span class="icon very-big">n</span> ' + _cms.lang.filemanager.button.upload,
+    	text: '<i class="icon-cloud-upload big"></i> ' + _cms.lang.filemanager.button.upload,
     	handler: function() {
     		_cms.getController('FileManager').onUploadBtn();
     	}
     },'-',{
-    	text: '<span class="icon very-big">m</span> ' + _cms.lang.filemanager.button.delete,
+    	text: '<i class="icon-remove big"></i> ' + _cms.lang.filemanager.button.delete,
     	disabled: true,
     	itemId: 'deleteFile',
     	handler: function() {

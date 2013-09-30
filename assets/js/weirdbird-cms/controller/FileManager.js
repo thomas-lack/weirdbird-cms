@@ -62,7 +62,7 @@ Ext.define('WeirdbirdCMS.controller.FileManager', {
 			    	id: 'form-file',
 			    	emptyText: _cms.lang.filemanager.window.emptyText,
 			    	fieldLabel: _cms.lang.filemanager.window.file,
-			    	buttonText: '<span class="icon very-big">&Oslash;</span>'
+			    	buttonText: '<i class="icon-file-text-alt big"></i>'
 		    	}]
 		    }],
 

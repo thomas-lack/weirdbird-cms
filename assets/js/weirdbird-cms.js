@@ -71,22 +71,24 @@ Ext.application({
 	updateNavigationMenu: function(categoryLink) {
 		if (this.debug) console.log('resetting navigation menu to: ' + categoryLink);
 
-		// remove big letters
 		Ext.each(Ext.query('#navmenu-body > ul > li > a'), function(domEl) {
-			Ext.get(domEl).removeCls('big bold');
+			Ext.get(domEl).removeCls('active');
 		});
 
-		// remove category indicator
-		Ext.each(Ext.query('#navmenu-body > ul > li > a > span'), function(domEl) {
-			Ext.get(domEl).destroy();
-		});
-
-		// add new big lettering and category indicator
 		var el = Ext.get(Ext.query('#navmenu-body > ul > li > a[ajax=' + categoryLink + ']'));
-		el.addCls('big bold');
-		var t = document.createElement('span'); //<span class="icon right very-big">=</span>
-		Ext.get(t).addCls('icon right very-big').setHTML('=');
-		el.appendChild(t);
+		el.addCls('active');
+	},
+
+	/**
+	 * Helper method: changes the description of the current subpage in the headline
+	 * @param  {string} description 	Description string of the current subpage
+	 * @return {null}             
+	 */
+	updateHeadlineDescription: function(description) {
+		if (this.debug) console.log('resetting headline description to: ' + description);
+
+		var el = Ext.get(Ext.query('#headline-description'));
+		el.setHTML(description);
 	},
 
 	/**
@@ -139,6 +141,9 @@ Ext.application({
 			default:
 				_cms.getController('Dashboard').registerDashboardHandlers();
 		}
+
+		// update the cms headline and print the module title 
+		_cms.updateHeadlineDescription(_cms.lang[module].title);
 	},
 
 	/**

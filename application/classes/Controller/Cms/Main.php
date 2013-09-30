@@ -36,6 +36,7 @@ class Controller_Cms_Main extends Controller_Template
             $styles = array(
 					'assets/css/ext-all-gray.css' => 'screen, projection',
 					'assets/css/CheckHeader.css' => 'screen, projection',
+					'assets/css/font-awesome.css' => 'screen, projection',
 					'assets/css/cms_screen2.css' => 'screen, projection'
 				);
             
