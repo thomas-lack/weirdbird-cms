@@ -158,6 +158,15 @@ Route::set('sitemap',  '(<language>/)<sitemap>',
 		'action'     	=> 'index'
 	));
 
+// robots.txt routing (enables dynamically generated robots.txt)
+Route::set('robots',  '(<language>/)robots.txt')
+	->defaults(array(
+		'directory'		=> 'frontend',
+		'controller' 	=> 'robots',
+		'action'     	=> 'index'
+	));
+ 
+
 // standard "/" route (frontend)	
 Route::set('default',  '(<language>)(/)', 
 	array(
