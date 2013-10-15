@@ -3,9 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<meta name="description" content="Example Auth with ORM for Kohana 3.1" />
 <meta name="author" content="Thomas Lack" />
-<meta name="copyright" content="Copyright 2011 Thomas Lack." />
+<meta name="copyright" content="Copyright 2012/2013 Thomas Lack." />
 <meta name="language" content="de-DE" />
 <title>WeirdBird cms login</title>
 <link href="/assets/css/cms_login_screen.css" rel="stylesheet" type="text/css"/>

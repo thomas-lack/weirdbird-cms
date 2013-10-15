@@ -49,6 +49,7 @@ class Controller_Frontend_Main extends Controller_Template {
 			// set layout
 			$layout = null;
 			$structureId = null;
+			
 			foreach ($structures as $s)
 			{
 				// enable also only lowercase structure names
@@ -64,9 +65,11 @@ class Controller_Frontend_Main extends Controller_Template {
 				}
 			}
 
-			// standard layout if none was set before
+			// 404 if no layout was found
 			if ($layout == null || $layout->view == null)
-				$this->setLayout($this->config->standardlayout);
+			{
+				throw HTTP_Exception::factory(404, 'that page doesn\'t exist.');
+			}
 			// otherwise the one that was set before via cms
 			else
 				$this->setLayout($layout->view);

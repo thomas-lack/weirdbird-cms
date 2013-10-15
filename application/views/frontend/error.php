@@ -1,10 +1,10 @@
 <html>
 <head>
-	<title>weirdbird cms :: error</title>
+	<title>weirdbird cms :: error <?= $errorCode; ?></title>
 </head>
 <body>
-	<span style="background:red;color:white;">weirdbird cms :: error</span>
+	<span style="background:red;color:white;">weirdbird cms :: error <?= $errorCode; ?></span>
 	<br/>
-	<? echo $error; ?>
+	Ooops... <?= $error;?>
 </body>
 </html>
