@@ -42,10 +42,10 @@ class Model_System_Setting extends ORM {
 		return $setting->content;
 	}
 
-	public function get_brandImagePath()
+	public function get_brandImagePath($thumbnail = true)
 	{
 		$imageId = ORM::factory('System_Setting')->get_brandImage();
-		return ORM::factory('File')->get_imageFilePath($imageId, true);
+		return ORM::factory('File')->get_imageFilePath($imageId, $thumbnail);
 	}
 
 	public function get_value_by_fieldname($name)
