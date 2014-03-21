@@ -14,6 +14,7 @@ class Model_File extends ORM {
         'user_id' => array(
             'not_empty'  => NULL
         ),
+        'filegroup_id' => array(),
         'filename' => array(
             'not_empty'  => NULL,
             'min_length' => array(1),
