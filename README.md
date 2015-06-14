@@ -1,19 +1,23 @@
-# Kohana PHP Framework
+# weirdbird CMS
 
-[Kohana](http://kohanaframework.org/) is an elegant, open source, and object oriented HMVC framework built using PHP5, by a team of volunteers. It aims to be swift, secure, and small.
+This is a little side project to create an intuitive and simple to use cms. Feel free to use it for your own needs if you like.
 
-Released under a [BSD license](http://kohanaframework.org/license), Kohana can be used legally for any open source, commercial, or personal project.
+Target audience are single-purpose sites like blogs and the like.
 
 ## Documentation
-Kohana's documentation can be found at <http://kohanaframework.org/documentation> which also contains an API browser.
 
-The `userguide` module included in all Kohana releases also allows you to view the documentation locally. Once the `userguide` module is enabled in the bootstrap, it is accessible from your site via `/index.php/guide` (or just `/guide` if you are rewriting your URLs).
+### Some of the features:
 
-## Reporting bugs
-If you've stumbled across a bug, please help us out by [reporting the bug](http://dev.kohanaframework.org/projects/kohana3/) you have found. Simply log in or register and submit a new issue, leaving as much information about the bug as possible, e.g.
-
-* Steps to reproduce
-* Expected result
-* Actual result
-
-This will help us to fix the bug as quickly as possible, and if you'd like to fix it yourself feel free to [fork us on GitHub](https://github.com/kohana) and submit a pull request!
+* using the current version of [Kohana](http://kohanaframework.org/) as PHP backend
+* on the client side [Sencha Ext JS](http://www.sencha.com/products/extjs/#overview) is jused
+* templating system, configurable in a single xml file
+* 2 templates included with one sporting a nice support of twitter bootstrap right out of the box
+* file management is possible only by using the cms
+* an wysiwyg-article-editor that uses the css definitions of the chosen template
+* breakdown of the parts a website consists of (which can be configured separately):
+* The layout (e.g. 2-column),
+* which consists of modules (e.g. content or navigation),
+* which consist of articles (e.g. blog entries)
+* currently a maximum link depth of 2 is supported by using teasers for your articles
+* language support for the cms is provided in german and english
+* articles of specific languages can be filtered via URL parameter (/en/ or /de/) which is nice for multi-language sites
