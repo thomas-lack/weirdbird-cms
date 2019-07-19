@@ -70,7 +70,7 @@ class Kohana_Inflector {
 	 *
 	 * [!!] Special inflections are defined in `config/inflector.php`.
 	 *
-	 * @param   string  $str    word to make singular
+	 * @param   string  $str    word to singularize
 	 * @param   integer $count  count of thing
 	 * @return  string
 	 * @uses    Inflector::uncountable
@@ -183,10 +183,6 @@ class Kohana_Inflector {
 		{
 			$str = Inflector::$irregular[$str];
 		}
-		elseif (in_array($str, Inflector::$irregular))
-		{
-			// Do nothing
-		}
 		elseif (preg_match('/[sxz]$/', $str) OR preg_match('/[^aeioudgkprt]h$/', $str))
 		{
 			$str .= 'es';
@@ -201,7 +197,7 @@ class Kohana_Inflector {
 			$str .= 's';
 		}
 
-		// Convert to uppercase if necessary
+		// Convert to uppsecase if nessasary
 		if ($is_uppercase)
 		{
 			$str = strtoupper($str);
@@ -270,4 +266,4 @@ class Kohana_Inflector {
 		return preg_replace('/[_-]+/', ' ', trim($str));
 	}
 
-}
+} // End Inflector

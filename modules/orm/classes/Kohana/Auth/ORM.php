@@ -51,10 +51,6 @@ class Kohana_Auth_ORM extends Auth {
 					if ( ! $roles->loaded())
 						return FALSE;
 				}
-				else
-				{
-					$roles = $role;
-				}
 			}
 
 			return $user->has('roles', $roles);

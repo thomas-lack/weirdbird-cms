@@ -42,11 +42,12 @@ class Controller_CMS_User extends Controller_Template {
         {
             try 
             {
+               $objToArray = function($obj) {
+                 return $obj->as_array();
+               };
+
                $users = array_map(
-                    create_function(
-                        '$obj',
-                        'return $obj->as_array();'
-                    ),
+                    $objToArray,
                     ORM::factory('user')
                             ->find_all()
                             ->as_array()        

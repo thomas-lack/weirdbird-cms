@@ -4,11 +4,12 @@ class Controller_Cms_FileManager extends Controller_Cms_Data
 {
 	public function action_data()
 	{
+    $objToArr = function($obj) {
+      return $obj->as_array();
+    };
+
 		$files = array_map(
-			create_function(
-				'$obj',
-				'return $obj->as_array();'
-			),
+      $objToArr, 
 			ORM::factory('File')->find_all()->as_array()		
 		);
 

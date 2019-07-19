@@ -15,11 +15,12 @@ class Controller_Cms_File extends Controller_Cms_Data
 						->find_all()
 						->as_array();
 
+      $objToArray = function($obj) {
+        return $obj->as_array();
+      };
+
 			$f = array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
+        $objToArray,
 				$files
 			);
 			
@@ -75,13 +76,13 @@ class Controller_Cms_File extends Controller_Cms_Data
 	 */
 	public function action_documents()
 	{
-		if (HTTP_Request::GET == $this->request->method())
-        { 
+		if (HTTP_Request::GET == $this->request->method()) { 
+      $objToArr = function($obj) {
+        return $obj->as_array();
+      };
+
 			$docs = array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
+        $objToArr,
 				ORM::factory('File')->get_files_by_type('application/pdf')->as_array()		
 			);
 

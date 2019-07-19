@@ -42,11 +42,17 @@ class Model_System_Setting extends ORM {
 		return $setting->content;
 	}
 
-	public function get_brandImagePath($thumbnail = true)
+	public function get_brandImagePath()
 	{
 		$imageId = ORM::factory('System_Setting')->get_brandImage();
-		return ORM::factory('File')->get_imageFilePath($imageId, $thumbnail);
+		return ORM::factory('File')->get_imageFilePath($imageId, true);
 	}
+
+  public function get_googleMapsApiKey()
+  {
+    $setting = $this->where('fieldname','=','googlemapsapikey')->find();
+    return $setting->content;
+  }
 
 	public function get_value_by_fieldname($name)
 	{

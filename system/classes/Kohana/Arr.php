@@ -207,13 +207,8 @@ class Kohana_Arr {
 			$delimiter = Arr::$delimiter;
 		}
 
-		// The path has already been separated into keys
-		$keys = $path;
-		if ( ! is_array($path))
-		{
-			// Split the keys by delimiter
-			$keys = explode($delimiter, $path);
-		}
+		// Split the keys by delimiter
+		$keys = explode($delimiter, $path);
 
 		// Set current $array to inner-most array path
 		while (count($keys) > 1)
@@ -288,7 +283,7 @@ class Kohana_Arr {
 	 *
 	 *     // Get the values "username", "password" from $_POST
 	 *     $auth = Arr::extract($_POST, array('username', 'password'));
-	 *
+	 *     
 	 *     // Get the value "level1.level2a" from $data
 	 *     $data = array('level1' => array('level2a' => 'value 1', 'level2b' => 'value 2'));
 	 *     Arr::extract($data, array('level1.level2a', 'password'));
@@ -622,4 +617,4 @@ class Kohana_Arr {
 		return $flat;
 	}
 
-}
+} // End arr

@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct access');
 /**
  * Kohana exception class. Translates exceptions using the [I18n] class.
  *
@@ -79,9 +79,9 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * @uses    Kohana_Exception::response
 	 * @param   Exception  $e
-	 * @return  void
+	 * @return  boolean
 	 */
-	public static function handler(Exception $e)
+	public static function handler(Throwable $e)
 	{
 		$response = Kohana_Exception::_handler($e);
 
@@ -97,9 +97,9 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * @uses    Kohana_Exception::response
 	 * @param   Exception  $e
-	 * @return  Response
+	 * @return  boolean
 	 */
-	public static function _handler(Exception $e)
+	public static function _handler(Throwable $e)
 	{
 		try
 		{
@@ -137,7 +137,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   int        $level
 	 * @return  void
 	 */
-	public static function log(Exception $e, $level = Log::EMERGENCY)
+	public static function log(Throwable $e, $level = Log::EMERGENCY)
 	{
 		if (is_object(Kohana::$log))
 		{
@@ -160,7 +160,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   Exception  $e
 	 * @return  string
 	 */
-	public static function text(Exception $e)
+	public static function text(Throwable $e)
 	{
 		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
 			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine());
@@ -173,7 +173,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   Exception  $e
 	 * @return  Response
 	 */
-	public static function response(Exception $e)
+	public static function response(Throwable $e)
 	{
 		try
 		{
@@ -184,6 +184,12 @@ class Kohana_Kohana_Exception extends Exception {
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 			$trace   = $e->getTrace();
+
+			if ( ! headers_sent())
+			{
+				// Make sure the proper http header is sent
+				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
+			}
 
 			/**
 			 * HTTP_Exceptions are constructed in the HTTP_Exception::factory()
@@ -224,7 +230,7 @@ class Kohana_Kohana_Exception extends Exception {
 						}
 					}
 				}
-
+				
 				if (isset(Kohana_Exception::$php_errors[$code]))
 				{
 					// Use the human-readable error name
@@ -245,13 +251,13 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Instantiate the error view.
 			$view = View::factory(Kohana_Exception::$error_view, get_defined_vars());
-
+			
 			// Prepare the response object.
 			$response = Response::factory();
 
 			// Set the response status
 			$response->status(($e instanceof HTTP_Exception) ? $e->getCode() : 500);
-
+			
 			// Set the response headers
 			$response->headers('Content-Type', Kohana_Exception::$error_view_content_type.'; charset='.Kohana::$charset);
 
@@ -273,4 +279,4 @@ class Kohana_Kohana_Exception extends Exception {
 		return $response;
 	}
 
-}
+} // End Kohana_Exception

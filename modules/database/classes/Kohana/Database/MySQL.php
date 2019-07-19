@@ -29,9 +29,9 @@ class Kohana_Database_MySQL extends Database {
 
 		if (Database_MySQL::$_set_names === NULL)
 		{
-			// Determine if we can use mysql_set_charset(), which is only
+			// Determine if we can use mysqli_set_charset(), which is only
 			// available on PHP 5.2.3+ when compiled against MySQL 5.0+
-			Database_MySQL::$_set_names = ! function_exists('mysql_set_charset');
+			Database_MySQL::$_set_names = ! function_exists('mysqli_set_charset');
 		}
 
 		// Extract the connection parameters, adding required variabels
@@ -51,12 +51,12 @@ class Kohana_Database_MySQL extends Database {
 			if ($persistent)
 			{
 				// Create a persistent connection
-				$this->_connection = mysql_pconnect($hostname, $username, $password);
+				$this->_connection = mysqli_connect("p:" . $hostname, $username, $password);
 			}
 			else
 			{
 				// Create a connection and force it to be a new link
-				$this->_connection = mysql_connect($hostname, $username, $password, TRUE);
+				$this->_connection = mysqli_connect($hostname, $username, $password, TRUE);
 			}
 		}
 		catch (Exception $e)
@@ -90,9 +90,16 @@ class Kohana_Database_MySQL extends Database {
 				$variables[] = 'SESSION '.$var.' = '.$this->quote($val);
 			}
 
-			mysql_query('SET '.implode(', ', $variables), $this->_connection);
+			mysqli_query($this->_connection, 'SET '.implode(', ', $variables));
 		}
 	}
+
+  protected function _throw_db_exception() {
+    // Unable to select database
+    throw new Database_Exception(':error',
+      array(':error' => mysqli_error($this->_connection)),
+        mysqli_errno($this->_connection));
+  }
 
 	/**
 	 * Select the database
@@ -102,13 +109,7 @@ class Kohana_Database_MySQL extends Database {
 	 */
 	protected function _select_db($database)
 	{
-		if ( ! mysql_select_db($database, $this->_connection))
-		{
-			// Unable to select database
-			throw new Database_Exception(':error',
-				array(':error' => mysql_error($this->_connection)),
-				mysql_errno($this->_connection));
-		}
+    mysqli_select_db($this->_connection, $database) OR $this->_throw_db_exception();
 
 		Database_MySQL::$_current_databases[$this->_connection_id] = $database;
 	}
@@ -122,7 +123,7 @@ class Kohana_Database_MySQL extends Database {
 
 			if (is_resource($this->_connection))
 			{
-				if ($status = mysql_close($this->_connection))
+				if ($status = mysqli_close($this->_connection))
 				{
 					// Clear the connection
 					$this->_connection = NULL;
@@ -149,19 +150,19 @@ class Kohana_Database_MySQL extends Database {
 		if (Database_MySQL::$_set_names === TRUE)
 		{
 			// PHP is compiled against MySQL 4.x
-			$status = (bool) mysql_query('SET NAMES '.$this->quote($charset), $this->_connection);
+			$status = (bool) mysqli_query($this->_connection, 'SET NAMES '.$this->quote($charset));
 		}
 		else
 		{
 			// PHP is compiled against MySQL 5.x
-			$status = mysql_set_charset($charset, $this->_connection);
+			$status = mysqli_set_charset($this->_connection, $charset);
 		}
 
 		if ($status === FALSE)
 		{
 			throw new Database_Exception(':error',
-				array(':error' => mysql_error($this->_connection)),
-				mysql_errno($this->_connection));
+				array(':error' => mysqli_error($this->_connection)),
+				mysqli_errno($this->_connection));
 		}
 	}
 
@@ -183,7 +184,7 @@ class Kohana_Database_MySQL extends Database {
 		}
 
 		// Execute the query
-		if (($result = mysql_query($sql, $this->_connection)) === FALSE)
+		if (($result = mysqli_query($this->_connection, $sql)) === FALSE)
 		{
 			if (isset($benchmark))
 			{
@@ -192,8 +193,8 @@ class Kohana_Database_MySQL extends Database {
 			}
 
 			throw new Database_Exception(':error [ :query ]',
-				array(':error' => mysql_error($this->_connection), ':query' => $sql),
-				mysql_errno($this->_connection));
+				array(':error' => mysqli_error($this->_connection), ':query' => $sql),
+				mysqli_errno($this->_connection));
 		}
 
 		if (isset($benchmark))
@@ -213,14 +214,14 @@ class Kohana_Database_MySQL extends Database {
 		{
 			// Return a list of insert id and rows created
 			return array(
-				mysql_insert_id($this->_connection),
-				mysql_affected_rows($this->_connection),
+				mysqli_insert_id($this->_connection),
+				mysqli_affected_rows($this->_connection),
 			);
 		}
 		else
 		{
 			// Return the number of rows affected
-			return mysql_affected_rows($this->_connection);
+			return mysqli_affected_rows($this->_connection);
 		}
 	}
 
@@ -240,7 +241,6 @@ class Kohana_Database_MySQL extends Database {
 			'fixed'                     => array('type' => 'float', 'exact' => TRUE),
 			'fixed unsigned'            => array('type' => 'float', 'exact' => TRUE, 'min' => '0'),
 			'float unsigned'            => array('type' => 'float', 'min' => '0'),
-			'geometry'                  => array('type' => 'string', 'binary' => TRUE),
 			'int unsigned'              => array('type' => 'int', 'min' => '0', 'max' => '4294967295'),
 			'integer unsigned'          => array('type' => 'int', 'min' => '0', 'max' => '4294967295'),
 			'longblob'                  => array('type' => 'string', 'binary' => TRUE, 'character_maximum_length' => '4294967295'),
@@ -285,14 +285,14 @@ class Kohana_Database_MySQL extends Database {
 		// Make sure the database is connected
 		$this->_connection or $this->connect();
 
-		if ($mode AND ! mysql_query("SET TRANSACTION ISOLATION LEVEL $mode", $this->_connection))
+		if ($mode AND ! mysqli_query($this->_connection, "SET TRANSACTION ISOLATION LEVEL $mode"))
 		{
 			throw new Database_Exception(':error',
-				array(':error' => mysql_error($this->_connection)),
-				mysql_errno($this->_connection));
+				array(':error' => mysqli_error($this->_connection)),
+				mysqli_errno($this->_connection));
 		}
 
-		return (bool) mysql_query('START TRANSACTION', $this->_connection);
+		return (bool) mysqli_query($this->_connection, 'START TRANSACTION');
 	}
 
 	/**
@@ -305,7 +305,7 @@ class Kohana_Database_MySQL extends Database {
 		// Make sure the database is connected
 		$this->_connection or $this->connect();
 
-		return (bool) mysql_query('COMMIT', $this->_connection);
+		return (bool) mysqli_query($this->_connection, 'COMMIT');
 	}
 
 	/**
@@ -318,7 +318,7 @@ class Kohana_Database_MySQL extends Database {
 		// Make sure the database is connected
 		$this->_connection or $this->connect();
 
-		return (bool) mysql_query('ROLLBACK', $this->_connection);
+		return (bool) mysqli_query($this->_connection, 'ROLLBACK');
 	}
 
 	public function list_tables($like = NULL)
@@ -430,11 +430,11 @@ class Kohana_Database_MySQL extends Database {
 		// Make sure the database is connected
 		$this->_connection or $this->connect();
 
-		if (($value = mysql_real_escape_string( (string) $value, $this->_connection)) === FALSE)
+		if (($value = mysqli_real_escape_string($this->_connection, (string) $value)) === FALSE)
 		{
 			throw new Database_Exception(':error',
-				array(':error' => mysql_error($this->_connection)),
-				mysql_errno($this->_connection));
+				array(':error' => mysqli_error($this->_connection)),
+				mysqli_errno($this->_connection));
 		}
 
 		// SQL standard is to use single-quotes for all values

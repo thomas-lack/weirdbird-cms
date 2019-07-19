@@ -4,11 +4,12 @@ class Controller_Cms_Structures extends Controller_Cms_Data
 {
 	public function action_data()
 	{
+    $objToArr = function($obj) {
+      return $obj->as_array();
+    };
+
 		$result = array_map(
-			create_function(
-				'$obj',
-				'return $obj->as_array();'
-			),
+      $objToArr,
 			ORM::factory('Structure')
 				->order_by('position', 'asc')
 				->find_all()

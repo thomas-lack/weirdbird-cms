@@ -6,11 +6,11 @@ class Controller_Cms_StructureColumnMappings extends Controller_Cms_Data
 
 	public function action_read()
 	{
+    $objToArray = function($obj) {
+      return $obj->as_array();
+    };
 		$result = array_map(
-			create_function(
-				'$obj',
-				'return $obj->as_array();'
-			),
+      objToArray,
 			ORM::factory('StructureColumnMapping')->find_all()->as_array()		
 		);
 		

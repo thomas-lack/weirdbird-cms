@@ -12,7 +12,8 @@ class Controller_Cms_System extends Controller_Cms_Data
 			'address' => ORM::factory('System_Setting')->get_address(),
 			'info' => ORM::factory('System_Setting')->get_info(),
 			'brandimage' => ORM::factory('System_Setting')->get_brandImage(),
-			'brandimagepath' => ORM::factory('System_Setting')->get_brandImagePath()
+      'brandimagepath' => ORM::factory('System_Setting')->get_brandImagePath(),
+      'googlemapsapikey' => ORM::factory('System_Setting')->get_googleMapsApiKey()
 		);
 		
 		// get current list of cms project changes (if allowed by the server)
@@ -27,7 +28,14 @@ class Controller_Cms_System extends Controller_Cms_Data
 			$dom = new DOMDocument();   
 			@$dom->loadHTML($html);
 			
-			$tablefields = $dom->getElementById('resultstable')->getElementsByTagName('td');
+      $resultstableElement = $dom->getElementById('resultstable');
+      if ($resultstableElement != null) {
+        $tablefields = $resultstableElement->getElementsByTagName('td');
+      }
+      else {
+        $tablefields = array();
+      }
+		  // $tablefields = $dom->getElementById('resultstable')->getElementsByTagName('td');
 			
 			$revision = array(
 				'system' => REVISION,
@@ -74,6 +82,7 @@ class Controller_Cms_System extends Controller_Cms_Data
 		$address = $data['address'];
 		$info = $data['info'];
 		$brandimage = $data['brandimage'];
+    $googleMapsApiKey = $data['googlemapsapikey'];
 
 		$setting = ORM::factory('System_Setting');
 
@@ -87,6 +96,7 @@ class Controller_Cms_System extends Controller_Cms_Data
 			$setting->set_value_by_fieldname('address', $address);
 			$setting->set_value_by_fieldname('info', $info);
 			$setting->set_value_by_fieldname('brandimage', $brandimage);
+      $setting->set_value_by_fieldname('googlemapsapikey', $googleMapsApiKey);
 
 			$this->template->result = array( 'success' => true );
 		}
@@ -101,11 +111,12 @@ class Controller_Cms_System extends Controller_Cms_Data
 
 	public function action_languages() 
 	{
+    $objToArr = function($obj) {
+      return $obj->as_array();
+    };
+
 		$result = array_map(
-			create_function(
-				'$obj',
-				'return $obj->as_array();'
-			),
+      $objToArr,
 			ORM::factory('Language')->find_all()->as_array()		
 		);
 

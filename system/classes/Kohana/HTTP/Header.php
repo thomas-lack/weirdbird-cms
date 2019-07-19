@@ -859,6 +859,12 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 */
 	public function send_headers(HTTP_Response $response = NULL, $replace = FALSE, $callback = NULL)
 	{
+		if ($response === NULL)
+		{
+			// Default to the initial request message
+			$response = Request::initial()->response();
+		}
+
 		$protocol = $response->protocol();
 		$status = $response->status();
 
@@ -940,4 +946,4 @@ class Kohana_HTTP_Header extends ArrayObject {
 		return $this;
 	}
 
-}
+} // End Kohana_HTTP_Header

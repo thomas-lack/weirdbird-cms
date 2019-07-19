@@ -48,17 +48,7 @@ class Kohana_Security {
 		if ($new === TRUE OR ! $token)
 		{
 			// Generate a new unique token
-			if (function_exists('openssl_random_pseudo_bytes'))
-			{
-				// Generate a random pseudo bytes token if openssl_random_pseudo_bytes is available
-				// This is more secure than uniqid, because uniqid relies on microtime, which is predictable
-				$token = base64_encode(openssl_random_pseudo_bytes(32));
-			}
-			else
-			{
-				// Otherwise, fall back to a hashed uniqid
-				$token = sha1(uniqid(NULL, TRUE));
-			}
+			$token = sha1(uniqid(NULL, TRUE));
 
 			// Store the new token
 			$session->set(Security::$token_name, $token);
@@ -110,4 +100,4 @@ class Kohana_Security {
 		return str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $str);
 	}
 
-}
+} // End security

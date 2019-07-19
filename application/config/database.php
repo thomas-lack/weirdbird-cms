@@ -4,7 +4,7 @@ return array
 (
 	'default' => array
 	(
-		'type'       => 'MySQLi',
+		'type'       => 'MySQL',
 		'connection' => array(
 			/**
 			 * The following options are available for MySQL:

@@ -16,28 +16,27 @@ class Controller_Cms_Templates extends Controller_Cms_Data
 	{
 		$ret = '[';
 
+    $objToArr = function($obj) {
+      return $obj->as_array();
+    };
+
 		$templateArr = array_map(
-			create_function(
-				'$obj', 
-				'return $obj->as_array();'
-			),
+      $objToArr,
 			ORM::factory('Template')->find_all()->as_array()
 		);
 
 		foreach ($templateArr as $t) {
+      $objToArr = function($obj) {
+        return $obj->as_array();
+      };
+
 			$modulesArr = array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
+        $objToArr,
 				ORM::factory('Module')->where('template_id','=',$t['id'])->find_all()->as_array()		
 			);
 
 			$layoutsArr = array_map(
-				create_function(
-					'$obj',
-					'return $obj->as_array();'
-				),
+        $objToArr,
 				ORM::factory('Layout')->where('template_id','=',$t['id'])->find_all()->as_array()		
 			);
 

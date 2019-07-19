@@ -124,6 +124,7 @@ class Kohana_Cookie {
 	 *
 	 * @param   string  $name   cookie name
 	 * @return  boolean
+	 * @uses    Cookie::set
 	 */
 	public static function delete($name)
 	{
@@ -148,7 +149,7 @@ class Kohana_Cookie {
 		// Require a valid salt
 		if ( ! Cookie::$salt)
 		{
-			throw new Kohana_Exception('A valid cookie salt is required. Please set Cookie::$salt in your bootstrap.php. For more information check the documentation');
+			throw new Kohana_Exception('A valid cookie salt is required. Please set Cookie::$salt.');
 		}
 
 		// Determine the user agent
@@ -157,4 +158,4 @@ class Kohana_Cookie {
 		return sha1($agent.$name.$value.Cookie::$salt);
 	}
 
-}
+} // End cookie

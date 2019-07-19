@@ -6,12 +6,12 @@ class Controller_Cms_Layouts extends Controller_Cms_Data
 	{
 		$t = ORM::factory('Template')->where('active','=','1')->find();
 
-		
+	  $objToArr = function($obj) {
+      return $obj->as_array();
+    };
+
 		$result = array_map(
-			create_function(
-				'$obj',
-				'return $obj->as_array();'
-			),
+      $objToArr,
 			ORM::factory('Layout')
 				->where('template_id','=',$t->id)
 				->find_all()

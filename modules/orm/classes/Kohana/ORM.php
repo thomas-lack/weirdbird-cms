@@ -288,11 +288,8 @@ class Kohana_ORM extends Model implements serializable {
 	 */
 	protected function _initialize()
 	{
-		// Set the object name if none predefined
-		if (empty($this->_object_name))
-		{
-			$this->_object_name = strtolower(substr(get_class($this), 6));
-		}
+		// Set the object name and plural name
+		$this->_object_name = strtolower(substr(get_class($this), 6));
 		
 		// Check if this model has already been initialized
 		if ( ! $init = Arr::get(ORM::$_init_cache, $this->_object_name, FALSE))
@@ -1466,7 +1463,8 @@ class Kohana_ORM extends Model implements serializable {
 	public function has($alias, $far_keys = NULL)
 	{
 		$count = $this->count_relations($alias, $far_keys);
-		if ($far_keys === NULL)
+    $isCountable = is_array($far_keys) || $far_keys instanceof Countable;
+    if ($far_keys === NULL || ! $isCountable)
 		{
 			return (bool) $count;
 		}
@@ -1504,14 +1502,14 @@ class Kohana_ORM extends Model implements serializable {
 	 * Returns the number of relationships 
 	 *
 	 *     // Counts the number of times the login role is attached to $model
-	 *     $model->count_relations('roles', ORM::factory('role', array('name' => 'login')));
+	 *     $model->has('roles', ORM::factory('role', array('name' => 'login')));
 	 *     // Counts the number of times role 5 is attached to $model
-	 *     $model->count_relations('roles', 5);
+	 *     $model->has('roles', 5);
 	 *     // Counts the number of times any of roles 1, 2, 3, or 4 are attached to
 	 *     // $model
-	 *     $model->count_relations('roles', array(1, 2, 3, 4));
+	 *     $model->has('roles', array(1, 2, 3, 4));
 	 *     // Counts the number roles attached to $model
-	 *     $model->count_relations('roles')
+	 *     $model->has('roles')
 	 *
 	 * @param  string  $alias    Alias of the has_many "through" relationship
 	 * @param  mixed   $far_keys Related model, primary key, or an array of primary keys
@@ -1644,7 +1642,7 @@ class Kohana_ORM extends Model implements serializable {
 		$this->_build(Database::SELECT);
 
 		$records = $this->_db_builder->from(array($this->_table_name, $this->_object_name))
-			->select(array(DB::expr('COUNT('.$this->_db->quote_column($this->_object_name.'.'.$this->_primary_key).')'), 'records_found'))
+			->select(array(DB::expr('COUNT(*)'), 'records_found'))
 			->execute($this->_db)
 			->get('records_found');
 
@@ -1654,7 +1652,7 @@ class Kohana_ORM extends Model implements serializable {
 		$this->reset();
 
 		// Return the total number of records in a table
-		return (int) $records;
+		return $records;
 	}
 
 	/**

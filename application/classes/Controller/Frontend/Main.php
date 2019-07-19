@@ -139,7 +139,6 @@ class Controller_Frontend_Main extends Controller_Template {
 														->find();
 				$this->template->columnContent = $columnContent;
 				$this->template->system = $this->getSystemValues();
-				$this->template->favicon = is_file($this->config->folder.'/favicon.ico') ? '/'.$this->config->folder.'/favicon.ico' : null;
 			}
 		}
 	}
@@ -153,8 +152,7 @@ class Controller_Frontend_Main extends Controller_Template {
 			'companyname' => ORM::factory('System_Setting')->get_companyName(),
 			'address' => ORM::factory('System_Setting')->get_address(),
 			'info' => ORM::factory('System_Setting')->get_info(),
-			'brandimagepath' => ORM::factory('System_Setting')->get_brandImagePath(true),
-			'fullsizebrandimagepath' => ORM::factory('System_Setting')->get_brandImagePath(false)
+			'brandimagepath' => ORM::factory('System_Setting')->get_brandImagePath()
 		);
 	}
 
