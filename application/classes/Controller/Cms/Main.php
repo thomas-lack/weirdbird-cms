@@ -14,7 +14,7 @@ class Controller_Cms_Main extends Controller_Template
 		// if a user is not logged in, redirect to login page
 		if (!$user)
         {
-           HTTP::redirect('http://' . $_SERVER['HTTP_HOST'] . '/cms/user/login');
+           HTTP::redirect(Controller_Cms_User::getProtocol() . $_SERVER['HTTP_HOST'] . '/cms/user/login');
         }
 		
 		// set standard variables 
