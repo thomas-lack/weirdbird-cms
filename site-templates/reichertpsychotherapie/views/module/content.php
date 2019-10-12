@@ -6,8 +6,8 @@
 *	Purpose:	Content Module
 *
 *	Variables the cms backend has to deliver:
-* 	$articles				array 		Array of ORM objects representing a row in the 
-*										'articles' database table (possibly null if no 
+* 	$articles				array 		Array of ORM objects representing a row in the
+*										'articles' database table (possibly null if no
 *										articles are allowed for this column)
 * 	$articleRequest			boolean		normally FALSE, but if set to TRUE it indicates
 * 										that the given articles shall be printed to the view
@@ -31,9 +31,6 @@ if ($articles != null)
 			. "\n";
 
 		echo $out;
-
-		if ($i < count($articles) - 1)
-			echo '<hr/>' . "\n";
-	}	
+	}
 }
 ?>
