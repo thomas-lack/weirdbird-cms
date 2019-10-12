@@ -3,7 +3,6 @@
  * css loader (since tinymce cms editor only is able to load one css file currently)
  */
 
-@import url(bootstrap.min.css);
-@import url(bootstrap-responsive.min.css);
-@import url(buttons.css);
+@import url(fontawesome/fontawesome.css);
+@import url(fontawesome/solid.css);
 @import url(reichertpsychotherapie.css);

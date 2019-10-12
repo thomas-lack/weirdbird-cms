@@ -1,0 +1,27 @@
+@mixin font-face($font-name, $font-style, $font-weight, $font-file-name, $local1, $local2, $svg-name) {
+	@font-face {
+		font-family: #{$font-name};
+		font-style: #{$font-style};
+		font-weight: $font-weight;
+		src: url("fonts/#{$font-file-name}.eot");
+		src: local("#{$local1}"), local(#{$local2}),
+		url("fonts/#{$font-file-name}.eot?iefix") format("embedded-opentype"),
+		url("fonts/#{$font-file-name}.woff2") format("woff2"),
+		url("fonts/#{$font-file-name}.woff") format("woff"),
+		url("fonts/#{$font-file-name}.ttf") format("truetype"),
+		url("fonts/#{$font-file-name}.svg##{$svg-name}") format("svg");
+	}
+}
+
+@include font-face("Open Sans", "normal", 400, "open-sans-v17-latin-regular", "Open Sans Regular", "OpenSans-Regular", "OpenSans");
+
+@include font-face("Open Sans", "italic", 400, "open-sans-v17-latin-italic", "Open Sans Italic", "OpenSans-Italic", "OpenSans");
+
+@include font-face("Open Sans", "normal", 700, "open-sans-v17-latin-700", "Open Sans Bold", "OpenSans-Bold", "OpenSans");
+
+@include font-face("Open Sans", "italic", 700, "open-sans-v17-latin-700italic", "Open Sans Bold Italic", "OpenSans-BoldItalic", "OpenSans");
+
+@include font-face("Roboto", "normal", 500, "roboto-v20-latin-500", "Roboto Medium", "Roboto-Medium", "Roboto");
+
+@include font-face("Roboto", "italic", 500, "roboto-v20-latin-500italic", "Roboto Medium Italic", "Roboto-MediumItalic", "Roboto");
+

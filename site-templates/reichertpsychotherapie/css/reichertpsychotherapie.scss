@@ -1,0 +1,106 @@
+@import "variables";
+@import "fonts";
+@import "navigation";
+@import "content";
+
+html {
+	height: 100%;
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+	color: $dark;
+	background-color: $green-100;
+	-webkit-font-smoothing: antialiased !important;
+	height: 100%;
+	font-size: 1.1em;
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	font-family: "Roboto", sans-serif;
+	font-size: 2em;
+	background-color: $blue-800;
+	color: $light;
+	margin: 0 0 $default-margin * 4 0;
+	padding: $default-padding * 2;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	@include mobile() {
+		margin: 0;
+	}
+}
+
+h2 {
+	font-family: "Roboto", sans-serif;
+	background-color: $blue-300;
+	color: $light;
+	margin: 0 0 $default-margin * 4 0;
+	padding: $default-padding * 2;
+	text-align: center;
+	font-size: 1.4em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	@include mobile() {
+		margin: 0;
+	}
+}
+
+h3 {
+	font-family: "Roboto", sans-serif;
+	background-color: $blue;
+	color: $light;
+	margin: 0 0 $default-margin * 4 0;
+	padding: $default-padding * 2;
+	text-align: center;
+	font-size: 1.1em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	@include mobile() {
+		margin: 0;
+	}
+}
+
+h4 {
+	font-size: 1.4em;
+	color: #4D341B;
+}
+
+h5 {
+	font-size: 1.2em;
+	color: #333332;
+	font-family: "Roboto", sans-serif;
+}
+
+h6 {
+	font-size: 1em;
+}
+
+p {
+	line-height: 1.6em;
+}
+
+table {
+	line-height: 1.9em;
+	border: 0 solid $green;
+}
+
+/* add alternativ colors to table rows */
+tr:nth-child(odd) {
+	background-color: $green;
+}
+
+tr:nth-child(even) {
+	background-color: $gray;
+}
+
+hr {
+	margin: 50px 0 30px 0;
+	border-top: 1px solid #ededed;
+	border-bottom: none;
+}
