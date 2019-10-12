@@ -20,9 +20,9 @@
 require_once('_common-before.php');
 ?>
 
-<div class="row">
+<div class="column">
 	<!-- column 1 -->
-	<div class="span16"><?= $columnContent[0] ?></div>
+	<?= $columnContent[0] ?>
 </div>
 
 <? require_once('_common-after.php'); ?>
