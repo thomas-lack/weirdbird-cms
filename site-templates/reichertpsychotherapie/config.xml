@@ -16,32 +16,8 @@
 			<view>1col</view>
 			<columns>1</columns>
 		</layout>
-		<layout standard="true">
-			<name>2col21</name>
-			<description>2-column page 2-1</description>
-			<view>2col21</view>
-			<columns>2</columns>
-		</layout>
-		<layout standard="true">
-			<name>2col12</name>
-			<description>2-column page 1-2</description>
-			<view>2col12</view>
-			<columns>2</columns>
-		</layout>
-		<layout>
-			<name>3col</name>
-			<description>3-column page</description>
-			<view>3col</view>
-			<columns>3</columns>
-		</layout>
-		<layout>
-			<name>3col21</name>
-			<description>3-column page (2-1 hyphen)</description>
-			<view>3col21</view>
-			<columns>3</columns>
-		</layout>
 	</layouts>
-	
+
 	<modules>
 		<module>
 			<name>content</name>
@@ -49,32 +25,8 @@
 			<view>content</view>
 			<allowarticles>true</allowarticles>
 		</module>
-		<module>
-			<name>teaser</name>
-			<description>teaser > content column</description>
-			<view>teaser</view>
-			<allowarticles>true</allowarticles>
-		</module>
-		<module>
-			<name>archive</name>
-			<description>archive for uploaded pdf files</description>
-			<view>archive</view>
-			<allowarticles>false</allowarticles>
-		</module>
-		<module>
-			<name>contact</name>
-			<description>contact column</description>
-			<view>contact</view>
-			<allowarticles>false</allowarticles>
-		</module>
-		<module>
-			<name>map</name>
-			<description>Google Map column</description>
-			<view>map</view>
-			<allowarticles>true</allowarticles>
-		</module>
 	</modules>
-	
+
 	<preview>
 		<folder>preview</folder>
 		<previewimage>
@@ -82,7 +34,7 @@
 			<description>Main site, featuring a one column vertical float layout</description>
 		</previewimage>
 	</preview>
-	
+
 	<stylesheet>
 		<folder>css</folder>
 		<load>layout_grids.css</load>
@@ -90,11 +42,7 @@
 	<javascript>
 		<folder>js</folder>
     <load>jquery-3.4.1.min.js</load>
-		<!--<load type="external">//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js</load>-->
-		<load>jquery.stellar.min.js</load>
-		<load>modernizr-2.6.2-respond-1.1.0.min.js</load>
-		<load>bootstrap.min.js</load>
-		<load>reichertpsychotherapie.min.js</load>
+		<load>reichertpsychotherapie.js</load>
 	</javascript>
 	<images>
 		<folder>img</folder>

@@ -1,0 +1,34 @@
+{
+  "name": "weirdbird-cms",
+  "version": "1.0.0",
+  "description": "A dabbling in content management",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass": "gulp sass",
+    "sass:watch": "gulp sass:watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomas-lack/weirdbird-cms.git"
+  },
+  "keywords": [
+    "CMS",
+    "intuitive",
+    "simple",
+    "PHP",
+    "kohana",
+    "Ext JS"
+  ],
+  "author": "Thomas Lack",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thomas-lack/weirdbird-cms/issues"
+  },
+  "homepage": "https://github.com/thomas-lack/weirdbird-cms#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.0.2",
+    "node-sass": "^4.12.0"
+  }
+}
