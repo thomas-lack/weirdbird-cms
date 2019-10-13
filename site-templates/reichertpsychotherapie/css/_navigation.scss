@@ -1,12 +1,128 @@
 @import "variables";
 @import "media";
 
-@include max-tablet() {
-	.nav {
+/* mobile and tablet navigation */
+.nav-mobile {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-color: $green;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	font-family: "Roboto", sans-serif;
+	font-size: 1.2em;
+
+	@include desktop() {
 		display: none;
+	}
+
+	i {
+		padding: $default-padding * 2;
+		cursor: pointer;
+	}
+
+	.nav-header {
+		margin: $default-margin;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		width: 100%;
+
+		@include tablet() {
+			align-items: center;
+
+			.name {
+				font-size: 1.4em;
+			}
+
+			.location {
+				background-color: $accent-yellow;
+				padding: 5px 10px;
+			}
+		}
+
+		@include mobile() {
+			flex-direction: column;
+
+			.occupation {
+				font-size: 0.7em;
+			}
+
+			.location {
+				display: none;
+			}
+		}
 	}
 }
 
+.nav-mobile-overlay {
+	height: 100%;
+	width: 100%;
+	position: fixed;
+	z-index: 10;
+	left: 0;
+	top: 0;
+	background-color: $dark;
+	opacity: 0.9;
+	overflow-x: hidden;
+	transition: 0.5s;
+	font-family: "Roboto", sans-serif;
+	font-size: 2em;
+
+	.overlay-content {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	a {
+		color: $light;
+		padding: 8px;
+		text-decoration: none;
+		display: block;
+		transition: 0.3s;
+
+		&:not(.overlay-bottom) {
+			border-bottom: 1px dotted $light;
+		}
+
+		&:nth-last-of-type(3) {
+			border-bottom: none;
+		}
+
+		&.overlay-bottom {
+			position: absolute;
+			bottom: $default-margin;
+			font-size: 0.6em;
+			z-index: 200;
+
+			&.overlay-impressum {
+				left: $default-margin;
+			}
+
+			&.overlay-datenschutz {
+				right: $default-margin;
+			}
+		}
+
+	}
+
+	.overlay-close {
+		position: absolute;
+		top: 15px;
+		right: 20px;
+		color: $light;
+		z-index: 200;
+	}
+}
+
+/* desktop navigation */
 .nav {
 	height: 100%;
 	width: 450px;
@@ -14,11 +130,19 @@
 	border-right: 2px solid $gray-100;
 	overflow-x: hidden;
 	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+
+	@include max-tablet {
+		display: none;
+	}
 
 	.logo {
 		background-color: $blue-800;
 		font-family: "Roboto", sans-serif;
 		position: relative;
+		flex: 1;
 
 		.name {
 			font-family: "Roboto", sans-serif;
@@ -46,6 +170,10 @@
 			right: $default-padding;
 			padding: 5px 10px;
 		}
+	}
+
+	nav {
+		flex: 1;
 	}
 
 	nav > ul {
@@ -98,6 +226,20 @@
 					padding: $default-padding * 2;
 				}
 			}
+		}
+	}
+
+	.legal-wrapper {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		flex: 10;
+
+		a {
+			margin: $default-margin;
+			display: flex;
+			align-items: flex-end;
+			font-size: 0.8em;
 		}
 	}
 }

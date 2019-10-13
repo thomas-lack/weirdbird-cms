@@ -5,6 +5,14 @@
 	display: flex;
 	height: 100%;
 
+	@include mobile() {
+		padding-top: $navbar-height-mobile;
+	}
+
+	@include tablet() {
+		padding-top: $navbar-height-tablet;
+	}
+
 	.content {
 		height: 100%;
 		width: 100%;
@@ -12,28 +20,29 @@
 		background-color: $green-100;
 
 		p {
+			margin: $default-margin * 2 0;
+
 			@include min-tablet() {
-				padding: $default-padding * 2;
+				margin: $default-margin * 2 $default-margin * 2;
 			}
 		}
 
 		.column {
 			box-sizing: border-box;
 			width: 100%;
-			padding: 35px $default-padding * 2 $default-padding * 2 $default-padding * 2;
-			border-left: 5px solid $gray-300;
-			border-right: 5px solid $gray-300;
-			margin: auto;
-			background-color: $gray-200;
 			min-height: 100%;
+			margin: auto;
+			padding: $default-padding;
+			background-color: $gray-200;
+
+			@include min-tablet() {
+				padding: 35px $default-padding * 2 $default-padding * 2 $default-padding * 2;
+			}
 
 			@include desktop() {
 				max-width: $max-content-width;
-			}
-
-			a {
-				text-decoration: none;
-				color: $blue;
+				border-left: 5px solid $gray-300;
+				border-right: 5px solid $gray-300;
 			}
 		}
 
