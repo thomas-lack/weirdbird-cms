@@ -48,17 +48,30 @@ p {
 		margin: $default-margin * 2 $default-margin * 2;
 	}
 
-	&.warning {
-		background-color: $accent-red;
+	&.warning, &.info, &.question {
 		color: $light;
 		margin: $default-margin * 4 $default-margin;
 		padding: $default-padding * 2;
+		min-height: $min-height-notification;
 
 		i {
 			font-size: 5em;
 			float: left;
 			margin: $default-margin * 2 $default-margin * 3 $default-margin * 2 $default-margin * 2;
 		}
+	}
+
+	&.warning {
+		background-color: $accent-red;
+	}
+
+	&.info {
+		background-color: $blue;
+	}
+
+	&.question {
+		background-color: $yellow-400;
+		color: $dark;
 	}
 }
 
