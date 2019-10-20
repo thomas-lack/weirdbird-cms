@@ -1,0 +1,19 @@
+@import "variables";
+
+ul {
+	&.fa-ul {
+		li {
+			margin-bottom: $default-margin * 2;
+			line-height: 1.6em;
+
+			@include mobile() {
+				word-break: break-word;
+			}
+
+			.fa-li {
+				margin-top: 4px;
+				color: $blue-300;
+			}
+		}
+	}
+}

@@ -1,5 +1,7 @@
 @import "variables";
 @import "media";
+@import "fontawesome";
+@import "fontawesome/variables";
 
 .container {
 	display: flex;
@@ -16,8 +18,11 @@
 	.content {
 		height: 100%;
 		width: 100%;
-		overflow: auto;
 		background-color: $green-100;
+
+		@include desktop() {
+			overflow: auto;
+		}
 
 		.column {
 			box-sizing: border-box;
@@ -36,8 +41,23 @@
 				border-left: 5px solid $gray-300;
 				border-right: 5px solid $gray-300;
 			}
-		}
 
+			a:not(.button) {
+				margin-right: $default-margin;
+
+				&::before {
+					font-family: "Font Awesome 5 Free";
+					content: fa-content($fa-var-external-link-alt);
+					margin: 0 $default-margin;
+				}
+
+				&[href^="mailto"]::before {
+					font-family: "Font Awesome 5 Free";
+					content: fa-content($fa-var-envelope);
+					margin: 0 $default-margin;
+				}
+			}
+		}
 	}
 }
 
@@ -79,30 +99,115 @@ ol {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	position: relative;
+
+	&:before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 60px;
+		height: 100%;
+		width: 0;
+		border-right: 6px dotted $dark;
+
+		@include mobile {
+			left: 30px;
+		}
+	}
 
 	li {
 		counter-increment: section;
 		position: relative;
-		background-color: $gray-100;
-		margin: $default-margin * 4 $default-margin;
-		padding: $default-padding * 2 $default-padding * 2 $default-padding * 2 $default-padding * 6;
+		margin: $default-margin * 4 $default-margin $default-margin * 6;
+		padding: 0 $default-padding * 2 0 124px;
+		min-height: 117px;
+		display: flex;
+		flex-direction: row;
 
 		@include mobile() {
-			margin-left: 0;
-			margin-right: 0;
-			padding: $default-padding * 4 $default-padding * 2 $default-padding * 2;
-		}
-
-		&:nth-of-type(odd) {
-			background-color: $gray-300;
+			margin: $default-margin * 4 0 $default-margin * 4 0;
+			padding: 0 0 $default-padding * 2 $default-padding * 7;
+			flex-direction: column;
 		}
 
 		&:last-of-type {
 			margin-bottom: 0;
+			background-color: $gray-200;
+		}
+
+		h3 {
+			padding: 0;
 		}
 
 		p {
-			margin: 0 0 $default-margin 0;
+			margin: 0;
+		}
+
+		&:before {
+			content: counter(section);
+			top: 0;
+			left: 0;
+			position: absolute;
+			border-radius: 50%;
+			padding: $default-padding 32px;
+			background-color: $accent-yellow;
+			text-align: center;
+			font-family: "Roboto", sans-serif;
+			font-size: 4em;
+			font-weight: 700;
+			color: $light;
+			z-index: 10;
+
+			@include mobile() {
+				left: 5px;
+				padding: $default-padding $default-padding * 2;
+				font-size: 1.4em;
+			}
+		}
+
+		&:nth-of-type(1):before, &:nth-of-type(5):before  {
+			background-color: $red-400;
+		}
+
+		&:nth-of-type(2):before, &:nth-of-type(6):before {
+			background-color: $blue-500;
+		}
+
+		&:nth-of-type(3):before, &:nth-of-type(7):before {
+			background-color: $green-500;
+		}
+
+		&:nth-of-type(4):before, &:nth-of-type(8):before {
+			background-color: $orange-500;
+		}
+
+		div:nth-of-type(1) {
+			flex: 2;
+			padding-right: $default-padding * 2;
+		}
+
+		div:nth-of-type(2) {
+			flex: 1;
+
+			@include mobile() {
+				margin-top: $default-margin;
+			}
+		}
+	}
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	align-content: flex-start;
+	justify-content: space-between;
+	padding: $default-padding * 2;
+
+	@include mobile {
+		flex-direction: column;
+
+		a {
+			margin-bottom: $default-margin * 4;
 
 			&:last-of-type {
 				margin-bottom: 0;
@@ -110,23 +215,9 @@ ol {
 		}
 	}
 
-	li:before {
-		content: counter(section);
-		top: -20px;
-		left: -20px;
-		position: absolute;
-		border-radius: 50%;
-		padding: $default-padding 24px;
-		background-color: $accent-yellow;
-		text-align: center;
-		color: $dark;
-		font-size: 2em;
-
-		@include mobile() {
-			top: -25px;
-			left: 5px;
-			padding: $default-padding $default-padding * 2;
-			font-size: 1.4em;
+	@include min-tablet {
+		a {
+			min-width: 25%;
 		}
 	}
 }

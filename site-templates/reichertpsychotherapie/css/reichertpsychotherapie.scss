@@ -2,6 +2,7 @@
 @import "fonts";
 @import "navigation";
 @import "content";
+@import "fontawesome/variables";
 
 html {
 	height: 100%;
@@ -40,7 +41,7 @@ h2 {
 	font-family: "Roboto", sans-serif;
 	color: $gray-800;
 	margin: 0;
-	padding: $default-padding * 2;
+	padding: $default-padding * 6 $default-padding * 2 0 $default-padding * 2;
 	font-size: 1.4em;
 	letter-spacing: 0.02em;
 	overflow: hidden;
@@ -48,6 +49,7 @@ h2 {
 
 	@include mobile() {
 		margin: 0;
+		padding: $default-padding * 4 0 0 0;
 	}
 }
 
@@ -55,7 +57,7 @@ h3 {
 	font-family: "Roboto", sans-serif;
 	color: $gray-800;
 	margin: 0;
-	padding: $default-padding * 2;
+	padding: $default-padding * 4 $default-padding * 2 0 $default-padding * 2;
 	font-size: 1.2em;
 	letter-spacing: 0.02em;
 	overflow: hidden;
@@ -63,6 +65,7 @@ h3 {
 
 	@include mobile() {
 		margin: 0;
+		padding: $default-padding * 4 0 0 0;
 	}
 }
 
@@ -74,7 +77,11 @@ h4 {
 	text-overflow: ellipsis;
 	letter-spacing: 0.02em;
 	margin: 0;
-	padding: $default-padding * 2;
+	padding: $default-padding * 3 $default-padding * 2 0 $default-padding * 2;
+
+	@include mobile() {
+		padding: $default-padding * 4 0 0 0;
+	}
 }
 
 h5 {
@@ -84,7 +91,11 @@ h5 {
 	text-overflow: ellipsis;
 	letter-spacing: 0.02em;
 	margin: 0;
-	padding: $default-padding * 2;
+	padding: $default-padding * 2 $default-padding * 2 0 $default-padding * 2;
+
+	@include mobile() {
+		padding: $default-padding * 4 0 0 0;
+	}
 }
 
 h6 {
@@ -118,6 +129,25 @@ hr {
 a {
 	text-decoration: none;
 	color: $blue;
+
+	&.button {
+		padding: $default-padding $default-padding * 2;
+		background-color: $blue-100;
+		color: $dark;
+		text-align: center;
+		border-radius: $default-radius;
+
+		&::after {
+			font-family: "Font Awesome 5 Free";
+			content: fa-content($fa-var-arrow-circle-right);
+			margin-left: $default-margin;
+		}
+
+		&:hover {
+			color: $light;
+			background-color: $blue-800;
+		}
+	}
 }
 
 .hidden {
