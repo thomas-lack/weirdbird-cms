@@ -2,6 +2,7 @@
 @import "fonts";
 @import "navigation";
 @import "content";
+@import "flowchart";
 @import "fontawesome/variables";
 
 html {
@@ -152,4 +153,8 @@ a {
 
 .hidden {
 	display: none;
+}
+
+.top-60 {
+	margin-top: 60px;
 }

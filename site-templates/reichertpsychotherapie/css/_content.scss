@@ -143,6 +143,11 @@ ol {
 			margin: 0;
 		}
 
+		a {
+			display: block;
+			margin-bottom: $default-margin;
+		}
+
 		&:before {
 			content: counter(section);
 			top: 0;
