@@ -1,3 +1,37 @@
+		<!-- mobile fullscreen navigation overlay -->
+		<div class="nav-mobile-overlay hidden">
+			<div class="overlay-content">
+				<?php
+					$pagelanguage = ($system["pagelanguage"] !== NULL) ? $system["pagelanguage"]."/" : "";
+
+					$currentlyInRow = false;
+					foreach ($structures as $structure) {
+
+						$isSubNavItem = substr($structure->description, 0, 3) === "-> ";
+						$description = str_replace("-> ", "", $structure->description);
+
+						if ($structure->mainnavigation) {
+							if ($isSubNavItem && !$currentlyInRow) {
+								$currentlyInRow = true;
+								echo "<div class='row'>";
+							}
+							if (!$isSubNavItem && $currentlyInRow) {
+								$currentlyInRow = false;
+								echo "</div>";
+							}
+
+							echo "<a href='/" . $pagelanguage . strtolower($structure->title) . "'>"
+								. $description
+								. "</a>";
+						}
+					}
+
+					echo "<a href='/".$pagelanguage."impressum' class='overlay-impressum overlay-bottom'>Impressum</a>";
+					echo "<a href='/".$pagelanguage."datenschutz' class='overlay-datenschutz overlay-bottom'>Datenschutz</a>";
+				?>
+			</div>
+		</div>
+
 	</div><!-- div.content -->
 
 	<?

@@ -59,28 +59,6 @@
 
 	<body>
 
-		<!-- mobile fullscreen navigation overlay -->
-		<div class="nav-mobile-overlay hidden">
-			<i class="fas fa-times overlay-close"></i>
-
-			<div class="overlay-content">
-				<?php
-					$pagelanguage = ($system["pagelanguage"] !== NULL) ? $system["pagelanguage"]."/" : "";
-
-					foreach ($structures as $structure) {
-						if ($structure->mainnavigation) {
-							echo "<a href='/".$pagelanguage.strtolower($structure->title)."'>"
-								.$structure->description
-								."</a>";
-						}
-					}
-
-					echo "<a href='/".$pagelanguage."impressum' class='overlay-impressum overlay-bottom'>Impressum</a>";
-					echo "<a href='/".$pagelanguage."datenschutz' class='overlay-datenschutz overlay-bottom'>Datenschutz</a>";
-				?>
-			</div>
-		</div>
-
 		<!-- ### content + footer ### -->
 		<div class="container">
 
@@ -90,7 +68,6 @@
 				<div class="nav-header">
 					<div class="name">Sonja Reichert</div>
 					<div class="occupation">Psychologische Psychotherapeutin</div>
-					<div class="location">Angermünde</div>
 				</div>
 			</div>
 
@@ -98,8 +75,7 @@
 			<div class="nav">
 				<div class="logo">
 					<div class="name">Sonja Reichert</div>
-					<div class="occupation">Psychologische<br>Psychotherapeutin</div>
-					<span class="location">Angermünde</span>
+					<div class="occupation">Psychologische Psychotherapeutin</div>
 				</div>
 
 				<nav>
@@ -107,14 +83,23 @@
 						<?php
 							foreach ($structures as $structure) {
 								if ($structure->mainnavigation) {
+									$isSubNavItem = substr($structure->description, 0, 3) === "-> ";
+									$description = str_replace("-> ", "", $structure->description);
+									$classList = [];
+									if ($currentStructure == "" || $structure->title == $currentStructure) {
+										array_push($classList, "active");
+									}
+									if ($isSubNavItem) {
+										array_push($classList, "sub-item");
+									}
 									$listItem = "<li "
-										.(($currentStructure == "" || $structure->title == $currentStructure) ? "class='active'" : "")
-										.">"
-										."<a href='/".(($system["pagelanguage"] !== NULL) ? $system["pagelanguage"]."/" : "").strtolower($structure->title)."'>"
-										."<span class='nav-link-text'>".$structure->description."</span>"
-										."<i class='fas fa-arrow-right'></i>"
-										."</li>"
-										."</a>";
+										. ((count($classList) > 0) ? "class='" . implode(" ", $classList) . "'" : "")
+										. ">"
+										. "<a href='/".(($system["pagelanguage"] !== NULL) ? $system["pagelanguage"] . "/" : "").strtolower($structure->title) . "'>"
+										. "<span class='nav-link-text'>" . $description . "</span>"
+										. "<i class='fas fa-arrow-right'></i>"
+										. "</li>"
+										. "</a>";
 
 									echo $listItem;
 								}

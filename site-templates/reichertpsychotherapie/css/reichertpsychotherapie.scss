@@ -3,6 +3,7 @@
 @import "navigation";
 @import "content";
 @import "flowchart";
+@import "file-list";
 @import "fontawesome/variables";
 
 html {
@@ -130,6 +131,7 @@ hr {
 a {
 	text-decoration: none;
 	color: $blue;
+	overflow-wrap: break-word;
 
 	&.button {
 		padding: $default-padding $default-padding * 2;

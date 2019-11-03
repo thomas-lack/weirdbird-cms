@@ -7,7 +7,8 @@
 	top: 0;
 	left: 0;
 	width: 100%;
-	background-color: $green;
+	background-color: $blue-800;
+	color: $light;
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
@@ -28,7 +29,7 @@
 		margin: $default-margin;
 		display: flex;
 		flex-direction: row;
-		justify-content: space-around;
+		justify-content: space-between;
 		width: 100%;
 
 		@include tablet() {
@@ -36,11 +37,6 @@
 
 			.name {
 				font-size: 1.4em;
-			}
-
-			.location {
-				background-color: $accent-yellow;
-				padding: 5px 10px;
 			}
 		}
 
@@ -50,10 +46,10 @@
 			.occupation {
 				font-size: 0.7em;
 			}
+		}
 
-			.location {
-				display: none;
-			}
+		.occupation {
+			color: $green;
 		}
 	}
 }
@@ -80,6 +76,24 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+	}
+
+	.row {
+		display: flex;
+		flex-direction: row;
+		padding: 0;
+
+		a {
+			flex: 1;
+			font-size: 0.5em;
+			border-right: 1px dotted $light;
+			margin: 0;
+			padding: $default-padding * 2 8px;
+
+			&:last-of-type {
+				border-right: none;
+			}
+		}
 	}
 
 	a {
@@ -112,14 +126,6 @@
 			}
 		}
 
-	}
-
-	.overlay-close {
-		position: absolute;
-		top: 75px;
-		right: 20px;
-		color: $light;
-		z-index: 200;
 	}
 }
 
@@ -160,17 +166,6 @@
 			margin: 0;
 			padding: 0 $default-padding $default-padding * 2 $default-padding;
 		}
-
-		.location {
-			font-size: 1.1em;
-			color: $dark;
-			background-color: $accent-yellow;
-			margin: 0;
-			position: absolute;
-			bottom: $default-padding;
-			right: $default-padding;
-			padding: 5px 10px;
-		}
 	}
 
 	nav {
@@ -207,6 +202,16 @@
 						background-color: $blue-800;
 						color: $light;
 					}
+				}
+			}
+
+			&.sub-item {
+				padding-left: $default-padding * 4;
+				font-size: 0.8em;
+
+				i {
+					background-color: $light;
+					padding: $default-padding * 1.5 $default-padding;
 				}
 			}
 
