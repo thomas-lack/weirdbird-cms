@@ -1,0 +1,30 @@
+@import "variables";
+@import "media";
+
+.container {
+	.content {
+		.column {
+			ul.file-list {
+				list-style-type: none;
+
+				@include mobile {
+					padding-inline-start: 0;
+				}
+
+				li {
+					margin: $default-margin 0;
+
+					&:first-of-type {
+						margin-top: 0;
+					}
+
+					a::before {
+						font-family: "Font Awesome 5 Free";
+						content: fa-content($fa-var-file-pdf);
+						margin: 0 $default-margin;
+					}
+				}
+			}
+		}
+	}
+}
