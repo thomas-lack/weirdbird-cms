@@ -25,6 +25,12 @@
 			<view>content</view>
 			<allowarticles>true</allowarticles>
 		</module>
+		<module>
+			<name>file-download</name>
+			<description>overview for downloadable pdf files</description>
+			<view>file-download</view>
+			<allowarticles>false</allowarticles>
+		</module>
 	</modules>
 
 	<preview>
