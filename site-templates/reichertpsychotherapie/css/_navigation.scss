@@ -239,12 +239,12 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
+		align-items: flex-end;
 		flex: 10;
 
 		a {
 			margin: $default-margin;
 			display: flex;
-			align-items: flex-end;
 			font-size: 0.8em;
 		}
 	}
