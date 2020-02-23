@@ -1,7 +1,7 @@
 <?
 /**
 *	Sitemap generator
-* 
+*
 *	Reference: http://www.sitemaps.org/de/protocol.html
 *
 *	Structural infos: $structures
@@ -15,10 +15,10 @@ function createUrl($location, $editDate = null, $changeFreq = 'monthly', $priori
 		// currently no edit date is saved via the cms
 		. (($editDate != null) ? ("\t<lastmod>" . $editDate . "</lastmod>\n") : "")
 		. "\t<changefreq>" . $changeFreq . "</changefreq>\n" // monthly | weekly | daily
-		. "\t<priority>". $priority ."</priority>\n" // on small pages every page gets a standard priority of 0.5
+		. "\t<priority>". number_format($priority, 2, '.', '') ."</priority>\n" // on small pages every page gets a standard priority of 0.5
 		. "</url>\n";
 
-	return $ret; 
+	return $ret;
 }
 
 $out = ""
