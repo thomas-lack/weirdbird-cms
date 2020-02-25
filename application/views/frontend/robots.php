@@ -1,14 +1,17 @@
 <?
 /**
 *	robots.txt generator
-* 
+*
 *	disallowed directories: $disallowedDirectories
 */
 
 $baseUrl = URL::base(true, true);
 $baseUrl = str_replace('index.php/', '', $baseUrl);
 
-$out = "User-agent: *\n";
+$out = "User-agent: Googlebot\n";
+$out .= "Allow: *.js\n";
+$out .= "Allow: *.css\n";
+$out .= "User-agent: *\n";
 
 foreach ($disallowedDirectories as $d) {
 	$out .= "Disallow: /" . $d . "\n";
