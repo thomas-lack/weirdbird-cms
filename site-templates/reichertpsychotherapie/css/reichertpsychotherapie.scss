@@ -31,7 +31,7 @@ h1 {
 	letter-spacing: 0.02em;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	border-top: 1px solid $gray-800;
+	border-top: 2px solid $gray-800;
 	border-bottom: 2px solid $gray-800;
 
 	@include mobile() {
@@ -106,6 +106,51 @@ h6 {
 
 p {
 	line-height: 1.6em;
+	text-align: justify;
+
+	&.centered {
+		display: flex;
+		justify-content: center;
+	}
+}
+
+img {
+	$image-border: 2px solid #BEBEBE;
+
+	&.full-width {
+		width: 56%;
+		border: $image-border;
+		padding: 5px;
+
+		@include mobile() {
+			width: 100%;
+			border: 0;
+			padding: 0;
+		}
+	}
+
+	@mixin float-image {
+		width: 48%;
+		border: $image-border;
+		padding: 5px;
+	}
+	&.float-left {
+		float: left;
+		margin: 0 40px 20px 0;
+		@include float-image;
+	}
+
+	&.float-right {
+		float: right;
+		margin: 0 0 20px 40px;
+		@include float-image;
+
+		@include mobile() {
+			width: 100%;
+			border: 0;
+			padding: 0;
+		}
+	}
 }
 
 table {
