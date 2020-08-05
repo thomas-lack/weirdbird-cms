@@ -13,10 +13,10 @@ Ext.define('WeirdbirdCMS.view.Viewport', {
 			+ '<span class="sans-serif headline dark-gray" id="headline">weirdbird cms</span>'
 			+ '<span id="headline-description">Dashboard</span>'
 			+ '<span class="right top-padding-10"><a href="cms/user/logout">' + _cms.lang.top.logout + ' '
-			+ '<i class="icon-off dark-gray"></i></a>' //<span class="icon big dark-gray icon-space-top">v</span>
+			+ '<i class="icon-off dark-gray"></i></a>'
 			+ '</span>'
 			+ '<span class="right dark-gray right-padding-10 top-padding-10">'
-			+ '<i class="icon-user dark-gray"></i> ' + _cms.username // <span class="icon big dark-gray icon-space-top">L</span>
+			+ '<i class="icon-user dark-gray"></i> ' + _cms.username
 			+ '</span>',
 		bodyCls: 'title',
 		height: 70
@@ -36,7 +36,6 @@ Ext.define('WeirdbirdCMS.view.Viewport', {
 		id: 'navmenu',
 		width: 80,
 		layout: 'fit', // bugfix - otherwise the size is not always calculated correctly by the browser
-		//border: false
 	}, {
 		region: 'center',
 		bodyCls: 'content',
@@ -45,12 +44,12 @@ Ext.define('WeirdbirdCMS.view.Viewport', {
 		border: false
 	}, {
 		region: 'south',
-		html: '<span class="sans-serif small">' 
+		html: '<span class="sans-serif small">'
 			+ _cms.lang.bottom.created
 			+ ' '
 			+ _cms.lang.bottom.moreinfo
 			+ ' '
-			+ '<a href="http://code.google.com/p/weirdbird-cms/">'
+			+ '<a href="https://github.com/thomas-lack/weirdbird-cms">'
 			+ _cms.lang.bottom.moreinfo2
 			+ '</a>.'
 			+ '</span>',

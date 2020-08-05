@@ -3,18 +3,17 @@
 Installation procedure for weirdbird cms:
 
 If you encounter problems, please have a look at the project page
-http://code.google.com/p/weirdbird-cms/source/list
-and the wiki you will find there.
+https://github.com/thomas-lack/weirdbird-cms
 
-1) Prepare your database by executing the SQL statement provided in 
-the file 'weirdbird-database-schema.sql' in your weirdbird cms 
+1) Prepare your database by executing the SQL statement provided in
+the file 'weirdbird-database-schema.sql' in your weirdbird cms
 'INSTALL' folder.
 
 2) Edit the file 'application/config/database.php', using the connect
 data provided by your website host. At least you will want to edit
 the fields for 'database', 'username' and 'password'.
 
-3) If you are using a subfolder on your webspace, you will want to 
+3) If you are using a subfolder on your webspace, you will want to
 edit the '.htaccess' file, so that the URL rewriting is pointing
 to the correct subfolder path.
 
@@ -22,7 +21,7 @@ to the correct subfolder path.
 want to change the error reporting level go to the 'index.php' file in
 the main folder. Edit the settings to your needs.
 
-5) For custom templates you will have to copy them into the 
+5) For custom templates you will have to copy them into the
 'site-templates' folder.
 
 6) Make sure you have writing rights for the php system user on the
