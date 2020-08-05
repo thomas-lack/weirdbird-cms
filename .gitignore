@@ -2,3 +2,5 @@
 application/logs
 package-lock.json
 node_modules
+user-upload/pdf/*
+user-upload/images/*
