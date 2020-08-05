@@ -111,6 +111,10 @@ p {
 	&.centered {
 		display: flex;
 		justify-content: center;
+
+		img {
+			align-self: center;
+		}
 	}
 }
 
@@ -121,6 +125,7 @@ img {
 		width: 56%;
 		border: $image-border;
 		padding: 5px;
+		height: auto;
 
 		@include mobile() {
 			width: 100%;
