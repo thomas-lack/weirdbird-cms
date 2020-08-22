@@ -1,5 +1,6 @@
 @import "variables";
 @import "media";
+@import "fontawesome/variables";
 
 /* mobile and tablet navigation */
 .nav-mobile {
@@ -25,12 +26,39 @@
 		cursor: pointer;
 	}
 
+	.activate-menu {
+		width: 30px;
+		height: 26px;
+		left:-5px;
+		top:-2px;
+		position:absolute;
+		font-style: normal;
+		font-family: "Font Awesome 5 Free";
+		text-align: center;
+
+		&:not(.active) {
+			&::before {
+				content: fa-content($fa-var-bars);
+			}
+		}
+
+		&.active {
+			&::before {
+				content: fa-content($fa-var-times);
+				transition: transform 400ms;
+				transform: rotate(180deg);
+				display: inline-block;
+			}
+		}
+	}
+
 	.nav-header {
 		margin: $default-margin;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
 		width: 100%;
+		padding-left: 60px;
 
 		@include tablet() {
 			align-items: center;
@@ -64,9 +92,22 @@
 	background-color: $dark;
 	opacity: 0.9;
 	overflow-x: hidden;
-	transition: 0.5s;
 	font-family: "Roboto", sans-serif;
-	font-size: 2em;
+	display: inline-block;
+	transform: translateY(-100vh);
+	transition: 400ms;
+
+	@include tablet {
+		font-size: 2em;
+	}
+
+	@include mobile() {
+		font-size: 1em;
+	}
+
+	&.active {
+		transform: translateY(0);
+	}
 
 	.overlay-content {
 		position: relative;
@@ -90,7 +131,12 @@
 			margin: 0;
 			padding: $default-padding * 2 8px;
 
-			&:last-of-type {
+			&:first-child {
+				margin-right: 0;
+			}
+
+			&:last-child {
+				margin-left: 0;
 				border-right: none;
 			}
 		}

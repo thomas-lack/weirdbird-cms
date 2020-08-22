@@ -64,7 +64,7 @@
 
 			<!-- site navigation mobile / tablet -->
 			<div class="nav-mobile">
-				<i class="fas fa-bars activate-menu"></i>
+				<i class="activate-menu"></i>
 				<div class="nav-header">
 					<div class="name">Sonja Reichert</div>
 					<div class="occupation">Psychologische Psychotherapeutin</div>

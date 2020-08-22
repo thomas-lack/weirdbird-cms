@@ -1,5 +1,5 @@
 		<!-- mobile fullscreen navigation overlay -->
-		<div class="nav-mobile-overlay hidden">
+		<div class="nav-mobile-overlay">
 			<div class="overlay-content">
 				<?php
 					$pagelanguage = ($system["pagelanguage"] !== NULL) ? $system["pagelanguage"]."/" : "";
