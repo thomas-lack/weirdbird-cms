@@ -46,7 +46,7 @@
 			content="index" />
 		<meta
 			name="viewport"
-			content="width=device-width">
+			content="width=device-width, initial-scale=1">
 
 		<?
 			// stylesheet files are loaded at the beginning of the page
