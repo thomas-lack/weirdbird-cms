@@ -1,7 +1,9 @@
 <h1>Vorlagen</h1>
 <?
 
-	echo "<h2>Ben&ouml;tigte Dokumente f&uuml;r die Kostenerstattung</h2>";
+	echo "<h2>Ben&ouml;tigte Dokumente <span class='underline'>nur</span> f&uuml;r die Kostenerstattung</h2>";
+
+	echo "<p>F&uuml;r die Beantragung einer Psychotherapie im Kassensystem stellen wir den Antrag gemeinsam in der Praxis in Berlin Sch&ouml;neberg.</p>";
 
 	$kostenerstattungFiles = ORM::factory("File")
 		->where("active", "=", "1")
