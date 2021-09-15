@@ -1,9 +1,9 @@
 <h1>Vorlagen</h1>
 <?
 
-	echo "<h2>Ben&ouml;tigte Dokumente <span class='underline'>nur</span> f&uuml;r die Kostenerstattung</h2>";
+	echo "<p class='info'><i class='fa fa-info-circle'></i>F&uuml;r die Beantragung einer Psychotherapie im Kassensystem stellen wir den Antrag gemeinsam in der Praxis in Berlin Sch&ouml;neberg.</p>";
 
-	echo "<p>F&uuml;r die Beantragung einer Psychotherapie im Kassensystem stellen wir den Antrag gemeinsam in der Praxis in Berlin Sch&ouml;neberg.</p>";
+	echo "<h2>Ben&ouml;tigte Dokumente <span class='underline'>ausschlie&szlig;lich</span> f&uuml;r die Kostenerstattung</h2>";
 
 	$kostenerstattungFiles = ORM::factory("File")
 		->where("active", "=", "1")
