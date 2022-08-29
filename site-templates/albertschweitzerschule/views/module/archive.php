@@ -37,7 +37,7 @@ foreach($files as $f)
 	$year = date('Y', $datetime);
 
 	// add new array if year is not remembered until now
-	if (sizeof($years[$year]) == 0)
+	if (!isset($years[$year]))
 		$years[$year] = array();
 
 	// add the file information object to the current years array
