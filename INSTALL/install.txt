@@ -27,17 +27,17 @@ the main folder. Edit the settings to your needs.
 6) Make sure you have writing rights for the php system user on the
 'user-upload' folder.
 
-6) After all this is set up, navigate to 'http://your-domain/cms'.
+7) After all this is set up, navigate to 'http://your-domain/cms'.
 Use the name 'Administrator' and the password 'adminadmin' to access
 the cms.
 
-7) Go to the 'User' tab and change at least the password of the
+8) Go to the 'User' tab and change at least the password of the
 Administrator user.
 
-8) Go to the templates tab and import all available site templates.
+9) Go to the templates tab and import all available site templates.
 Afterwards chose one and set it to active.
 
-9) Now the site should be usable. You can start defining your site
+10) Now the site should be usable. You can start defining your site
 structure and adding articles.
 
 
