@@ -2,7 +2,7 @@
 
 This is a little side project to create an intuitive and simple to use cms. Feel free to use it for your own needs if you like.
 
-Target audience are single-purpose sites like blogs and the like.
+Target audience are single-purpose sites like blogs and the like..
 
 ## Documentation
 
